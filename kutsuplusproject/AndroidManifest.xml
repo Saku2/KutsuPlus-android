@@ -3,7 +3,14 @@
       package="fi.aalto.kutsuplus"
       android:versionCode="1"
       android:versionName="1.0">
+      
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+    
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.Base.AppCompat">
         <activity android:name="MainActivity"
@@ -22,5 +29,20 @@
         <activity
             android:name="fi.aalto.kutsuplus.FormFragment">
         </activity>
+        
+        <!-- SMS handling -->
+        <activity
+          android:name="fi.aalto.kutsuplus.sms.SMSNotificationActivity"
+          android:label="@string/title_sms_notification"
+          android:parentActivityName="com.example.myfirstapp.MainActivity" >
+          <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="fi.aalto.kutsuplus.sms.SMSNotificationActivity" />
+        </activity>
+          <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

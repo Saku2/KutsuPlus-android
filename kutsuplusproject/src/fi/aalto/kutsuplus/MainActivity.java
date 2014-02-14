@@ -1,11 +1,15 @@
 package fi.aalto.kutsuplus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
+import android.view.View;
 import android.view.Window;
+import fi.aalto.kutsuplus.sms.SMSNotificationActivity;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener
 {
@@ -82,4 +86,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	// Dummy call for the sms activity
+	public void doSMS(View v)  {
+    	SmsManager smsManager = SmsManager.getDefault();
+    	smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, "from to", null, null);	
+       Intent intent = new Intent(this, SMSNotificationActivity.class);  
+       startActivity(intent);
+    }
 }

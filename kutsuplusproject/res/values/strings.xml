@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AaltoKutsuplus</string>
+    
+    
+    <string name="title_sms_notification">Receive ticket</string>
+    <string name="sms_waiting">Seconds </string>
+    <string name="sms_timeout">Still waiting</string>
+    <string name="sms_ticket_ok">Ticket received</string>
+    <string name="sms_hsl_number">5556</string>    
 </resources>
