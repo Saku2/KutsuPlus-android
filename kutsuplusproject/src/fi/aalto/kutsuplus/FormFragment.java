@@ -12,6 +12,7 @@ public class FormFragment extends Fragment {
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
+		return rootView;
 	}
 	
 }
