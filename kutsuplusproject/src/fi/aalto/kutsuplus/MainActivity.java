@@ -29,7 +29,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         //web from:
         	//http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
         // Check whether the activity is using the layout version with
-		// the fragment_container FrameLayout. If so, we must add the first
+		// the phone_fragment_container FrameLayout. If so, we must add the first
 		// fragment
         //ONE-PANE LAYOUT
 		if (findViewById(R.id.phone_fragment_container) != null) {
