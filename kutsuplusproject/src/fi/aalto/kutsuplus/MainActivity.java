@@ -3,8 +3,10 @@ package fi.aalto.kutsuplus;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Window;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener
 {

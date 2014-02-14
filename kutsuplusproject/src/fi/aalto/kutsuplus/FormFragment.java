@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 public class FormFragment extends Fragment {
 
-	private View rootView
+	private View rootView;
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
