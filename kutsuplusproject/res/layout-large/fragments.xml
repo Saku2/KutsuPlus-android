@@ -6,13 +6,13 @@
     android:baselineAligned="false"
 	android:paddingTop="?attr/actionBarSize">
 
-    <fragment android:name=".FormFragment"
-              android:id="@+id/tablet_form_fragment"
+    <fragment android:name="fi.aalto.kutsuplus.FormFragment"
+              android:id="@+id/large_form_fragment"
               android:layout_weight="1"
               android:layout_width="0dp"
               android:layout_height="match_parent" />
 
-    <fragment android:name=".MapFragment"
+    <fragment android:name="fi.aalto.kutsuplus.MapFragment"
               android:id="@+id/map_fragment"
               android:layout_width="0dp"
               android:layout_height="match_parent"

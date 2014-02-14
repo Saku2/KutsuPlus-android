@@ -1,6 +1,5 @@
 package fi.aalto.kutsuplus;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -59,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			MapFragment mapFrag = (MapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map_fragment);
 			if (mapFrag != null) {
-				//some view-changing method in map-fragmet
+				//some view-changing method in map-fragmet?
 				//mapFrag.updateDetailView(0);
 			}
 		}
