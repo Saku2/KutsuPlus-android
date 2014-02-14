@@ -8,4 +8,8 @@
     <string name="sms_timeout">Still waiting</string>
     <string name="sms_ticket_ok">Ticket received</string>
     <string name="sms_hsl_number">5556</string>    
+    
+    <string name="kutsuplus_url_short">http://kutsuplus.fi</string>
+    <string name="kutsuplus_url">http://kutsuplus.fi/m/sign-in</string>
+    
 </resources>

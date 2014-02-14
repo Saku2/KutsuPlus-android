@@ -1,6 +1,7 @@
 package fi.aalto.kutsuplus;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -11,30 +12,27 @@ import android.view.View;
 import android.view.Window;
 import fi.aalto.kutsuplus.sms.SMSNotificationActivity;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener
-{
+public class MainActivity extends ActionBarActivity implements
+		android.support.v7.app.ActionBar.TabListener {
 
-    /** Called when the activity is first created. */
+	/** Called when the activity is first created. */
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
+		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
-        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        
-
-        //web from:
-        	//http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
-        // Check whether the activity is using the layout version with
-		// the phone_fragment_container FrameLayout. If so, we must add the first
+		// web from:
+		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
+		// Check whether the activity is using the layout version with
+		// the phone_fragment_container FrameLayout. If so, we must add the
+		// first
 		// fragment
-        //ONE-PANE LAYOUT
+		// ONE-PANE LAYOUT
 		if (findViewById(R.id.phone_fragment_container) != null) {
 
 			// However, if we're being restored from a previous state,
@@ -56,43 +54,45 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.phone_fragment_container, formFragment).commit();
 		}
-		//TWO-PANE LAYOUT
-		else{//in two-pane layout set general as initial detail view
-			// Capture the detail fragment from the activity layout
+		// TWO-PANE LAYOUT
+		else {// in two-pane layout set general as initial detail view
+				// Capture the detail fragment from the activity layout
 			MapFragment mapFrag = (MapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map_fragment);
 			if (mapFrag != null) {
-				//some view-changing method in map-fragmet?
-				//mapFrag.updateDetailView(0);
+				// some view-changing method in map-fragmet?
+				// mapFrag.updateDetailView(0);
 			}
 		}
-     		
-    }
+
+	}
 
 	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
+
 	// Dummy call for the sms activity
-	public void doSMS(View v)  {
-    	SmsManager smsManager = SmsManager.getDefault();
-    	smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, "from to", null, null);	
-       Intent intent = new Intent(this, SMSNotificationActivity.class);  
-       startActivity(intent);
-    }
+	public void doSMS(View v) {
+		SmsManager smsManager = SmsManager.getDefault();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null,
+				"from to", null, null);
+		Intent intent = new Intent(this, SMSNotificationActivity.class);
+		startActivity(intent);
+	}
+
+	
 }
