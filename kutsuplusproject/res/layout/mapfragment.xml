@@ -11,6 +11,14 @@
             android:paddingLeft="0dp" 
             android:paddingRight="0dp" 
             >
+             <TextView
+		        android:id="@+id/hellou_map"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:ems="10"
+		        android:text="HELLO KutsuPlus MAP!">
+ 
+    </TextView>
 
     </LinearLayout>
  
