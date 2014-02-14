@@ -34,3 +34,4 @@ proguard/
 *.sublime-workspace
 
 Kutsuplusproject/.metadata/*
+kutsuplusproject/project.properties
