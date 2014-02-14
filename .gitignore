@@ -27,3 +27,8 @@ proguard/
 *.ipr
 *.iws
 .idea/
+
+# Sublime text project files
+
+*.sublime-project
+*.sublime-workspace
