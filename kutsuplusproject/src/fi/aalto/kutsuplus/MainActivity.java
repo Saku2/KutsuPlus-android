@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
@@ -17,15 +18,17 @@ public class MainActivity extends ActionBarActivity implements
 
 	/** Called when the activity is first created. */
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        super.onCreate(savedInstanceState);
+		setContentView(R.layout.fragments);
 
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
+        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
 		// Check whether the activity is using the layout version with
@@ -54,6 +57,7 @@ public class MainActivity extends ActionBarActivity implements
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.phone_fragment_container, formFragment).commit();
 		}
+
 		// TWO-PANE LAYOUT
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout

@@ -12,11 +12,16 @@ public class FormFragment extends Fragment {
 
 	private View rootView;
 
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
 		return rootView;
 	}
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) {    	
+        super.onCreate(savedInstanceState);
+    }
 
 	// Open the web browser for the www-users
 	public void doOpenBrowser(View v) {
