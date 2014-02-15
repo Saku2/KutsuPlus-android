@@ -23,11 +23,6 @@ public class FormFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-	// Open the web browser for the www-users
-	public void doOpenBrowser(View v) {
-		Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-				Uri.parse(getString(R.string.kutsuplus_url)));
-		startActivity(browserIntent);
-	}
+
 
 }

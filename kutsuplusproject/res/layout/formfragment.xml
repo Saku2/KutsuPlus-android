@@ -106,14 +106,14 @@
             android:id="@+id/estimated_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="estimated price" >
+            android:ems="10" >
         </TextView>
     </LinearLayout>
 
     <Button
         android:id="@+id/bn_order"
         android:layout_width="150dp"
+        android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Order" />
