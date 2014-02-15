@@ -52,7 +52,7 @@
     </LinearLayout>
         
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <TextView
@@ -72,7 +72,7 @@
     </LinearLayout>
             
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <TextView
@@ -92,7 +92,7 @@
     </LinearLayout>
              
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <TextView
@@ -102,19 +102,20 @@
             android:text="estimated price" >
         </TextView>
 
-        <EditText
+        <TextView
             android:id="@+id/estimated_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="estimated price" >
-        </EditText>
+        </TextView>
     </LinearLayout>
 
     <Button
         android:id="@+id/bn_order"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:text="Order" />
     
    
