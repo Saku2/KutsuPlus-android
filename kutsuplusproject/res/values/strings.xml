@@ -2,7 +2,20 @@
 <resources>
     <string name="app_name">AaltoKutsuplus</string>
     
+    <!-- Order Form -->
+    <string name="OF_from">From</string>
+    <string name="OF_from_hint">From</string>
+    <string name="OF_to">To</string>
+    <string name="OF_to_hint">To</string>    
+    <string name="OF_number_of_passengers">Number of passengers</string>
+    <string name="OF_number_of_passengers_hint">1</string>
+    <string name="OF_max_price">Max price</string>
+    <string name="OF_max_price_hint">0.0</string>
+    <string name="OF_estimated_price">Estimated price</string>    
+    <string name="OF_button_order">Order</string>
     
+    
+    <!-- SMS Handling -->
     <string name="title_sms_notification">Receive ticket</string>
     <string name="sms_waiting">Seconds </string>
     <string name="sms_timeout">Still waiting</string>

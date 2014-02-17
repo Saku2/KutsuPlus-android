@@ -14,12 +14,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
+        <!-- Order Form -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="from" >
+            android:text="@string/OF_from" >
         </TextView>
 
         <EditText
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="from" >
+            android:hint="@string/OF_from_hint" >
         </EditText>
     </LinearLayout>
     
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="to" >
+            android:text="@string/OF_to" >
         </TextView>
 
         <EditText
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="to" >
+            android:hint="@string/OF_to_hint" >
         </EditText>
     </LinearLayout>
         
@@ -59,15 +59,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="number of passingers" >
+            android:text="@string/OF_number_of_passengers" >
         </TextView>
 
         <EditText
-            android:id="@+id/to"
+            android:id="@+id/number_of_passengers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="nr" >
+            android:inputType="numberSigned"	
+            android:hint="@string/OF_number_of_passengers_hint" >
         </EditText>
     </LinearLayout>
             
@@ -79,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="max price" >
+            android:text="@string/OF_max_price" >
         </TextView>
 
         <EditText
@@ -87,7 +88,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="max price" >
+            android:inputType="numberDecimal"
+            android:hint="@string/OF_max_price_hint" >
         </EditText>
     </LinearLayout>
              
@@ -99,7 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="estimated price" >
+            android:text="@string/OF_estimated_price" >
         </TextView>
 
         <TextView
@@ -116,7 +118,7 @@
         android:layout_marginTop="10dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Order" />
+        android:text="@string/OF_button_order" />
     
    
     
