@@ -1,0 +1,1 @@
+Order a trip from stop to stop by typing 'KPE STOPID1 STOPID2'. The cheapest trip available will be charged in your phone bill. https://kutsuplus.fi/sms

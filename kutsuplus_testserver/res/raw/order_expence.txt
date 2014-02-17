@@ -1,0 +1,1 @@
+No vehicles available with the given max trip cost {{max-price}}. The cheapest trip available was {{trip-price}}. Kutsuplus.fi/sms 

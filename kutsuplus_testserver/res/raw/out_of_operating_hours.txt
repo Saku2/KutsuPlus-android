@@ -1,0 +1,1 @@
+The service is not available at the moment. We receive orders again {{service-date}} at {{service-time}}. Kutsuplus.fi

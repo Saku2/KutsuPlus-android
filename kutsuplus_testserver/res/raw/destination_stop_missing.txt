@@ -1,0 +1,1 @@
+Destination stop id was missing. Order a trip from stop to stop by typing 'KPE STOPID1 STOPID2'. Kutsuplus.fi/sms

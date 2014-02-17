@@ -1,0 +1,1 @@
+Unfortunately the stop with id {{stop-id}} is not covered by the service at the moment. Kutsuplus.fi
