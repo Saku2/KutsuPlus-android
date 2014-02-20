@@ -50,7 +50,6 @@ public class SMSNotificationActivity extends Activity {
 	
     public void checkOldSMSs()  {
     	final long one_day=1000*60*60*24;
-    	TextView view = new TextView(this);
         Uri uriSMSURI = Uri.parse("content://sms/inbox");
         Date filterDateStart=new Date();        
         String filter = "date>=" + (filterDateStart.getTime()-one_day);
@@ -84,7 +83,7 @@ public class SMSNotificationActivity extends Activity {
 				msg = msg.replace("\n", "");
 				String body = msg.substring(msg.lastIndexOf(":") + 1,
 						msg.length());
-				String pNumber = msg.substring(0, msg.lastIndexOf(":"));				
+				//String pNumber = msg.substring(0, msg.lastIndexOf(":"));				
                 sms_message.setText(body);
                 counter.cancel();
                 timerText.setText(getString(R.string.sms_ticket_ok));
