@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.view.Window;
-import fi.aalto.kutsuplus.sms.SMSNotificationActivity;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {

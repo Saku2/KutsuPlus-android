@@ -1,4 +1,4 @@
-package fi.aalto.kutsuplus.sms;
+package fi.aalto.kutsuplus;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import fi.aalto.kutsuplus.R;
+import fi.aalto.kutsuplus.sms.SMSMessage;
 
 public class SMSNotificationActivity extends Activity {
 	private BroadcastReceiver mIntentReceiver;

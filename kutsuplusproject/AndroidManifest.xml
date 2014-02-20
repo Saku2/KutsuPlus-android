@@ -33,12 +33,12 @@
         
         <!-- SMS handling -->
         <activity
-          android:name="fi.aalto.kutsuplus.sms.SMSNotificationActivity"
+          android:name="fi.aalto.kutsuplus.SMSNotificationActivity"
           android:label="@string/title_sms_notification"
           android:parentActivityName="fi.aalto.kutsuplus.MainActivity" >
           <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value="fi.aalto.kutsuplus.sms.SMSNotificationActivity" />
+            android:value="fi.aalto.kutsuplus.MainActivity" />
         </activity>
           <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >
             <intent-filter>
