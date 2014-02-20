@@ -1,4 +1,4 @@
-package fi.aalto.kutsuplus;
+package fi.aalto.kutsuplus.sms;
 
 public class SMSParsingException extends Exception {
 

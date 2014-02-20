@@ -1,4 +1,5 @@
-package fi.aalto.kutsuplus;
+package fi.aalto.kutsuplus.sms;
+
 
 // SMS format is
 // Pickup 11:08, stop 1901
