@@ -1,0 +1,2 @@
+No vehicles were available for trip from stop {{departure-stop}} to stop {{arrival-stop}}. Please try again later. Kutsuplus.fi
+ 

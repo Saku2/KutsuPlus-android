@@ -1,0 +1,8 @@
+Pickup 11:08, stop 1901
+Vehicle K11
+Code 4U
+1 pax
+Drop-off 11:41+/-10min, stop E1129
+6,74e
+Order Id 2013-11-27-58488
+https://kutsuplus.fi/t/4Upnw

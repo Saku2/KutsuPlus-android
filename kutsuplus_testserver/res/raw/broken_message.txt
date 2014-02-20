@@ -1,0 +1,1 @@
+Code {{unknown-parameter}} is unknown. Please check use instructions at https://kutsuplus.fi/sms

@@ -4,13 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <LinearLayout android:id="@+id/mapview"
+    <LinearLayout android:id="@+id/map_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="0dp" 
             android:paddingRight="0dp" 
             >
+             <TextView
+		        android:id="@+id/hellou_map"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:ems="10"
+		        android:text="HELLO KutsuPlus MAP!">
+ 
+    </TextView>
 
     </LinearLayout>
  
