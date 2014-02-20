@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:text="@string/kutsuplus_url_short"
         android:clickable="true" 
-        android:onClick="doOpenBrowser"/>/>
+        android:onClick="doOpenBrowser"/>
 
     <LinearLayout
         android:layout_width="match_parent"
