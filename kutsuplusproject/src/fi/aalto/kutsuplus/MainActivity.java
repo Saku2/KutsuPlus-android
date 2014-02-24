@@ -90,14 +90,6 @@ public class MainActivity extends ActionBarActivity implements
 
 	}
 
-	// Dummy call for the sms activity
-	public void doSMS(View v) {
-		SmsManager smsManager = SmsManager.getDefault();
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null,
-				"from to", null, null);
-		Intent intent = new Intent(this, SMSNotificationActivity.class);
-		startActivity(intent);
-	}
 	// Open the web browser for the www-users
 	public void doOpenBrowser(View v) {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW,
@@ -105,5 +97,13 @@ public class MainActivity extends ActionBarActivity implements
 		startActivity(browserIntent);
 	}
 
-	
+	public void doOrder(View v) {
+		SmsManager smsManager = SmsManager.getDefault();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null,
+				"from to", null, null);
+		Intent intent = new Intent(this, SMSNotificationActivity.class);
+		startActivity(intent);
+	}
+
+
 }
