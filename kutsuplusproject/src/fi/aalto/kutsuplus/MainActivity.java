@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {
@@ -66,6 +68,7 @@ public class MainActivity extends ActionBarActivity implements
 				// mapFrag.updateDetailView(0);
 			}
 		}
+
 
 	}
 

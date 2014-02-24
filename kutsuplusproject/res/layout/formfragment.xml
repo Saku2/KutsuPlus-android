@@ -22,13 +22,13 @@
             android:text="@string/OF_from" >
         </TextView>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/OF_from_hint" >
-        </EditText>
+        </AutoCompleteTextView>
     </LinearLayout>
     
     <LinearLayout
@@ -42,13 +42,13 @@
             android:text="@string/OF_to" >
         </TextView>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/OF_to_hint" >
-        </EditText>
+        </AutoCompleteTextView>
     </LinearLayout>
         
     <LinearLayout
