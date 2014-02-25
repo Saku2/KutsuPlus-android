@@ -33,5 +33,8 @@ proguard/
 *.sublime-project
 *.sublime-workspace
 
+# Log files
+*.log
+
 Kutsuplusproject/.metadata/*
 kutsuplusproject/project.properties
