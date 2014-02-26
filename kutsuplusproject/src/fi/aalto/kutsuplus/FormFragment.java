@@ -25,7 +25,7 @@ public class FormFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
 		
 		// Get the streets string array
-		String[] streets = readStreets(R.raw.kutsuplus_area_street_names_fi);
+		String[] streets = readStreets(R.raw.kutsuplus_area_street_names);
 
 		
 		// Get a reference to the AutoCompleteTextView in the layout
