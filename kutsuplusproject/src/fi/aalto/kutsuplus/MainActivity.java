@@ -2,8 +2,13 @@ package fi.aalto.kutsuplus;
 
 import android.content.Intent;
 import android.net.Uri;
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
@@ -16,18 +21,24 @@ import android.widget.AutoCompleteTextView;
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {
 
-	/** Called when the activity is first created. */
+    /** Called when the activity is first created. */
+
+	List<Fragment> 	mFragments;
+	FormFragment 	formFrag;
+	MapFragment 	mapFrag;
+	TabPagerAdapter mTabPagerAdapter;
+	ViewPager		mPager;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR); // TODO: FEATURE_ACTION_BAR requires API level 11
         super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragments);
-
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		setContentView(R.layout.fragments);
+
         
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
@@ -46,16 +57,42 @@ public class MainActivity extends ActionBarActivity implements
 			}
 
 			// Create an instance of ExampleFragment
-			FormFragment formFragment = new FormFragment();
+	        mFragments = new ArrayList<Fragment>();
+	        formFrag = new FormFragment();
+	        mapFrag = new MapFragment();
 
-			// In case this activity was started with special instructions from
-			// an Intent,
-			// pass the Intent's extras to the fragment as arguments
-			formFragment.setArguments(getIntent().getExtras());
+	        mFragments.add(formFrag);
+	        mFragments.add(mapFrag);
 
-			// Add the fragment to the 'fragment_container' FrameLayout
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.phone_fragment_container, formFragment).commit();
+	        mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
+
+	        mPager = (ViewPager) findViewById(R.id.pager);
+	        mPager.setAdapter(mTabPagerAdapter);
+	        
+			mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+				 
+	            @Override
+	            public void onPageSelected(int position) {
+	                actionBar.setSelectedNavigationItem(position);
+	            }
+	 
+	            @Override
+	            public void onPageScrolled(int arg0, float arg1, int arg2) {
+	            	//TODO autocreated stub
+	            }
+	 
+	            @Override
+	            public void onPageScrollStateChanged(int arg0) {
+	            	//TODO autocreated stub
+	            }
+	        });
+			
+			actionBar.addTab(actionBar.newTab()
+						.setText("form")
+						.setTabListener(this));
+			actionBar.addTab(actionBar.newTab()
+						.setText("map")
+						.setTabListener(this));
 		}
 
 		// TWO-PANE LAYOUT
@@ -71,7 +108,7 @@ public class MainActivity extends ActionBarActivity implements
 
 
 	}
-
+        
 	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
@@ -79,9 +116,10 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 
+		mPager.setCurrentItem(tab.getPosition());
 	}
 
 	@Override

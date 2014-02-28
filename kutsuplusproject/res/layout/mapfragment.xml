@@ -18,8 +18,8 @@
 		        android:ems="10"
 		        android:text="HELLO KutsuPlus MAP!">
  
-    </TextView>
-
+            </TextView>
     </LinearLayout>
+
  
 </LinearLayout>
