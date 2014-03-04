@@ -2,33 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@color/light_gray">
+    
   <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/kutsuplus_url_short"
         android:clickable="true" 
+        android:layout_marginLeft="20dp"
         android:onClick="doOpenBrowser"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
+
         <!-- Order Form -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:ems="5"
+            android:layout_marginLeft="20dp"
             android:text="@string/OF_from" >
         </TextView>
 
         <AutoCompleteTextView
             android:id="@+id/from"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.37"
+            android:ems="15"
+            android:hint="@string/OF_current_location" >
+        </AutoCompleteTextView>
+
+        <ImageButton
+            android:id="@+id/from_extras"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/OF_from_hint" >
-        </AutoCompleteTextView>
+            android:contentDescription="@string/OF_from_extra_options"
+            android:src="@android:drawable/arrow_down_float" />
+
     </LinearLayout>
     
     <LinearLayout
@@ -38,17 +53,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:ems="5"
+            android:layout_marginLeft="20dp"
             android:text="@string/OF_to" >
         </TextView>
 
         <AutoCompleteTextView
             android:id="@+id/to"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.37"
+            android:ems="15"
+            android:hint="@string/OF_current_location" >
+        </AutoCompleteTextView>
+        <ImageButton
+            android:id="@+id/to_extras"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/OF_to_hint" >
-        </AutoCompleteTextView>
+            android:contentDescription="@string/OF_to_extra_options"
+            android:src="@android:drawable/arrow_down_float" />
+        
     </LinearLayout>
         
     <LinearLayout
@@ -59,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_marginLeft="20dp"
             android:text="@string/OF_number_of_passengers" >
         </TextView>
 
@@ -69,7 +94,7 @@
             android:ems="10"
             android:inputType="numberSigned"	
             android:hint="@string/OF_number_of_passengers_hint" >
-        </EditText>
+        </EditText>        
     </LinearLayout>
             
     <LinearLayout
@@ -80,6 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_marginLeft="20dp"
             android:text="@string/OF_max_price" >
         </TextView>
 
@@ -101,6 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_marginLeft="20dp"
             android:text="@string/OF_estimated_price" >
         </TextView>
 
@@ -120,7 +147,5 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/OF_button_order"
         android:onClick="doOrder" />
-    
-   
     
 </LinearLayout>

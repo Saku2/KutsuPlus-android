@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="light_gray">#DDDDDD</color>
     <string name="app_name">AaltoKutsuplus</string>
     
     <!-- Order Form -->
+    <string name="OF_current_location">Current location</string>
     <string name="OF_from">From</string>
-    <string name="OF_from_hint">From</string>
+    <string name="OF_from_extra_options">From: extra options</string>
+    
     <string name="OF_to">To</string>
-    <string name="OF_to_hint">To</string>    
+    <string name="OF_to_extra_options">To: extra options</string>
     <string name="OF_number_of_passengers">Number of passengers</string>
     <string name="OF_number_of_passengers_hint">1</string>
     <string name="OF_max_price">Max price</string>

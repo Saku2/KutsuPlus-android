@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.view.Window;
+import android.widget.PopupWindow;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {
@@ -26,6 +27,11 @@ public class MainActivity extends ActionBarActivity implements
 	MapFragment 	mapFrag;
 	TabPagerAdapter mTabPagerAdapter;
 	ViewPager		mPager;
+
+    public PopupWindow popupWindow_ExtrasList;
+    public static int EXTRAS_FROM = 0;
+    public static int EXTRAS_TO = 1;
+    public int extras_list=EXTRAS_FROM; 
 
     @Override
     public void onCreate(Bundle savedInstanceState)
