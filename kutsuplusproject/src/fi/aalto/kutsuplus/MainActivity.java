@@ -1,10 +1,10 @@
 package fi.aalto.kutsuplus;
 
-import android.content.Intent;
-import android.net.Uri;
 import java.util.ArrayList;
 import java.util.List;
-import android.app.Activity;
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,8 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {

@@ -6,10 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,10 +47,11 @@ public class FormFragment extends Fragment {
 	private String[] readStreets(int resource_id) {
 		List<String> streets=new ArrayList<String>();
 		
+		
 		InputStream raw = getResources().openRawResource(resource_id);
 		try
 		{
-	      // Special scandinavian characters handled
+	      // Special Scandinavian characters handled
 		 InputStreamReader isr=new InputStreamReader(raw,"ISO-8859-1");
 		 BufferedReader in=new BufferedReader(isr);
 		 String line=in.readLine();
