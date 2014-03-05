@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
 
 	private String makeUPMessage() {
 		Random randomGenerator = new Random(System.currentTimeMillis());
-		int delay = randomGenerator.nextInt(30);
+		int delay = randomGenerator.nextInt(5);
 		try {
 			Thread.sleep(delay * 1000);
 		} catch (Exception e) {
