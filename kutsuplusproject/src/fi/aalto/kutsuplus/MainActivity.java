@@ -96,10 +96,18 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});
 
-			actionBar.addTab(actionBar.newTab().setText("form")
-					.setTabListener(this));
-			actionBar.addTab(actionBar.newTab().setText("map")
-					.setTabListener(this));
+			Tab formtab=actionBar.newTab();
+			formtab.setText(getString(R.string.TAB_form));
+			formtab.setContentDescription(getString(R.string.TAB_form_description));
+			formtab.setTabListener(this);
+			actionBar.addTab(formtab);
+			
+			Tab maptab=actionBar.newTab();
+			maptab.setText(getString(R.string.TAB_map));
+			maptab.setContentDescription(getString(R.string.TAB_map_description));
+			maptab.setTabListener(this);
+			actionBar.addTab(maptab);
+			
 		}
 
 		// TWO-PANE LAYOUT
@@ -115,23 +123,14 @@ public class MainActivity extends ActionBarActivity implements
 
 	}
 
-	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-		// TODO Auto-generated method stub
-
 		mPager.setCurrentItem(tab.getPosition());
 	}
 
-	@Override
 	public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	// Open the web browser for the www-users

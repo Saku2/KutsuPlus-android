@@ -33,15 +33,17 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.37"
-            android:ems="15"
-            android:hint="@string/OF_current_location" >
+            android:ems="15" 
+            android:focusable="true"           
+            android:contentDescription="@string/OF_from_field_description">
         </AutoCompleteTextView>
 
         <ImageButton
             android:id="@+id/from_extras"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/OF_from_extra_options"
+            android:focusable="true"
+            android:contentDescription="@string/OF_from_extra_options_desciption"
             android:src="@android:drawable/arrow_down_float" />
 
     </LinearLayout>
@@ -64,13 +66,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.37"
             android:ems="15"
-            android:hint="@string/OF_current_location" >
+            android:focusable="true"
+            android:contentDescription="@string/OF_to_field_description">
         </AutoCompleteTextView>
         <ImageButton
             android:id="@+id/to_extras"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/OF_to_extra_options"
+            android:focusable="true"            
+            android:contentDescription="@string/OF_to_extra_options_description"
             android:src="@android:drawable/arrow_down_float" />
         
     </LinearLayout>
@@ -92,6 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:focusable="true"
             android:inputType="numberSigned"	
             android:hint="@string/OF_number_of_passengers_hint" >
         </EditText>        
@@ -114,8 +119,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:focusable="true"
             android:inputType="numberDecimal"
-            android:hint="@string/OF_max_price_hint" >
+            android:contentDescription="@string/OF_max_price_description" >
         </EditText>
     </LinearLayout>
              
@@ -146,6 +152,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/OF_button_order"
+        android:focusable="true"
+        android:contentDescription="@string/OF_button_order_description"
         android:onClick="doOrder" />
     
 </LinearLayout>
