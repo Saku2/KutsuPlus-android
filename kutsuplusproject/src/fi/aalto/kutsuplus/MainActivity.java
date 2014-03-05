@@ -3,6 +3,11 @@ package fi.aalto.kutsuplus;
 import java.util.ArrayList;
 import java.util.List;
 
+import fi.aalto.kutsuplus.database.Ride;
+import fi.aalto.kutsuplus.database.RideDatabaseHandler;
+import fi.aalto.kutsuplus.database.StreetAddress;
+import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,35 +20,34 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.view.Window;
+import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {
 
-    /** Called when the activity is first created. */
+	/** Called when the activity is first created. */
 
-	List<Fragment> 	mFragments;
-	FormFragment 	formFrag;
-	MapFragment 	mapFrag;
+	List<Fragment> mFragments;
+	FormFragment formFrag;
+	MapFragment mapFrag;
 	TabPagerAdapter mTabPagerAdapter;
-	ViewPager		mPager;
+	ViewPager mPager;
 
-    public PopupWindow popupWindow_ExtrasList;
-    public static int EXTRAS_FROM = 0;
-    public static int EXTRAS_TO = 1;
-    public int extras_list=EXTRAS_FROM; 
+	public PopupWindow popupWindow_ExtrasList;
+	public static int EXTRAS_FROM = 0;
+	public static int EXTRAS_TO = 1;
+	public int extras_list = EXTRAS_FROM;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		setContentView(R.layout.fragments);
 
-        
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
 		// Check whether the activity is using the layout version with
@@ -61,42 +65,41 @@ public class MainActivity extends ActionBarActivity implements
 			}
 
 			// Create an instance of ExampleFragment
-	        mFragments = new ArrayList<Fragment>();
-	        formFrag = new FormFragment();
-	        mapFrag = new MapFragment();
+			mFragments = new ArrayList<Fragment>();
+			formFrag = new FormFragment();
+			mapFrag = new MapFragment();
 
-	        mFragments.add(formFrag);
-	        mFragments.add(mapFrag);
+			mFragments.add(formFrag);
+			mFragments.add(mapFrag);
 
-	        mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
+			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),
+					mFragments);
 
-	        mPager = (ViewPager) findViewById(R.id.pager);
-	        mPager.setAdapter(mTabPagerAdapter);
-	        
+			mPager = (ViewPager) findViewById(R.id.pager);
+			mPager.setAdapter(mTabPagerAdapter);
+
 			mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-				 
-	            @Override
-	            public void onPageSelected(int position) {
-	                actionBar.setSelectedNavigationItem(position);
-	            }
-	 
-	            @Override
-	            public void onPageScrolled(int arg0, float arg1, int arg2) {
-	            	//TODO autocreated stub
-	            }
-	 
-	            @Override
-	            public void onPageScrollStateChanged(int arg0) {
-	            	//TODO autocreated stub
-	            }
-	        });
-			
-			actionBar.addTab(actionBar.newTab()
-						.setText("form")
-						.setTabListener(this));
-			actionBar.addTab(actionBar.newTab()
-						.setText("map")
-						.setTabListener(this));
+
+				@Override
+				public void onPageSelected(int position) {
+					actionBar.setSelectedNavigationItem(position);
+				}
+
+				@Override
+				public void onPageScrolled(int arg0, float arg1, int arg2) {
+					// TODO autocreated stub
+				}
+
+				@Override
+				public void onPageScrollStateChanged(int arg0) {
+					// TODO autocreated stub
+				}
+			});
+
+			actionBar.addTab(actionBar.newTab().setText("form")
+					.setTabListener(this));
+			actionBar.addTab(actionBar.newTab().setText("map")
+					.setTabListener(this));
 		}
 
 		// TWO-PANE LAYOUT
@@ -110,9 +113,8 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		}
 
-
 	}
-        
+
 	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
@@ -145,7 +147,23 @@ public class MainActivity extends ActionBarActivity implements
 				"from to", null, null);
 		Intent intent = new Intent(this, SMSNotificationActivity.class);
 		startActivity(intent);
+		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
+		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
+		String from = fromView.getText().toString();
+		String to = toView.getText().toString();
+		if (from == null)
+			return;
+		if (to == null)
+			return;
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(
+				getApplicationContext());
+		stha.clearContent();
+		stha.addStreetAddress(new StreetAddress(from));
+		stha.addStreetAddress(new StreetAddress(to));
+		RideDatabaseHandler rides = new RideDatabaseHandler(
+				getApplicationContext());
+		rides.clearContent();
+		rides.addRide(from, to);
 	}
-
 
 }

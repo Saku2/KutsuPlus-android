@@ -41,12 +41,18 @@ public class ExtrasDropdownOnItemClickListener implements OnItemClickListener {
         if(mainActivity.extras_list==MainActivity.EXTRAS_FROM)
         {
           final AutoCompleteTextView fromView = (AutoCompleteTextView)mainActivity.findViewById(R.id.from);
-          fromView.setText(selectedItemText);
+          if(selectedItemText.equals("Current location"))
+        	  fromView.setText("");
+          else
+              fromView.setText(selectedItemText);
         }
         else
         {
             final AutoCompleteTextView toView = (AutoCompleteTextView)mainActivity.findViewById(R.id.to);
-            toView.setText(selectedItemText);
+            if(selectedItemText.equals("Current location"))
+          	  toView.setText("");
+            else
+              toView.setText(selectedItemText);
         }
         
         String selectedItemTag = ((TextView) v).getTag().toString();

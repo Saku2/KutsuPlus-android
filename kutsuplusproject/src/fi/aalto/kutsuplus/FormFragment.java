@@ -21,178 +21,205 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import fi.aalto.kutsuplus.database.Ride;
+import fi.aalto.kutsuplus.database.RideDatabaseHandler;
+import fi.aalto.kutsuplus.database.StreetAddress;
+import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 
 public class FormFragment extends Fragment {
 
 	private View rootView;
 	String popUpContents[];
-    ImageButton buttonShowDropDown_fromExtras;
-    ImageButton buttonShowDropDown_toExtras;
-    PopupWindow popupWindow_ExtrasList;
-    
+	ImageButton buttonShowDropDown_fromExtras;
+	ImageButton buttonShowDropDown_toExtras;
+	PopupWindow popupWindow_ExtrasList;
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
-		
+
 		// Get the streets string array
 		String[] streets = readStreets(R.raw.kutsuplus_area_street_names);
 
-		
 		// Get a reference to the AutoCompleteTextView in the layout
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
-		// Create the adapter and set it to the AutoCompleteTextView 
-		ArrayAdapter<String> adapter_from = 
-		        new ArrayAdapter<String>(getActivity()		, android.R.layout.simple_list_item_1, streets);
+		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView
+				.findViewById(R.id.from);
+		// Create the adapter and set it to the AutoCompleteTextView
+		ArrayAdapter<String> adapter_from = new ArrayAdapter<String>(
+				getActivity(), android.R.layout.simple_list_item_1, streets);
 		fromView.setAdapter(adapter_from);
-		
-		
-		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+
+		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView
+				.findViewById(R.id.to);
 		// Get the string array
-		ArrayAdapter<String> adapter_to = 
-		        new ArrayAdapter<String>(getActivity()		, android.R.layout.simple_list_item_1, streets);
+		ArrayAdapter<String> adapter_to = new ArrayAdapter<String>(
+				getActivity(), android.R.layout.simple_list_item_1, streets);
 		toView.setAdapter(adapter_to);
 		createDropDown(rootView);
+		
+		
+		// Remember the last ride
+		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
+		List<Ride> ride_list = rides.getAllStreetAddresses();
+		if (ride_list != null)
+			if (ride_list.size() > 0) {
+				String from = ride_list.get(0).get_StreetAddress_from();
+				String to = ride_list.get(0).get_StreetAddress_to();
+				if ((from != null) && (to != null)) {
+					fromView.setText(from);
+					toView.setText(to);
+				}
+			}
+
+
 		return rootView;
 	}
 
-	
 	private String[] readStreets(int resource_id) {
-		List<String> streets=new ArrayList<String>();
-		
-		
+		List<String> streets = new ArrayList<String>();
+
 		InputStream raw = getResources().openRawResource(resource_id);
-		try
-		{
-	      // Special Scandinavian characters handled
-		 InputStreamReader isr=new InputStreamReader(raw,"ISO-8859-1");
-		 BufferedReader in=new BufferedReader(isr);
-		 String line=in.readLine();
-		 while(line!=null)
-		 {
-			 streets.add(line);
-			 line=in.readLine();
-		 }
-		}
-		catch(Exception ex)
-		{
+		try {
+			// Special Scandinavian characters handled
+			InputStreamReader isr = new InputStreamReader(raw, "ISO-8859-1");
+			BufferedReader in = new BufferedReader(isr);
+			String line = in.readLine();
+			while (line != null) {
+				streets.add(line);
+				line = in.readLine();
+			}
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
-       return streets.toArray(new String[streets.size()]);
+
+		return streets.toArray(new String[streets.size()]);
 	}
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {    	
-        super.onCreate(savedInstanceState);
-        
-	}
-
-	private void createDropDown(View rootView)
-	{
-        // add items on the array dynamically
-        // format is DogName::DogID
-        List<String> optionsList = new ArrayList<String>();
-        optionsList.add("Current location");
-        optionsList.add("Street 1");
-        optionsList.add("Street 2");
-        // convert to simple array
-        popUpContents = new String[optionsList.size()];
-        optionsList.toArray(popUpContents);
-
-        /*
-         * initialize pop up window
-         */
-        Context mContext = rootView.getContext();
-        final MainActivity mainActivity = ((MainActivity) mContext);
-        mainActivity.popupWindow_ExtrasList = popupWindowDogs();
-        popupWindow_ExtrasList=mainActivity.popupWindow_ExtrasList;
-        /*
-         * fromExtras button on click listener
-         */
-        View.OnClickListener extras_handler = new View.OnClickListener() {
-            public void onClick(View v) {                                                                                                                                                                                                                                                                                                 
-
-                switch (v.getId()) {
-                case R.id.from_extras:
-                    // show the list view as dropdown
-                	mainActivity.extras_list=MainActivity.EXTRAS_FROM;
-                    popupWindow_ExtrasList.showAsDropDown(v, 0, 0);                    
-                    break;
-                    
-                case R.id.to_extras:
-                    // show the list view as dropdown
-                	mainActivity.extras_list=MainActivity.EXTRAS_TO;
-                    popupWindow_ExtrasList.showAsDropDown(v, 0, 0);
-                    break;
-                }
-            }
-        };
-
-        // toExreas button
-        buttonShowDropDown_fromExtras = (ImageButton) rootView.findViewById(R.id.from_extras);
-        buttonShowDropDown_fromExtras.setOnClickListener(extras_handler);
-
-        // fromExreas button
-        buttonShowDropDown_toExtras = (ImageButton) rootView.findViewById(R.id.to_extras);
-        buttonShowDropDown_toExtras.setOnClickListener(extras_handler);
-
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
 	}
-	 /*
+
+	private void createDropDown(View rootView) {
+		// add items on the array dynamically
+		// format is DogName::DogID
+		List<String> optionsList = new ArrayList<String>();
+		optionsList.add("Current location");
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(
+				rootView.getContext());
+		try {
+			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
+
+			for (StreetAddress address : own_addresses)
+				optionsList.add(address.get_StreetAddress());
+		} catch (Exception e) {
+             e.printStackTrace();  // Possiblt legal
+		}
+		// convert to simple array
+		popUpContents = new String[optionsList.size()];
+		optionsList.toArray(popUpContents);
+
+		/*
+		 * initialize pop up window
+		 */
+		Context mContext = rootView.getContext();
+		final MainActivity mainActivity = ((MainActivity) mContext);
+		mainActivity.popupWindow_ExtrasList = popupWindowDogs();
+		popupWindow_ExtrasList = mainActivity.popupWindow_ExtrasList;
+		/*
+		 * fromExtras button on click listener
+		 */
+		View.OnClickListener extras_handler = new View.OnClickListener() {
+			public void onClick(View v) {
+
+				switch (v.getId()) {
+				case R.id.from_extras:
+					// show the list view as dropdown
+					mainActivity.extras_list = MainActivity.EXTRAS_FROM;
+					popupWindow_ExtrasList.showAsDropDown(v, 0, 0);
+					break;
+
+				case R.id.to_extras:
+					// show the list view as dropdown
+					mainActivity.extras_list = MainActivity.EXTRAS_TO;
+					popupWindow_ExtrasList.showAsDropDown(v, 0, 0);
+					break;
+				}
+			}
+		};
+
+		// toExreas button
+		buttonShowDropDown_fromExtras = (ImageButton) rootView
+				.findViewById(R.id.from_extras);
+		buttonShowDropDown_fromExtras.setOnClickListener(extras_handler);
+
+		// fromExreas button
+		buttonShowDropDown_toExtras = (ImageButton) rootView
+				.findViewById(R.id.to_extras);
+		buttonShowDropDown_toExtras.setOnClickListener(extras_handler);
+
+	}
+
+	/*
      * 
      */
-    public PopupWindow popupWindowDogs() {
+	public PopupWindow popupWindowDogs() {
 
-        PopupWindow popupWindow = new PopupWindow(rootView, 
-                               LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		PopupWindow popupWindow = new PopupWindow(rootView,
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-        // the drop down list is a list view
-        ListView listViewExtras = new ListView(getActivity());
-        
-        // set our adapter and pass our pop up window contents
-        listViewExtras.setAdapter(extrasAdapter(popUpContents));
-        
-        // set the item click listener
-        listViewExtras.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
+		// the drop down list is a list view
+		ListView listViewExtras = new ListView(getActivity());
 
-        // some other visual settings
-        popupWindow.setFocusable(true);
-        popupWindow.setWidth(250);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        
-        // set the list view as pop up window content
-        popupWindow.setContentView(listViewExtras);
+		// set our adapter and pass our pop up window contents
+		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
-        return popupWindow;
-    }
+		// set the item click listener
+		listViewExtras
+				.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
 
-    /*
-     * adapter where the list values will be set
-     */
-    private ArrayAdapter<String> extrasAdapter(String dogsArray[]) {
+		// some other visual settings
+		popupWindow.setFocusable(true);
+		popupWindow.setWidth(450); // TODO check if this can be adapted to fit
+									// the screen widths
+		popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dogsArray) {
+		// set the list view as pop up window content
+		popupWindow.setContentView(listViewExtras);
 
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+		return popupWindow;
+	}
 
-                // setting the ID and text for every items in the list
-                String item = getItem(position);
+	/*
+	 * adapter where the list values will be set
+	 */
+	private ArrayAdapter<String> extrasAdapter(String dogsArray[]) {
 
-                // visual settings for the list item
-                TextView listItem = new TextView(getContext());
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_list_item_1, dogsArray) {
 
-                listItem.setText(item);
-                listItem.setTag(item);
-                listItem.setTextSize(22);
-                listItem.setPadding(15, 15, 15, 15);
-                listItem.setTextColor(Color.BLACK);
-                listItem.setBackgroundColor(Color.WHITE);
-                
-                return listItem;
-            }
-        };
-        
-        return adapter;
-    }
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+
+				// setting the ID and text for every items in the list
+				String item = getItem(position);
+
+				// visual settings for the list item
+				TextView listItem = new TextView(getContext());
+
+				listItem.setText(item);
+				listItem.setTag(item);
+				listItem.setTextSize(22);
+				listItem.setPadding(15, 15, 15, 15);
+				listItem.setTextColor(Color.BLACK);
+				listItem.setBackgroundColor(Color.WHITE);
+
+				return listItem;
+			}
+		};
+
+		return adapter;
+	}
 }
