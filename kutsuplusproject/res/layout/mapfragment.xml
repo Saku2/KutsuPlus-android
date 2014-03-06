@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/g_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-    <LinearLayout android:id="@+id/map_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingLeft="0dp" 
-            android:paddingRight="0dp" 
-            >
-             <TextView
-		        android:id="@+id/hellou_map"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:ems="10"
-		        android:text="HELLO KutsuPlus MAP!">
- 
-            </TextView>
-    </LinearLayout>
+    android:orientation="vertical" 
+    android:name="com.google.android.gms.maps.MapFragment">
 
  
-</LinearLayout>
+</fragment>
