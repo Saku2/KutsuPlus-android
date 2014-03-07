@@ -1,5 +1,6 @@
 package fi.aalto.kutsuplus;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,10 @@ import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.kdtree.MapPoint;
+import fi.aalto.kutsuplus.kdtree.StopObject;
+import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
+import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -18,6 +23,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
@@ -27,13 +33,16 @@ public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener {
 
 	/** Called when the activity is first created. */
+	private final String LOG_TAG = "kutsuplus";
+	
+	private List<Fragment> mFragments;
+	private FormFragment formFrag;
+	private MapFragment mapFrag;
+	private TabPagerAdapter mTabPagerAdapter;
+	private ViewPager mPager;
 
-	List<Fragment> mFragments;
-	FormFragment formFrag;
-	MapFragment mapFrag;
-	TabPagerAdapter mTabPagerAdapter;
-	ViewPager mPager;
-
+	private StopTreeHandler stopTreeHandler;
+	
 	public PopupWindow popupWindow_ExtrasList;
 	public static int EXTRAS_FROM = 0;
 	public static int EXTRAS_TO = 1;
@@ -47,7 +56,28 @@ public class MainActivity extends ActionBarActivity implements
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		setContentView(R.layout.fragments);
-
+		
+		
+		//Create stop tree
+		//TODO: Run in new thread?
+		Log.d(LOG_TAG, "before creating stopTree");
+		try {
+			stopTreeHandler = StopTreeHandler.getInstance(getAssets().open(getString(R.string.stop_list_path)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(LOG_TAG, "after creating stopTree");
+		StopObject stop;
+		try {
+			stop = stopTreeHandler.getClosestStop(new MapPoint(0,0), 1)[0].getNeighbor().getValue();
+			Log.d(LOG_TAG, stop.getFinnishName());
+		} catch (TreeNotReadyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(LOG_TAG, "after querying stop");
+		
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
 		// Check whether the activity is using the layout version with
