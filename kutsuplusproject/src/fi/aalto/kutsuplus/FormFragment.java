@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -57,10 +58,10 @@ public class FormFragment extends Fragment {
 				getActivity(), android.R.layout.simple_list_item_1, streets);
 		toView.setAdapter(adapter_to);
 		createDropDown(rootView);
-		
-		
+
 		// Remember the last ride
-		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
+		RideDatabaseHandler rides = new RideDatabaseHandler(
+				rootView.getContext());
 		List<Ride> ride_list = rides.getAllStreetAddresses();
 		if (ride_list != null)
 			if (ride_list.size() > 0) {
@@ -71,7 +72,6 @@ public class FormFragment extends Fragment {
 					toView.setText(to);
 				}
 			}
-
 
 		return rootView;
 	}
@@ -115,7 +115,7 @@ public class FormFragment extends Fragment {
 			for (StreetAddress address : own_addresses)
 				optionsList.add(address.get_StreetAddress());
 		} catch (Exception e) {
-             e.printStackTrace();  // Possiblt legal
+			e.printStackTrace(); // Possiblt legal
 		}
 		// convert to simple array
 		popUpContents = new String[optionsList.size()];
@@ -181,6 +181,9 @@ public class FormFragment extends Fragment {
 				.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
 
 		// some other visual settings
+		// Closes the popup window when touch outside of it - when looses focus
+		popupWindow.setBackgroundDrawable(new BitmapDrawable());
+		popupWindow.setOutsideTouchable(true);
 		popupWindow.setFocusable(true);
 		popupWindow.setWidth(450); // TODO check if this can be adapted to fit
 									// the screen widths
