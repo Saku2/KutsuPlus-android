@@ -3,8 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false"
-	android:paddingTop="?attr/actionBarSize">
+    android:baselineAligned="false">
 
     <fragment android:name="fi.aalto.kutsuplus.FormFragment"
               android:id="@+id/large_form_fragment"

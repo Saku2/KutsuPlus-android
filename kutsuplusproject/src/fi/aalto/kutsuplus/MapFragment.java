@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 public class MapFragment extends Fragment {
 
-	private View rootView;
+	private View rootView;//
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
