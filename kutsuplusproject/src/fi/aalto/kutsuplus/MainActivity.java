@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.savarese.spatial.KDTree;
+
 import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
@@ -37,7 +42,7 @@ public class MainActivity extends ActionBarActivity implements
 	
 	private List<Fragment> mFragments;
 	private FormFragment formFrag;
-	private MapFragment mapFrag;
+	private MapFragm mapFrag;
 	private TabPagerAdapter mTabPagerAdapter;
 	private ViewPager mPager;
 
@@ -51,6 +56,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//what is that?
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -82,8 +88,7 @@ public class MainActivity extends ActionBarActivity implements
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
 		// Check whether the activity is using the layout version with
 		// the phone_fragment_container FrameLayout. If so, we must add the
-		// first
-		// fragment
+		// first fragment
 		// ONE-PANE LAYOUT
 		if (findViewById(R.id.phone_fragment_container) != null) {
 
@@ -97,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements
 			// Create an instance of ExampleFragment
 			mFragments = new ArrayList<Fragment>();
 			formFrag = new FormFragment();
-			mapFrag = new MapFragment();
+			mapFrag = new MapFragm();
 
 			mFragments.add(formFrag);
 			mFragments.add(mapFrag);
@@ -143,11 +148,22 @@ public class MainActivity extends ActionBarActivity implements
 		// TWO-PANE LAYOUT
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout
-			MapFragment mapFrag = (MapFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.map_fragment);
-			if (mapFrag != null) {
+			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			if (mapFrag != null) {//
+				//center point on map
+				double latitude = 40.76793169992044;
+				double longitude = -73.98180484771729;
+				//get map object
+				SupportMapFragment mySupportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+				GoogleMap gMap = mySupportMapFragment.getMap();
+				mapFrag.map = gMap;
+				mapFrag.stopTreeHandler = stopTreeHandler;
 				// some view-changing method in map-fragmet?
-				// mapFrag.updateDetailView(0);
+		        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
+                //how close to zoom, given center point of map
+		        float zoomLevel = 11.5F;
+				mapFrag.updateMapView(centerPoint, zoomLevel);
+				
 			}
 		}
 

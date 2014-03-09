@@ -11,7 +11,7 @@
               android:layout_width="0dp"
               android:layout_height="match_parent" />
 
-    <fragment android:name="fi.aalto.kutsuplus.MapFragment"
+    <fragment android:name="fi.aalto.kutsuplus.MapFragm"
               android:id="@+id/map_fragment"
               android:layout_width="0dp"
               android:layout_height="match_parent"

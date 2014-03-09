@@ -8,9 +8,10 @@ public class StopObject {
 	private String swedishName;
 	private String finnishAddress;
 	private String swedishAddress;
+	private GoogleMapPoint gmpoint;
 	
 	public StopObject(String shortId, String longId, String finnishName,
-			String swedishName, String finnishAddress, String swedishAddress) {
+			String swedishName, String finnishAddress, String swedishAddress, GoogleMapPoint gmpoint) {
 		
 		this.shortId = shortId;
 		this.longId = longId;
@@ -18,7 +19,7 @@ public class StopObject {
 		this.swedishName = swedishName;
 		this.finnishAddress = finnishAddress;
 		this.swedishAddress = finnishAddress;
-		
+		this.gmpoint = gmpoint;
 	}
 	
 	public String getShortId() {
@@ -43,5 +44,13 @@ public class StopObject {
 	
 	public String getSwedishAddres() {
 		return this.swedishAddress;
+	}
+
+	public GoogleMapPoint getGmpoint() {
+		return gmpoint;
+	}
+
+	public void setGmpoint(GoogleMapPoint gmpoint) {
+		this.gmpoint = gmpoint;
 	}
 }

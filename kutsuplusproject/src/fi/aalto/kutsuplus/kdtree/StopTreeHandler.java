@@ -6,6 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.PriorityQueue;
+
+import android.util.Log;
 
 import com.savarese.spatial.KDTree;
 import com.savarese.spatial.NearestNeighbors;
@@ -21,6 +28,9 @@ public class StopTreeHandler {
 	
 	private boolean treeReady = false;
 	
+	//lists of latitudes and longitudes
+	ArrayList<Double> latitudes = new ArrayList<Double>();
+	ArrayList<Double> longitudes = new ArrayList<Double>();
 	
 
 	private StopTreeHandler() {
@@ -64,8 +74,14 @@ public class StopTreeHandler {
 		try {
 			while ((line = br.readLine()) != null) {
 				String[] data = line.trim().split("#");
+				double latitude = Double.parseDouble(data[12].trim());
+				double longitude = Double.parseDouble(data[13].trim());
+				this.latitudes.add(latitude);
+				this.longitudes.add(longitude);
+				GoogleMapPoint gmpoint = new GoogleMapPoint(latitude, longitude);
+				
 				StopObject stop = new StopObject(data[0], data[1],
-						data[3], data[4], data[5], data[6]);
+						data[3], data[4], data[5], data[6], gmpoint);
 				MapPoint p = new MapPoint(Integer.parseInt(data[10]), Integer.parseInt(data[11]));
 				stopTree.put(p, stop);
 			}
@@ -88,6 +104,60 @@ public class StopTreeHandler {
 			throw new TreeNotReadyException("Tree is not ready yet");
 		}
 		return finder.get(stopTree, p, n);
+	}
+
+    public GoogleMapPoint findInitialCenter(){
+    	Collections.sort(latitudes);
+    	Collections.sort(longitudes);
+		double minLatitude = this.latitudes.get(0);
+		double maxLatitude = this.latitudes.get(latitudes.size()-1);
+		double minLongitude = this.longitudes.get(0);
+		double maxLongitude = this.longitudes.get(longitudes.size()-1);
+		double lat_center = (minLatitude + maxLatitude)/2;
+		double lon_center = (minLongitude + maxLongitude)/2;
+		return new GoogleMapPoint(lat_center, lon_center);
+	}
+	
+	
+	///getters-setters
+	public static StopTreeHandler getINSTANCE() {
+		return INSTANCE;
+	}
+
+	public static void setINSTANCE(StopTreeHandler iNSTANCE) {
+		INSTANCE = iNSTANCE;
+	}
+
+	public KDTree<Integer, MapPoint, StopObject> getStopTree() {
+		return stopTree;
+	}
+
+	public void setStopTree(KDTree<Integer, MapPoint, StopObject> stopTree) {
+		this.stopTree = stopTree;
+	}
+
+	public NearestNeighbors<Integer, MapPoint, StopObject> getFinder() {
+		return finder;
+	}
+
+	public void setFinder(NearestNeighbors<Integer, MapPoint, StopObject> finder) {
+		this.finder = finder;
+	}
+
+	public static InputStream getFileStream() {
+		return fileStream;
+	}
+
+	public static void setFileStream(InputStream fileStream) {
+		StopTreeHandler.fileStream = fileStream;
+	}
+
+	public boolean isTreeReady() {
+		return treeReady;
+	}
+
+	public void setTreeReady(boolean treeReady) {
+		this.treeReady = treeReady;
 	}
 	
 }
