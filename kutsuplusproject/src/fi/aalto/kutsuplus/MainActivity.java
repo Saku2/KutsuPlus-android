@@ -150,18 +150,16 @@ public class MainActivity extends ActionBarActivity implements
 				// Capture the detail fragment from the activity layout
 			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
 			if (mapFrag != null) {//
-				//center point on map
-				double latitude = 40.76793169992044;
-				double longitude = -73.98180484771729;
 				//get map object
 				SupportMapFragment mySupportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
 				GoogleMap gMap = mySupportMapFragment.getMap();
 				mapFrag.map = gMap;
 				mapFrag.stopTreeHandler = stopTreeHandler;
-				// some view-changing method in map-fragmet?
+				//center point on map
 		        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
                 //how close to zoom, given center point of map
 		        float zoomLevel = 11.5F;
+				// view-changing method in map-fragmet:
 				mapFrag.updateMapView(centerPoint, zoomLevel);
 				
 			}
