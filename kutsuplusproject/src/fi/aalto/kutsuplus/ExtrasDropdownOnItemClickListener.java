@@ -9,9 +9,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
-import fi.aalto.kutsuplus.FormFragment;
-import fi.aalto.kutsuplus.MainActivity;
-import fi.aalto.kutsuplus.R;
 /*
  * Idea originally:
  * http://www.codeofaninja.com/2013/04/show-listview-as-drop-down-android.html

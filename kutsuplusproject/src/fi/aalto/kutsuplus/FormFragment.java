@@ -165,6 +165,7 @@ public class FormFragment extends Fragment {
 	/*
      * 
      */
+	@SuppressWarnings("deprecation")
 	public PopupWindow popupWindowDogs() {
 
 		PopupWindow popupWindow = new PopupWindow(rootView,

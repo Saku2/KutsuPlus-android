@@ -68,6 +68,8 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value="fi.aalto.kutsuplus.MainActivity" />
         </activity>
+        <activity android:name="fi.aalto.kutsuplus.SettingsActivity" android:label="@string/title_settings" />
+                
           <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
