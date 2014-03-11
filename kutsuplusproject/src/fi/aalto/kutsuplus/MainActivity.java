@@ -30,6 +30,10 @@ import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 
+//<<<<<<< HEAD
+//public class MainActivity extends ActionBarActivity implements ISendStopName,
+//		android.support.v7.app.ActionBar.TabListener {
+//=======
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -43,9 +47,10 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 
 public class MainActivity extends ActionBarActivity implements
-		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener {
+		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStopName {
 
 	SharedPreferences preferences;
+//>>>>>>> b623040af318fee01ad9bcb1cd1c692319b955b0
 
 	private final String LOG_TAG = "kutsuplus";
 	
@@ -246,6 +251,7 @@ public class MainActivity extends ActionBarActivity implements
 		
 		
 	}
+<<<<<<< HEAD
 	Locale myLocale;
 	
 	private void setLocale(String lang) { 
@@ -258,4 +264,16 @@ public class MainActivity extends ActionBarActivity implements
 		Intent refresh = new Intent(this, MainActivity.class); 
 		startActivity(refresh); 
 		} 
+=======
+
+	
+	//ISendStopName implementation
+	@Override
+	public void fillFromToTextBox(String stopName) {
+		Log.d("stopName", stopName);
+		formFrag = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		formFrag.updateFromText(stopName);
+	}
+
+>>>>>>> 6f3eed3bb47939d79dce6ca1b785862281ee84a8
 }

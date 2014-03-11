@@ -7,6 +7,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -17,13 +18,15 @@ import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MapFragm extends Fragment {
+public class MapFragm extends Fragment implements OnMarkerClickListener{
+	public ISendStopName iSendStopName;
 
 	private View rootView;//
 	public GoogleMap map;
@@ -50,6 +53,7 @@ public class MapFragm extends Fragment {
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
 		map.moveCamera(center);
 		addAllKutsuPlusStopMarkers();
+		map.setOnMarkerClickListener((OnMarkerClickListener) this);
 	}
 
 	public void addAllKutsuPlusStopMarkers(){
@@ -65,19 +69,42 @@ public class MapFragm extends Fragment {
             Marker marker = map.addMarker(markerOptions);
             marker.setVisible(false);
             markers.add(marker);
+            
+		}
             //show markers only on large zoom level
             map.setOnCameraChangeListener(new OnCameraChangeListener(){
 				@Override
 				public void onCameraChange(CameraPosition cameraPosition) {
 					for(Marker m : markers){
 						m.setVisible(cameraPosition.zoom > minZoomLevel);
+						
 					}
 				}
             	
             });
-		}
+            
 	}
 
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		String stopName = marker.getTitle();
+		//send data
+		iSendStopName.fillFromToTextBox(stopName);
+		return false;
+	} 
+
 	
+	@Override
+    public void onAttach(Activity activity) {
+        // TODO Auto-generated method stub
+        super.onAttach(activity);
+        try {
+        	iSendStopName = (ISendStopName ) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement interface");
+        }
+
+    }
 	
 }

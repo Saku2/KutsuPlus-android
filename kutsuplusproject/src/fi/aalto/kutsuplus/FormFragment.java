@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,13 +29,15 @@ import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
-public class FormFragment extends Fragment {
+public class FormFragment extends Fragment{
 
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
 	ImageButton buttonShowDropDown_toExtras;
 	PopupWindow popupWindow_ExtrasList;
+	 
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -227,4 +230,16 @@ public class FormFragment extends Fragment {
 
 		return adapter;
 	}
+
+	
+    //After clicking on a map, update from/to text
+	public void updateFromText(String fromData){
+		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
+		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+		if(fromView.hasFocus())
+			fromView.setText(fromData);
+		else
+			toView.setText(fromData);
+	}
+
 }
