@@ -34,7 +34,7 @@ import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 
-public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends ActionBarActivity implements ISendStopName,
 		android.support.v7.app.ActionBar.TabListener {
 
 	/** Called when the activity is first created. */
@@ -207,6 +207,15 @@ public class MainActivity extends ActionBarActivity implements
 				getApplicationContext());
 		rides.clearContent();
 		rides.addRide(from, to);
+	}
+
+	
+	//ISendStopName implementation
+	@Override
+	public void fillFromToTextBox(String stopName) {
+		Log.d("stopName", stopName);
+		formFrag = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		formFrag.updateFromText(stopName);
 	}
 
 }
