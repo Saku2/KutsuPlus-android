@@ -27,6 +27,7 @@
     <string name="OF_button_order">Order</string>
     <string name="OF_button_order_description">A button to order the ride.</string>
     
+    <string name="title_settings">Settings</string>
     
     <!-- SMS Handling -->
     <string name="title_sms_notification">Receive ticket</string>

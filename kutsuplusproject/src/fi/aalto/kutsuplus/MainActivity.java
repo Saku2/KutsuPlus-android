@@ -4,11 +4,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.AutoCompleteTextView;
+import android.widget.PopupWindow;
+
+//<<<<<<< HEAD
+//public class MainActivity extends ActionBarActivity implements ISendStopName,
+//		android.support.v7.app.ActionBar.TabListener {
+//=======
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.savarese.spatial.KDTree;
 
-import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
@@ -18,26 +42,12 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.Tab;
-import android.support.v7.app.ActionBarActivity;
-import android.telephony.SmsManager;
-import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.widget.AutoCompleteTextView;
-import android.widget.PopupWindow;
+public class MainActivity extends ActionBarActivity implements
+		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStopName {
 
-public class MainActivity extends ActionBarActivity implements ISendStopName,
-		android.support.v7.app.ActionBar.TabListener {
+	SharedPreferences preferences;
+//>>>>>>> b623040af318fee01ad9bcb1cd1c692319b955b0
 
-	/** Called when the activity is first created. */
 	private final String LOG_TAG = "kutsuplus";
 	
 	private List<Fragment> mFragments;
@@ -143,6 +153,10 @@ public class MainActivity extends ActionBarActivity implements ISendStopName,
 			maptab.setTabListener(this);
 			actionBar.addTab(maptab);
 			
+			// The preferences menu
+			preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			preferences.registerOnSharedPreferenceChangeListener(this);
+
 		}
 
 		// TWO-PANE LAYOUT
@@ -207,6 +221,31 @@ public class MainActivity extends ActionBarActivity implements ISendStopName,
 				getApplicationContext());
 		rides.clearContent();
 		rides.addRide(from, to);
+	}
+	
+	//called when user first clicks menu button
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+	    MenuInflater inflater = getMenuInflater();//create a MenuInflater to help use the menu that we already made in XML
+	    inflater.inflate(R.menu.menu, menu);//inflate this menu with the XML resource that was created earlier
+	    return true;//to allow method to be displayed
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+	  switch(item.getItemId()){//decide which MenuItem was pressed based on its id
+	  case R.id.item_prefs:
+	    startActivity(new Intent(this, SettingsActivity.class));//start the PrefsActivity.java
+	    break;
+	  }
+	  return true; //to execute the event here
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		
+		
 	}
 
 	
