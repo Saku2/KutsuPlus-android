@@ -26,6 +26,7 @@ import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
 public class FormFragment extends Fragment {
 
@@ -47,14 +48,14 @@ public class FormFragment extends Fragment {
 		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView
 				.findViewById(R.id.from);
 		// Create the adapter and set it to the AutoCompleteTextView
-		ArrayAdapter<String> adapter_from = new ArrayAdapter<String>(
+		StreetSearchAdapter adapter_from = new StreetSearchAdapter(
 				getActivity(), android.R.layout.simple_list_item_1, streets);
 		fromView.setAdapter(adapter_from);
 
 		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView
 				.findViewById(R.id.to);
 		// Get the string array
-		ArrayAdapter<String> adapter_to = new ArrayAdapter<String>(
+		StreetSearchAdapter adapter_to = new StreetSearchAdapter(
 				getActivity(), android.R.layout.simple_list_item_1, streets);
 		toView.setAdapter(adapter_to);
 		createDropDown(rootView);

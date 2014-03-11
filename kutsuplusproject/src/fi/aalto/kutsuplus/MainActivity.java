@@ -3,10 +3,13 @@ package fi.aalto.kutsuplus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -242,5 +246,16 @@ public class MainActivity extends ActionBarActivity implements
 		
 		
 	}
-
+	Locale myLocale;
+	
+	private void setLocale(String lang) { 
+		myLocale = new Locale(lang); 
+		Resources res = getResources(); 
+		DisplayMetrics dm = res.getDisplayMetrics(); 
+		Configuration conf = res.getConfiguration(); 
+		conf.locale = myLocale; 
+		res.updateConfiguration(conf, dm); 
+		Intent refresh = new Intent(this, MainActivity.class); 
+		startActivity(refresh); 
+		} 
 }
