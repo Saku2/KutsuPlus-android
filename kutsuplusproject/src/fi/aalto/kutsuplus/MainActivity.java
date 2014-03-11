@@ -251,7 +251,6 @@ public class MainActivity extends ActionBarActivity implements
 		
 		
 	}
-<<<<<<< HEAD
 	Locale myLocale;
 	
 	private void setLocale(String lang) { 
@@ -264,7 +263,6 @@ public class MainActivity extends ActionBarActivity implements
 		Intent refresh = new Intent(this, MainActivity.class); 
 		startActivity(refresh); 
 		} 
-=======
 
 	
 	//ISendStopName implementation
@@ -275,5 +273,5 @@ public class MainActivity extends ActionBarActivity implements
 		formFrag.updateFromText(stopName);
 	}
 
->>>>>>> 6f3eed3bb47939d79dce6ca1b785862281ee84a8
+
 }
