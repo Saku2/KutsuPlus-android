@@ -46,7 +46,6 @@ public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStopName {
 
 	SharedPreferences preferences;
-//>>>>>>> b623040af318fee01ad9bcb1cd1c692319b955b0
 
 	private final String LOG_TAG = "kutsuplus";
 	
