@@ -3,6 +3,7 @@ package fi.aalto.kutsuplus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Locale;
  
 
@@ -11,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,10 +34,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-//<<<<<<< HEAD
-//public class MainActivity extends ActionBarActivity implements ISendStopName,
-//		android.support.v7.app.ActionBar.TabListener {
-//=======
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -47,11 +45,13 @@ import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
+import fi.aalto.kutsuplus.sms.SMSParser;
 
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStopName {
 
 	SharedPreferences preferences;
+	SMSParser smsParser;
 
 	private final String LOG_TAG = "kutsuplus";
 	
@@ -72,6 +72,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		//what is that?
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);

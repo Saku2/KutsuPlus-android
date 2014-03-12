@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -104,7 +105,16 @@ public class SMSNotificationActivity extends Activity {
 				String body = msg.substring(msg.indexOf(":") + 1);
 				//String pNumber = msg.substring(0, msg.lastIndexOf(":"));				
                 //sms_message.setText(body);
-				SMSParser smsparser=new SMSParser();
+				SMSParser smsparser = null;
+				try {
+					smsparser = new SMSParser(getResources().getStringArray(R.array.sms_keyword_array));
+				} catch (NotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				String[] response=smsparser.parse(body);
 				if(smsparser.isTicket())
 				{
