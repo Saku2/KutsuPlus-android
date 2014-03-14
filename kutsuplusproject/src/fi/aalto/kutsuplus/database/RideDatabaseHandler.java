@@ -66,15 +66,17 @@ public class RideDatabaseHandler extends SQLiteOpenHelper {
 
 		// Create tables again
 		onCreate(db);
+		db.close(); // Closing database connection
 	}
 
 	public List<Ride> getAllStreetAddresses() {
 		List<Ride> rides = new ArrayList<Ride>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_RIDES;
+		SQLiteDatabase db=null;
 		try {
 
-			SQLiteDatabase db = this.getWritableDatabase();
+			db = this.getWritableDatabase();
 			Cursor cursor = db.rawQuery(selectQuery, null);
 
 			// looping through all rows and adding to list
@@ -88,8 +90,12 @@ public class RideDatabaseHandler extends SQLiteOpenHelper {
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// The database can be empty
 		}
+		finally{
+			if(db!=null)
+			  db.close(); // Closing database connection
+	    }
 
 		// return contact list
 		return rides;

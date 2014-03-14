@@ -66,6 +66,7 @@ public class StreetDatabaseHandler extends SQLiteOpenHelper {
 
 		// Create tables again
 		onCreate(db);
+		db.close(); // Closing database connection
 	}
 	
 	public List<StreetAddress> getAllStreetAddresses() {
@@ -73,10 +74,10 @@ public class StreetDatabaseHandler extends SQLiteOpenHelper {
 	    // Select All Query
 	    String selectQuery = "SELECT  * FROM " + TABLE_STREETS;
 	 
-	    
+	    SQLiteDatabase db=null;
 	    try
 	    {
-	    SQLiteDatabase db = this.getWritableDatabase();
+	    db = this.getWritableDatabase();
 	    Cursor cursor = db.rawQuery(selectQuery, null);
 	 
 	    // looping through all rows and adding to list
@@ -93,7 +94,11 @@ public class StreetDatabaseHandler extends SQLiteOpenHelper {
 	    {
 	    	e.printStackTrace();
 	    }
-	 
+		finally{
+			if(db!=null)
+			  db.close(); // Closing database connection
+	    }
+
 	    // return contact list
 	    return addressList;
 	}
