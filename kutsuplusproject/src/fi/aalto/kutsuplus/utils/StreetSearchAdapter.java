@@ -62,7 +62,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
 
 
     private class ArrayFilter extends Filter {
-        private Object lock;
+        private Object lock=new Object();
 
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {

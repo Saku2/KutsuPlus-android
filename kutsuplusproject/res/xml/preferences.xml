@@ -1,10 +1,4 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="prefSystemLanguage"
-            android:summary="Use the system default language"
-            android:title="System default language used" >
-        </CheckBoxPreference>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">   
    <ListPreference
             android:key="prefLanguage"
             android:title="User selected language "
