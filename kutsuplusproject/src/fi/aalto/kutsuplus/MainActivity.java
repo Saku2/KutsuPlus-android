@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+ 
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 //<<<<<<< HEAD
 //public class MainActivity extends ActionBarActivity implements ISendStopName,
@@ -65,6 +67,8 @@ public class MainActivity extends ActionBarActivity implements
 	public static int EXTRAS_FROM = 0;
 	public static int EXTRAS_TO = 1;
 	public int extras_list = EXTRAS_FROM;
+	
+	boolean isFirstVisitToMap = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +120,12 @@ public class MainActivity extends ActionBarActivity implements
 			mFragments = new ArrayList<Fragment>();
 			formFrag = new FormFragment();
 			mapFrag = new MapFragm();
+			
+			// In case this activity was started with special instructions from
+			// an Intent,
+			// pass the Intent's extras to the fragment as arguments
+			formFrag.setArguments(getIntent().getExtras());
+			
 
 			mFragments.add(formFrag);
 			mFragments.add(mapFrag);
@@ -156,7 +166,7 @@ public class MainActivity extends ActionBarActivity implements
 			maptab.setTabListener(this);
 			actionBar.addTab(maptab);
 			
-			// The preferences menu
+			// The preferences menu//s
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			preferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -166,22 +176,23 @@ public class MainActivity extends ActionBarActivity implements
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout
 			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-			if (mapFrag != null) {//
-				//get map object
-				SupportMapFragment mySupportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-				GoogleMap gMap = mySupportMapFragment.getMap();
-				mapFrag.map = gMap;
-				mapFrag.stopTreeHandler = stopTreeHandler;
-				//center point on map
-		        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
-                //how close to zoom, given center point of map
-		        float zoomLevel = 11.5F;
-				// view-changing method in map-fragmet:
-				mapFrag.updateMapView(centerPoint, zoomLevel);
-				
-			}
+			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 		}
 
+	}
+
+	private void showHelsinkiArea(MapFragm mapFrag, float zoomLevel){
+		if (mapFrag != null) {//
+			//get map object
+			SupportMapFragment mySupportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+			GoogleMap gMap = mySupportMapFragment.getMap();
+			mapFrag.map = gMap;
+			mapFrag.stopTreeHandler = stopTreeHandler;
+			//center point on map
+	        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
+			// view-changing method in map-fragmet:
+			mapFrag.updateMapView(centerPoint, zoomLevel);
+		}
 	}
 
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
@@ -189,8 +200,16 @@ public class MainActivity extends ActionBarActivity implements
 
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
+		TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
+		if(isFirstVisitToMap){
+			if(tab.getPosition() == 1){//mapfrag
+				showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
+				isFirstVisitToMap = false;
+				//Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_LONG).show();
+			}
+		}
 	}
-
+	
 	public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
 	}
 
@@ -268,9 +287,15 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void fillFromToTextBox(String stopName) {
 		Log.d("stopName", stopName);
-		formFrag = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		formFrag.updateFromText(stopName);
+		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		if(formFragment != null){//large view
+			formFragment.updateFromText(stopName);
+		}
+		else{//small view
+			formFrag.updateFromText(stopName);
+		}
 	}
+	
 
 
 }

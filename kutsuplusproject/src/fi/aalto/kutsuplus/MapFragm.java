@@ -2,11 +2,14 @@ package fi.aalto.kutsuplus;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -19,19 +22,25 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 import android.app.Activity;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-public class MapFragm extends Fragment implements OnMarkerClickListener{
+public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
 	public ISendStopName iSendStopName;
 
 	private View rootView;//
 	public GoogleMap map;
 	//list for managing markers
 	final private ArrayList<Marker> markers = new ArrayList<Marker>();
+	//default initial zoom level, when app is opened
+	public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
 	public float minZoomLevel = 13.2F;
 	public StopTreeHandler stopTreeHandler;
@@ -51,9 +60,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener{
 	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {
         LatLng ll = new LatLng(centerPoint.getX(), centerPoint.getY());
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
-		map.moveCamera(center);
+		map.animateCamera(center);//moveCamera
 		addAllKutsuPlusStopMarkers();
 		map.setOnMarkerClickListener((OnMarkerClickListener) this);
+        map.setOnMapClickListener(this);  
 	}
 
 	public void addAllKutsuPlusStopMarkers(){
@@ -82,8 +92,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener{
 				}
             	
             });
-            
+          
 	}
+	
+
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
@@ -106,5 +118,28 @@ public class MapFragm extends Fragment implements OnMarkerClickListener{
         }
 
     }
+
+	@Override
+	public void onMapClick(LatLng ll) {
+		try {
+			Locale aLocale = new Locale("fi", "FI");
+	        Geocoder geo = new Geocoder(rootView.getContext().getApplicationContext(), aLocale);
+	        boolean isPresent = Geocoder.isPresent();
+	        List<Address> addresses = geo.getFromLocation(ll.latitude, ll.longitude, 1);
+	        if (addresses.isEmpty()) {
+	        	Toast.makeText(rootView.getContext().getApplicationContext(), "Waiting for Location", Toast.LENGTH_LONG).show();
+	        }
+	        else {
+	            if (addresses.size() > 0) {
+	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
+	                Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	            	//Log.d(LOG_TAG, "after querying stop");
+	            }
+	        }
+	    }
+	    catch (Exception e) {
+	        e.printStackTrace(); // getFromLocation() may sometimes fail
+	    }
+	}
 	
 }
