@@ -5,4 +5,8 @@
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/title_settings" />
 
+    <item
+        android:id="@+id/kutsu_pysakkit"
+        android:icon="@android:drawable/kp_marker"
+        android:title="@string/show_kplus_stops" />
 </menu>
