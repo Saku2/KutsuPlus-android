@@ -1,18 +1,11 @@
 package fi.aalto.kutsuplus.kdtree;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.PriorityQueue;
-
-import android.util.Log;
 
 import com.savarese.spatial.KDTree;
 import com.savarese.spatial.NearestNeighbors;
@@ -67,11 +60,11 @@ public class StopTreeHandler {
 	
 	// Read the stop list and add stops to tree.
 	private void addStops() {
-		BufferedReader br = new BufferedReader(new InputStreamReader(fileStream));
-		String line;
 		
 		//read the file and fill the tree
 		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(fileStream, "ISO-8859-1"));
+			String line;
 			while ((line = br.readLine()) != null) {
 				String[] data = line.trim().split("#");
 				double latitude = Double.parseDouble(data[12].trim());

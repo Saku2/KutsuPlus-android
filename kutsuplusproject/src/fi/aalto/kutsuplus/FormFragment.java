@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,6 +19,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -130,7 +130,7 @@ public class FormFragment extends Fragment{
 		 */
 		Context mContext = rootView.getContext();
 		final MainActivity mainActivity = ((MainActivity) mContext);
-		mainActivity.popupWindow_ExtrasList = popupWindowDogs();
+		mainActivity.popupWindow_ExtrasList = getPopupWindow();
 		popupWindow_ExtrasList = mainActivity.popupWindow_ExtrasList;
 		/*
 		 * fromExtras button on click listener
@@ -170,10 +170,11 @@ public class FormFragment extends Fragment{
      * 
      */
 	@SuppressWarnings("deprecation")
-	public PopupWindow popupWindowDogs() {
+	public PopupWindow getPopupWindow() {
 
 		PopupWindow popupWindow = new PopupWindow(rootView,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		
 
 		// the drop down list is a list view
 		ListView listViewExtras = new ListView(getActivity());
@@ -184,8 +185,6 @@ public class FormFragment extends Fragment{
 		// set the item click listener
 		listViewExtras
 				.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
-
-		// some other visual settings
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -194,9 +193,19 @@ public class FormFragment extends Fragment{
 									// the screen widths
 		popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 
-		// set the list view as pop up window content
-		popupWindow.setContentView(listViewExtras);
 
+		LinearLayout layout=new LinearLayout(rootView.getContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+		     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+		layoutParams.setMargins(5, 5, 5, 5);
+		layout.setBackgroundColor(getResources().getColor(R.color.light_gray));
+		// set the list view as pop up window content
+		layout.addView(listViewExtras,layoutParams);
+		popupWindow.setContentView(layout);
+        
 		return popupWindow;
 	}
 
@@ -233,13 +242,25 @@ public class FormFragment extends Fragment{
 
 	
     //After clicking on a map, update from/to text
-	public void updateFromText(String fromData){
+	public void updateToFromText(String fromData){
 		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		if(fromView.hasFocus())
-			fromView.setText(fromData);
+		{
+			fromView.setFocusable(false);
+			fromView.setFocusableInTouchMode(false);
+			fromView.setText(fromData);            
+			fromView.setFocusable(true);
+			fromView.setFocusableInTouchMode(true);
+		}
 		else
+		{
+			toView.setFocusable(false);
+			toView.setFocusableInTouchMode(false);
 			toView.setText(fromData);
+			toView.setFocusable(true);
+			toView.setFocusableInTouchMode(true);
+		}
 	}
 
 }
