@@ -1,18 +1,11 @@
 package fi.aalto.kutsuplus.kdtree;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.PriorityQueue;
-
-import android.util.Log;
 
 import com.savarese.spatial.KDTree;
 import com.savarese.spatial.NearestNeighbors;

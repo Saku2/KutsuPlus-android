@@ -5,6 +5,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,17 +30,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
-
-import android.app.Activity;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
 	public ISendStopName iSendStopName;
@@ -108,7 +107,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	@Override
     public void onAttach(Activity activity) {
-        // TODO Auto-generated method stub
         super.onAttach(activity);
         try {
         	iSendStopName = (ISendStopName ) activity;

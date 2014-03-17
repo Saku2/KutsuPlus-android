@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
- 
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,12 +29,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
-//<<<<<<< HEAD
-//public class MainActivity extends ActionBarActivity implements ISendStopName,
-//		android.support.v7.app.ActionBar.TabListener {
-//=======
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -48,8 +42,10 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 
+
 public class MainActivity extends ActionBarActivity implements
 		android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStopName {
+
 
 	SharedPreferences preferences;
 
@@ -64,8 +60,9 @@ public class MainActivity extends ActionBarActivity implements
 	private StopTreeHandler stopTreeHandler;
 	
 	public PopupWindow popupWindow_ExtrasList;
-	public static int EXTRAS_FROM = 0;
-	public static int EXTRAS_TO = 1;
+	final static int MAPFRAG  = 1;
+	final static int EXTRAS_FROM = 0;
+	final static int EXTRAS_TO = 1;
 	public int extras_list = EXTRAS_FROM;
 	
 	boolean isFirstVisitToMap = true;
@@ -73,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//what is that?
+		//TODO: field requires API level 11
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -87,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements
 		try {
 			stopTreeHandler = StopTreeHandler.getInstance(getAssets().open(getString(R.string.stop_list_path)));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
@@ -96,7 +92,6 @@ public class MainActivity extends ActionBarActivity implements
 			stop = stopTreeHandler.getClosestStop(new MapPoint(0,0), 1)[0].getNeighbor().getValue();
 			Log.d(LOG_TAG, stop.getFinnishName());
 		} catch (TreeNotReadyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after querying stop");
@@ -145,12 +140,10 @@ public class MainActivity extends ActionBarActivity implements
 
 				@Override
 				public void onPageScrolled(int arg0, float arg1, int arg2) {
-					// TODO autocreated stub
 				}
 
 				@Override
 				public void onPageScrollStateChanged(int arg0) {
-					// TODO autocreated stub
 				}
 			});
 
@@ -191,21 +184,29 @@ public class MainActivity extends ActionBarActivity implements
 			//center point on map
 	        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
 			// view-changing method in map-fragmet:
-			mapFrag.updateMapView(centerPoint, zoomLevel);
+	        try
+	        {
+			  mapFrag.updateMapView(centerPoint, zoomLevel);
+	        }
+	        catch(Exception e)
+	        {
+	        	System.out.println("Probably no map initialized: "+e.getMessage());
+	        }
+	        
 		}
 	}
 
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 	}
 
+	
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
-		TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
+		//TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
 		if(isFirstVisitToMap){
-			if(tab.getPosition() == 1){//mapfrag
+			if(tab.getPosition() == MAPFRAG){//
 				showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 				isFirstVisitToMap = false;
-				//Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

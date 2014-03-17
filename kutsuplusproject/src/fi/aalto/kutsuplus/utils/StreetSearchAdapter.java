@@ -2,6 +2,7 @@ package fi.aalto.kutsuplus.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
@@ -12,7 +13,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import blogspot.software_and_algorithms.stern_library.string.DamerauLevenshteinAlgorithm;
 
-public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
+public class StreetSearchAdapter extends ArrayAdapter<String> implements Filterable {
 
     private ArrayList<String> fullList;
     private ArrayList<String> copyOfTheList;
@@ -81,7 +82,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
                     results.count = list.size();
                 }
             } else {
-                final String prefixString = prefix.toString().toLowerCase();
+                final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
 
                 ArrayList<String> values = copyOfTheList;
                 int count = values.size();
@@ -90,7 +91,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
 
                 for (int i = 0; i < count; i++) {
                     String item = values.get(i);
-                    if (item.toLowerCase().startsWith(prefixString)) {
+                    if (item.toLowerCase(Locale.getDefault()).startsWith(prefixString)) {
                         newValues.add(item);
                     }
                      }
@@ -106,7 +107,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
                     	   if(item.length()<prefixString.length())
                     		  prefitem=item;
                     	   else
-                    	      prefitem=item.substring(0,prefixString.length()).toLowerCase();
+                    	      prefitem=item.substring(0,prefixString.length()).toLowerCase(Locale.getDefault());
                     	   
                     	   if(dla.execute(prefitem, prefixString)<(acc_slen+1))
                     	   {
@@ -126,7 +127,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
                     	   if(item.length()<prefixString.length())
                     		  prefitem=item;
                     	   else
-                    	      prefitem=item.substring(0,prefixString.length()).toLowerCase();
+                    	      prefitem=item.substring(0,prefixString.length()).toLowerCase(Locale.getDefault());
                     	   
                     	   if(dla.execute(prefitem, prefixString)<(acc_slen+1))
                     	   {
@@ -141,7 +142,7 @@ public class StreetSearchAdapter extends ArrayAdapter implements Filterable {
             return results;
         }
         
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")   // cast Object -> ArrayList<String>)
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
 
