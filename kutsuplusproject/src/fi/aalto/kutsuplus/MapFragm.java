@@ -100,7 +100,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public boolean onMarkerClick(Marker marker) {
 		String stopName = marker.getTitle();
 		//send data
-		iSendStopName.fillFromToTextBox(stopName);
+		//iSendStopName.fillFromToTextBox(stopName);
 		return false;
 	} 
 
@@ -130,7 +130,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        else {
 	            if (addresses.size() > 0) {
 	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
-	                Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
+	            	iSendStopName.fillFromToTextBox( addresses.get(0).getAddressLine(0));
 	            	//Log.d(LOG_TAG, "after querying stop");
 	            }
 	        }
