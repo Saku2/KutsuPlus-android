@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -232,13 +233,25 @@ public class FormFragment extends Fragment{
 
 	
     //After clicking on a map, update from/to text
-	public void updateFromText(String fromData){
+	public void updateToFromText(String fromData){
 		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		if(fromView.hasFocus())
-			fromView.setText(fromData);
+		{
+			fromView.setFocusable(false);
+			fromView.setFocusableInTouchMode(false);
+			fromView.setText(fromData);            
+			fromView.setFocusable(true);
+			fromView.setFocusableInTouchMode(true);
+		}
 		else
+		{
+			toView.setFocusable(false);
+			toView.setFocusableInTouchMode(false);
 			toView.setText(fromData);
+			toView.setFocusable(true);
+			toView.setFocusableInTouchMode(true);
+		}
 	}
 
 }

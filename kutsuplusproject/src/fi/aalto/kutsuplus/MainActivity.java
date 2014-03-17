@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements
 			SupportMapFragment mySupportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
 			GoogleMap gMap = mySupportMapFragment.getMap();
 			mapFrag.map = gMap;
-			mapFrag.stopTreeHandler = stopTreeHandler;
+			mapFrag.setStopTreeHandler(stopTreeHandler);
 			//center point on map
 	        GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
 			// view-changing method in map-fragmet:
@@ -290,10 +290,10 @@ public class MainActivity extends ActionBarActivity implements
 		Log.d("stopName", stopName);
 		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 		if(formFragment != null){//large view
-			formFragment.updateFromText(stopName);
+			formFragment.updateToFromText(stopName);
 		}
 		else{//small view
-			formFrag.updateFromText(stopName);
+			formFrag.updateToFromText(stopName);
 		}
 	}
 	

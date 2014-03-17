@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_gray">#DDDDDD</color>
+    <color name="light_background">#DDDDFF</color>
+    <color name="kutsuplus_light_blue"> #B9D6F0</color>
     <string name="app_name">AaltoKutsuplus</string>
     
     <!-- Order Tabs -->

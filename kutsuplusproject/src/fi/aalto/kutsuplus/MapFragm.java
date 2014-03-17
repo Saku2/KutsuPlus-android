@@ -32,7 +32,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
-	public ISendStopName iSendStopName;
+	private ISendStopName iSendStopName;
 
 	private View rootView;//
 	public GoogleMap map;
@@ -42,7 +42,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
 	public float minZoomLevel = 13.2F;
-	public StopTreeHandler stopTreeHandler;
+	private StopTreeHandler stopTreeHandler;
 	private final String LOG_TAG = "PUNKTID";
 
 	@Override
@@ -140,6 +140,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    catch (Exception e) {
 	        e.printStackTrace(); // getFromLocation() may sometimes fail
 	    }
+	}
+
+	public void setStopTreeHandler(StopTreeHandler stopTreeHandler) {
+		this.stopTreeHandler = stopTreeHandler;
 	}
 	
 }
