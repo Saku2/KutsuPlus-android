@@ -60,11 +60,11 @@ public class StopTreeHandler {
 	
 	// Read the stop list and add stops to tree.
 	private void addStops() {
-		BufferedReader br = new BufferedReader(new InputStreamReader(fileStream));
-		String line;
 		
 		//read the file and fill the tree
 		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(fileStream, "ISO-8859-1"));
+			String line;
 			while ((line = br.readLine()) != null) {
 				String[] data = line.trim().split("#");
 				double latitude = Double.parseDouble(data[12].trim());

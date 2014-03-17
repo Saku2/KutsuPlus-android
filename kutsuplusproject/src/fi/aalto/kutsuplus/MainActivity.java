@@ -298,8 +298,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		else
 		{
 			address_to_gps=address_gps;
-			showRouteOnMap();
 		}
+		showRouteOnMap();
 	}
 
 	LatLng address_from_gps=null;
