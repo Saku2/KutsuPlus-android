@@ -32,10 +32,10 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
-	private ISendStopName iSendStopName;
+	private ISendStreetAddress iSendSttreetAddress;
 
 	private View rootView;//
-	public GoogleMap map;
+	private GoogleMap map;
 	//list for managing markers
 	final private ArrayList<Marker> markers = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened
@@ -109,7 +109,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-        	iSendStopName = (ISendStopName ) activity;
+        	iSendSttreetAddress = (ISendStreetAddress ) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement interface");
@@ -132,7 +132,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
 	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendStopName.fillFromToTextBox( addresses.get(0).getAddressLine(0));
+	            	iSendSttreetAddress.fillFromToTextBox( addresses.get(0).getAddressLine(0));
+	            	iSendSttreetAddress.fillSelectedMapLocation(ll);
 	            	//Log.d(LOG_TAG, "after querying stop");
 	            }
 	        }
@@ -145,5 +146,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public void setStopTreeHandler(StopTreeHandler stopTreeHandler) {
 		this.stopTreeHandler = stopTreeHandler;
 	}
+
+	public GoogleMap getMap() {
+		return map;
+	}
+
+	public void setMap(GoogleMap map) {
+		this.map = map;
+	}
+
+	
 	
 }
