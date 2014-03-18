@@ -3,9 +3,7 @@ package fi.aalto.kutsuplus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Locale;
- 
 
 import android.content.Intent;
 import android.content.SharedPreferences;
