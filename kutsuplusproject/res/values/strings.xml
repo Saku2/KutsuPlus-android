@@ -30,7 +30,7 @@
     <string name="OF_button_order">Order</string>
     <string name="OF_button_order_description">A button to order the ride.</string>
     
-    <!-- actionbar buttons -->
+    <!-- Menu -->
     <string name="title_settings">Settings</string>
     <string name="show_kplus_stops">Show KutsuPlus stops</string>
     

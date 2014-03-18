@@ -72,8 +72,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// TODO: field requires API level 11
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+		// field requires API level 11, messes the textviews...
+		if (android.os.Build.VERSION.RELEASE.startsWith("1.") ||
+		        android.os.Build.VERSION.RELEASE.startsWith("2.") )
+		        ;
+		else
+           getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
