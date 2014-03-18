@@ -46,12 +46,10 @@ import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
-import fi.aalto.kutsuplus.sms.SMSParser;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStreetAddress {
 
 	SharedPreferences preferences;
-	SMSParser smsParser;
 
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
