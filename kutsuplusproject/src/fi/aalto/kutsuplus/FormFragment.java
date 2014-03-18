@@ -87,7 +87,14 @@ public class FormFragment extends Fragment{
 				super.onChanged();
 				getCoordinatesTask.cancel();
 				timer.purge();
-				timer.schedule(getCoordinatesTask, 500l);
+				try
+				{
+				  timer.schedule(getCoordinatesTask, 500l);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		
