@@ -1,6 +1,5 @@
 package fi.aalto.kutsuplus.database;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -115,8 +115,6 @@ public class MainActivity extends Activity {
 
 				// Process the sms format and extract body &amp; phoneNumber
 				msg = msg.replace("\n", "");
-				String body = msg.substring(msg.lastIndexOf(":") + 1,
-						msg.length());
 				String pNumber = msg.substring(0, msg.lastIndexOf(":"));
 				String new_message = makeUPMessage();
 				sendSMS(pNumber, new_message);

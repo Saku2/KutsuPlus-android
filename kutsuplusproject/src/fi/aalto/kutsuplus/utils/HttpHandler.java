@@ -1,7 +1,6 @@
 package fi.aalto.kutsuplus.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -29,7 +28,6 @@ public class HttpHandler {
 			HttpEntity httpEntity = null;
 			HttpResponse httpResponse = null;
 			
-			InputStream content = null;
 			if (params != null) {
 				String paramString = URLEncodedUtils
 						.format(params, "utf-8");
