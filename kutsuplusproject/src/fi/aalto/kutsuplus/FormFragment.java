@@ -5,8 +5,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -28,6 +36,7 @@ import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
+import fi.aalto.kutsuplus.utils.HttpHandler;
 
 public class FormFragment extends Fragment{
 
@@ -51,8 +60,37 @@ public class FormFragment extends Fragment{
 		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView
 				.findViewById(R.id.from);
 		// Create the adapter and set it to the AutoCompleteTextView
-		StreetSearchAdapter adapter_from = new StreetSearchAdapter(
+		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(
 				getActivity(), android.R.layout.simple_list_item_1, streets);
+		
+		adapter_from.registerDataSetObserver(new DataSetObserver() {
+			
+			private Timer timer = new Timer();
+			
+			TimerTask getCoordinatesTask = new TimerTask() {
+				public void run() {
+					String queryText = adapter_from.getItem(0);
+					HttpHandler http = new HttpHandler();
+					List<NameValuePair> args = new ArrayList<NameValuePair>();
+					args.add(new BasicNameValuePair("key", queryText));
+					JSONObject json = null;
+					try {
+						json = new JSONObject(
+								http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			@Override
+			public void onChanged() {
+				super.onChanged();
+				getCoordinatesTask.cancel();
+				timer.purge();
+				timer.schedule(getCoordinatesTask, 500l);
+			}
+		});
+		
 		fromView.setAdapter(adapter_from);
 
 		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView
