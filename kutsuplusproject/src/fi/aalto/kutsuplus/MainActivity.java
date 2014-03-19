@@ -296,16 +296,20 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 	}
 
-	@Override
-	public void fillPickupDropoffTextBox(String stopName) {
-		Log.d("stop name", stopName);
+	@Override	
+	public void setPickupDropoff(StopObject so) {
+		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 		if (formFragment != null) {// large view
-			formFragment.updatePickupDropOffText(stopName);
+			formFragment.updatePickupDropOffText(so.getFinnishName()+" "+so.getShortId());
 		} else {// small view
-			formFrag. updatePickupDropOffText(stopName);
+			formFrag. updatePickupDropOffText(so.getFinnishName()+so.getShortId());
 		}
 		
+		
+	}
+	
+	public void fillPickupDropoffTextBox(String stopName) {
 	}
 
 	public void fillSelectedMapLocation(LatLng address_gps) {
@@ -348,6 +352,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.addAllKutsuPlusStopMarkers();
 		
 	}
+
+	
 
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.WeakHashMap;
 
 import android.app.Activity;
 import android.location.Address;
@@ -33,18 +34,20 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
 	private ISendStreetAddress iSendSttreetAddress;
+	WeakHashMap <Marker, StopObject> haspMap = new WeakHashMap <Marker, StopObject>();
 
+	
 	private View rootView;//
 	private GoogleMap map;
 	//list for managing markers
 	final private ArrayList<Marker> markers = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened
-	public float initialZoomLevel = 11.5F;
+	final public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
-	public float minZoomLevel = 13.2F;
+	final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
 	private final String LOG_TAG = "PUNKTID";
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.mapfragment, container, false);
@@ -69,13 +72,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		MarkerOptions markerOptions = new MarkerOptions();
 		markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker));
 
-		Collection<StopObject>pysakkit = this.stopTreeHandler.getStopTree().values();
-		for(StopObject so : pysakkit){
+		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
+		for(StopObject so : pysakit){
 			LatLng ll = new LatLng(so.getGmpoint().getX(), so.getGmpoint().getY());
 			markerOptions.position(ll)
  			             .title(so.getFinnishName())
 			             .snippet(so.getSwedishName());
             Marker marker = map.addMarker(markerOptions);
+            haspMap.put(marker, so);
             marker.setVisible(false);
             markers.add(marker);
             
@@ -100,9 +104,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public boolean onMarkerClick(Marker marker) {
 		String stopName = marker.getTitle();
 		//send data
-    	iSendSttreetAddress.fillPickupDropoffTextBox(stopName);
-    	iSendSttreetAddress.fillSelectedMapLocation(marker.getPosition());
-
+		StopObject so=haspMap.get(marker);
+	    if(so!=null)
+	    {
+    	  iSendSttreetAddress.setPickupDropoff(so);
+	    }
+    	iSendSttreetAddress.fillSelectedMapLocation(marker.getPosition());    	
+    	iSendSttreetAddress.fillFromToTextBox(stopName);
 		return false;
 	} 
 

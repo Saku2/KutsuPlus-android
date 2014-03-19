@@ -22,8 +22,8 @@ public class StopTreeHandler {
 	private boolean treeReady = false;
 	
 	//lists of latitudes and longitudes
-	ArrayList<Double> latitudes = new ArrayList<Double>();
-	ArrayList<Double> longitudes = new ArrayList<Double>();
+	private ArrayList<Double> latitudes = new ArrayList<Double>();
+	private ArrayList<Double> longitudes = new ArrayList<Double>();
 	
 
 	private StopTreeHandler() {
