@@ -26,7 +26,12 @@
     <string name="OF_max_price">Max price</string>
     <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
     
+    
     <string name="OF_estimated_price">Estimated price</string>    
+    
+    <string name="OF_pickup_stop">Pickup stop</string>
+    <string name="OF_dropoff_stop">Dropoff stop</string>
+    
     <string name="OF_button_order">Order</string>
     <string name="OF_button_order_description">A button to order the ride.</string>
     

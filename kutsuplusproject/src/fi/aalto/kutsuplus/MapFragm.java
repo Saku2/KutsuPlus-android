@@ -100,7 +100,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public boolean onMarkerClick(Marker marker) {
 		String stopName = marker.getTitle();
 		//send data
-		//iSendStopName.fillFromToTextBox(stopName);
+    	iSendSttreetAddress.fillPickupDropoffTextBox(stopName);
+    	iSendSttreetAddress.fillSelectedMapLocation(marker.getPosition());
+
 		return false;
 	} 
 

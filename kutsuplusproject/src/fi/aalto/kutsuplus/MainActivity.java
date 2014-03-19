@@ -287,13 +287,25 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	// ISendStopName implementation
 	@Override
 	public void fillFromToTextBox(String street_address) {
-		Log.d("stopName", street_address);
+		Log.d("street adress", street_address);
 		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 		if (formFragment != null) {// large view
 			formFragment.updateToFromText(street_address);
 		} else {// small view
 			formFrag.updateToFromText(street_address);
 		}
+	}
+
+	@Override
+	public void fillPickupDropoffTextBox(String stopName) {
+		Log.d("stop name", stopName);
+		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		if (formFragment != null) {// large view
+			formFragment.updatePickupDropOffText(stopName);
+		} else {// small view
+			formFrag. updatePickupDropOffText(stopName);
+		}
+		
 	}
 
 	public void fillSelectedMapLocation(LatLng address_gps) {
@@ -336,5 +348,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.addAllKutsuPlusStopMarkers();
 		
 	}
+
 
 }

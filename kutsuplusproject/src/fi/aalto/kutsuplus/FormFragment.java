@@ -308,4 +308,18 @@ public class FormFragment extends Fragment{
 		}
 	}
 
+	public void updatePickupDropOffText(String fromData){
+		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
+		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
+		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
+		if(fromView.hasFocus())
+		{
+			pickupView.setText(fromData);            
+		}
+		else
+		{
+			dropoffView.setText(fromData);
+		}
+	}
+
 }
