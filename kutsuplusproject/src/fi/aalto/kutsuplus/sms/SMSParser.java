@@ -1,6 +1,8 @@
 package fi.aalto.kutsuplus.sms;
 
-
+/**
+ * SMSParser has methods for parsing a string into an array of strings
+ * */
 // SMS format is
 // Pickup 11:08, stop 1901
 // Vehicle K11
@@ -12,28 +14,28 @@ package fi.aalto.kutsuplus.sms;
 // https://kutsuplus.fi/t/4Upnw
 
 public class SMSParser {
-	private boolean ticket=true;
-	final static public int PICKUP_TIME =0;
-	final static public int PICKUP_STOP_CODE=1;
-	final static public int VECHILE_CODE=2;
-	final static public int ORDER_CODE=3;
-	final static public int AMOUNT_OF_PASSENGERS=4;
-	final static public int DROP_OFF_TIME=5;
-	final static public int DROP_OFF_STOP_CODE=6;
-	final static public int PRICE=7;
-	final static public int ORDER_ID=8;
-	final static public int URL=9;
-	final static public int ERROR_MESSAGE=0;
+	
+	private boolean ticket = true;
+	final static public int PICKUP_TIME = 0;
+	final static public int PICKUP_STOP_CODE = 1;
+	final static public int VEHICLE_CODE = 2;
+	final static public int ORDER_CODE = 3;
+	final static public int AMOUNT_OF_PASSENGERS = 4;
+	final static public int DROP_OFF_TIME = 5;
+	final static public int DROP_OFF_STOP_CODE = 6;
+	final static public int PRICE = 7;
+	final static public int ORDER_ID = 8;
+	final static public int URL = 9;
+	final static public int ERROR_MESSAGE = 0;
 	
 	private static final int CONF_MSG_SIZE = 8;
+	
+	static private String[] keywords;
 
-	public SMSParser() {
-		
+	public SMSParser(String[] keywordList) {
+		keywords = keywordList;
 	}
-	
-	
-	private String[] catchWords = {"Pickup", "Vehicle", "Code", "pax", "Drop-off", "e", "Order Id", "https"};
-	
+		
 	public String[] parse(String message) {
 		String[] result;
 		String[] lines;
@@ -46,37 +48,37 @@ public class SMSParser {
 				//Split first line
 				String[] words0 = lines[0].trim().split(" ");
 				try {
-					if (!words0[0].equals(catchWords[0]) || words0.length != 4) {
-						throw new SMSParsingException("Syntax error at line 1:"+lines[0]);
+					if (!words0[0].equals(keywords[1]) || words0.length != 4 || !words0[2].equals(keywords[2])) {
+						throw new SMSParsingException("Syntax error at line:" + lines[0]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line 1:"+lines[1]);
+					throw new SMSParsingException("Syntax error at line:" + lines[1]);
 				}
 				//Get pickup time, don't include ','
-				result[PICKUP_TIME] = words0[1].substring(0, words0[1].length()-1);
+				result[PICKUP_TIME] = words0[1].substring(0, words0[1].length() - 1);
 				//Get pickup stop code
 				result[PICKUP_STOP_CODE] = words0[3];
 				
 				//Split second line
 				String[] words1 = lines[1].trim().split(" ");
 				try {
-					if (!words1[0].equals(catchWords[1]) || words1.length != 2) {
-						throw new SMSParsingException("Syntax error at line 2:"+lines[1]);
+					if (!words1[0].equals(keywords[3]) || words1.length != 2) {
+						throw new SMSParsingException("Syntax error at line:" + lines[1]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line 2:"+lines[1]);
+					throw new SMSParsingException("Syntax error at line:" + lines[1]);
 				}
 				//Get vehicle code
-				result[VECHILE_CODE] = words1[1];
+				result[VEHICLE_CODE] = words1[1];
 				
 				//Split third line
 				String[] words2 = lines[2].trim().split(" ");
 				try {
-					if (!words2[0].equals(catchWords[2]) || words2.length != 2) {
-						throw new SMSParsingException("Syntax error at line 3:"+lines[2]);
+					if (!words2[0].equals(keywords[4]) || words2.length != 2) {
+						throw new SMSParsingException("Syntax error at line:" + lines[2]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line 3:"+lines[2]);
+					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[2]);
 				}
 				//Get order code
 				result[ORDER_CODE] = words2[1];
@@ -84,11 +86,13 @@ public class SMSParser {
 				//Split fourth line
 				String[] words3 = lines[3].trim().split(" ");
 				try {
-					if (!words3[1].equals(catchWords[3]) || words3.length != 2) {
-						throw new SMSParsingException("Syntax error at line 4:"+lines[3]+"-"+words3.length+" "+words3[1]+"-"+catchWords[3]);
+					if (!words3[1].equals(keywords[5]) || words3.length != 2) {
+						throw new SMSParsingException("Syntax error at line:" + 
+														lines[3] + "-" + words3.length + 
+														" " + words3[1] + "-" + keywords[3]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line, null pointer 4:"+lines[3]);
+					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[3]);
 				}
 				//Get amount of passengers
 				result[AMOUNT_OF_PASSENGERS] = words3[0];
@@ -96,55 +100,61 @@ public class SMSParser {
 				//Split fifth line
 				String[] words4 = lines[4].trim().split(" ");
 				try {
-					if (!words4[0].equals(catchWords[4]) || words4.length != 4) {
-						throw new SMSParsingException("Syntax error at line 5:"+lines[4]);
+					if (!words4[0].equals(keywords[6]) || words4.length != 4 || !words4[2].equals(keywords[2])) {
+						throw new SMSParsingException("Syntax error at line:" + lines[4]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line, null pointer 5:"+lines[4]);
+					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[4]);
 				}
 				//Get drop-off time, don't include ','
-				result[DROP_OFF_TIME] = words4[1].substring(0, words4[1].length()-1);
+				result[DROP_OFF_TIME] = words4[1].substring(0, words4[1].length() - 1);
 				//Get drop-off stop code
 				result[DROP_OFF_STOP_CODE] = words4[3];
 				
 				//Sixth line should contain only one string
-				if (!lines[5].contains(catchWords[5]) || lines[5].contains(" ")) {
-					throw new SMSParsingException("Syntax error at line 6");
+				if (!lines[5].contains(keywords[7]) || lines[5].contains(" ")) {
+					throw new SMSParsingException("Syntax error at line:" + lines[5]);
 				}
 				//Get price, don't include 'e'
-				result[PRICE] = lines[5].substring(0, lines[5].length()-1);
+				result[PRICE] = lines[5].substring(0, lines[5].length() - 1);
 				
 				//Split seventh line
 				String[] words6 = lines[6].trim().split(" ");
 				try {
-					if (!lines[6].contains(catchWords[6]) || words6.length != 3) {
-						throw new SMSParsingException("Syntax error at line 7:"+lines[6]);
+					/**@TODO check word count, take different languages into account */
+					if (!lines[6].contains(keywords[8])) {
+						throw new SMSParsingException("Syntax error at line:" + lines[6]);
 					}
 				} catch (java.lang.NullPointerException e) {
-					throw new SMSParsingException("Syntax error at line, null pointer 7:"+lines[6]);
+					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[6]);
 				}
 				//Get order id
-				result[ORDER_ID] = words6[2];
+				if (keywords[0].equals(new String("en"))) {
+					result[ORDER_ID] = words6[2];
+				}
+				else if (keywords[0].equals(new String("fi")) || keywords[0].equals(new String("sv"))) {
+					result[ORDER_ID] = words6[1];
+				}
 				
 				//Eighth line should contain only the URL
-				if (!lines[7].contains(catchWords[7])) {
+				if (!lines[7].contains(keywords[9])) {
 					throw new SMSParsingException("Syntax error at line 8");
 				}
 				//Get URL
 				result[URL] = lines[7];
-				ticket=true;
+				ticket = true;
 			}
 			// An error message was received, let's just display it.
 			else {
 				result = new String[1];
 				result[ERROR_MESSAGE] = message;
-				ticket=false;
+				ticket = false;
 			}
 		} catch (SMSParsingException e) {
 			System.err.println(e.getMessage());
 			String[] msg = new String[1];
 			msg[0] = message;
-			ticket=false;
+			ticket = false;
 			return msg;
 		}
 		return result;

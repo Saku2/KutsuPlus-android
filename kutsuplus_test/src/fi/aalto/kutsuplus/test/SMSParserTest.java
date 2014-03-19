@@ -7,6 +7,8 @@ public class SMSParserTest extends TestCase {
 	protected String testMsgOK;
 	protected String testMsgError;
 	protected String testMsgInfo;
+	protected String[] keywords = {
+			"en","Pickup","stop","Vehicle","Code","pax","Drop-off","e","Order Id","https"};
 
 	public SMSParserTest() {
 		super();
@@ -27,7 +29,7 @@ public class SMSParserTest extends TestCase {
 	}
 	
 	public void testParseOK() {
-		SMSParser parser = new SMSParser();
+		SMSParser parser = new SMSParser(keywords);
 		String[] result = parser.parse(testMsgOK);
 		assertEquals(result[0], "11:08");
 		assertEquals(result[1], "1901");
@@ -42,13 +44,13 @@ public class SMSParserTest extends TestCase {
 	}
 
 	public void testParseError() {
-		SMSParser parser = new SMSParser();
+		SMSParser parser = new SMSParser(keywords);
 		String[] result = parser.parse(testMsgError);
 		assertEquals(result[0], testMsgError);
 	}
 	
 	public void testParseInfo() {
-		SMSParser parser = new SMSParser();
+		SMSParser parser = new SMSParser(keywords);
 		String[] result = parser.parse(testMsgInfo);
 		assertEquals(result[0], testMsgInfo);
 	}

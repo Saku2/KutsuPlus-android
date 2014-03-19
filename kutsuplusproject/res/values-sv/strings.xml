@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#FFFFFF</color>
     <color name="light_gray">#DDDDDD</color>
-    <color name="light_background">#DDDDFF</color>
-    <color name="kutsuplus_light_blue"> #B9D6F0</color>
-    <string name="app_name">ÄlyBussi</string>
+    <string name="app_name">AaltoKutsuplus</string>
     
     <!-- Order Tabs -->
     <string name="TAB_form">Form</string>
@@ -30,9 +27,6 @@
     <string name="OF_button_order">Order</string>
     <string name="OF_button_order_description">A button to order the ride.</string>
     
-    <!-- Menu -->
-    <string name="title_settings">Settings</string>
-    <string name="show_kplus_stops">Show KutsuPlus stops</string>
     
     <!-- SMS Handling -->
     <string name="title_sms_notification">Receive ticket</string>
@@ -43,27 +37,18 @@
     
     <string name="kutsuplus_url_short">http://kutsuplus.fi</string>
     <string name="kutsuplus_url">http://kutsuplus.fi/m/sign-in</string>
-
-    <string name="stop_list_path">kutsupluspysakit_ext.txt</string>
-    
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-    </string-array>
     
     <!--  SMS Parsing -->
     <string-array name="sms_keyword_array">
-        <item>en</item>
-        <item>Pickup</item>
-        <item>stop</item>
-        <item>Vehicle</item>
-        <item>Code</item>
-        <item>pax</item>
-        <item>Drop-off</item>
+        <item>sv</item>
+        <item>Hämtning</item>
+        <item>hlp.</item>
+        <item>Fordon</item>
+        <item>Kod</item>
+        <item>pers.</item>
+        <item>Framme</item>
         <item>e</item>
-        <item>Order Id</item>
+        <item>Best.nr</item>
         <item>https</item>
     </string-array>
 </resources>

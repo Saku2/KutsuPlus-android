@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStreetAddress {
 
 	SharedPreferences preferences;
+
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
 	final static int EXTRAS_TO = 1;
@@ -70,6 +72,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		// field requires API level 11, messes the textviews...
 		if (android.os.Build.VERSION.RELEASE.startsWith("1.") ||

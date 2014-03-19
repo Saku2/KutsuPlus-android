@@ -84,7 +84,7 @@
         <!-- NB! steps to get release-key: -->
         <!-- https://developers.google.com/maps/documentation/android/start -->
         <meta-data
-		    android:name="com.google.android.maps.v2.API_KEY"
-		    android:value="AIzaSyC0e8bMDR8b6oWmmyJDTVDuU_4y4wBDQxM"/>
+            android:name="com.google.android.maps.v2.API_KEY"        
+            android:value="AIzaSyC0e8bMDR8b6oWmmyJDTVDuU_4y4wBDQxM"/>
     </application>
 </manifest>
