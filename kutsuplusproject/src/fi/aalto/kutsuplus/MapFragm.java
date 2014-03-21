@@ -96,6 +96,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             Marker marker = map.addMarker(markerOptions);
             haspMap.put(marker, so);
             marker.setVisible(true);
+            marker.setAlpha(0.5F);
             markers.add(marker);
             
 		}
