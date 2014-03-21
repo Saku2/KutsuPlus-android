@@ -1,5 +1,6 @@
 package fi.aalto.kutsuplus;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -43,6 +43,7 @@ import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
+import fi.aalto.kutsuplus.utils.CoordinateConverter;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStreetAddress {
 
@@ -338,7 +339,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	}
 
-	Locale myLocale;
+	private Locale myLocale;
 
 	private void setLocale(String lang) {
 		myLocale = new Locale(lang);
@@ -351,12 +352,19 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(refresh);
 	}
 
+
 	@Override
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
 		formFragment.updateToFromText(street_address);
+
 		fillSelectedMapLocation(address_gps); 
+		//TODO fix this to KKJ
+		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
+		//TODO: check that x is really x
+		//stopTreeHandler.
+		
 	}
 
 	@Override
@@ -380,7 +388,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		
 		if(mapFragment.startPoint != null && mapFragment.endPoint != null)
 			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
+
 	}
+
 
 
 	
