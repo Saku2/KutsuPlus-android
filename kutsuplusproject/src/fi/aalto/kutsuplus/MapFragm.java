@@ -52,6 +52,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	public boolean KPstopsAreVisible = false;
 	public boolean KPstopsAreCreated = false;
+
 	private float markerAlpha = 0.5F;
 
 
@@ -71,7 +72,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     }
 
 	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {
-        LatLng ll = new LatLng(centerPoint.getX(), centerPoint.getY());
+		// The constructor takes (lat,long), lat=y, long=x
+        LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
 		map.animateCamera(center);//moveCamera
 		//addAllKutsuPlusStopMarkers();
@@ -98,14 +100,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
 		for(StopObject so : pysakit){
-			LatLng ll = new LatLng(so.getGmpoint().getX(), so.getGmpoint().getY());
+			// Constructor uses (lat,long)  remember: latitude=y, longituden=x
+			LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
 			markerOptions.position(ll)
  			             .title(so.getFinnishName())
 			             .snippet(so.getSwedishName());
             Marker marker = map.addMarker(markerOptions);
             haspMap.put(marker, so);
             marker.setVisible(true);
-            marker.setAlpha(markerAlpha);//
+            marker.setAlpha(0.5F);
             markers.add(marker);
             
 		}
@@ -134,10 +137,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		StopObject so=haspMap.get(marker);
 	    if(so!=null)
 	    {
-    	  iSendSttreetAddress.setPickupDropoff(so);
+    	  iSendSttreetAddress.setStopMarkerSelection(so,marker.getPosition());
 	    }
-    	iSendSttreetAddress.fillSelectedMapLocation(marker.getPosition());    	
-    	iSendSttreetAddress.fillFromToTextBox(stopName);
 		return false;
 	} 
 
@@ -168,9 +169,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	            if (addresses.size() > 0) {
 	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
 	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
+	            	iSendSttreetAddress.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
 	            	//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendSttreetAddress.fillFromToTextBox( addresses.get(0).getAddressLine(0));
-	            	iSendSttreetAddress.fillSelectedMapLocation(ll);
 	            	//Log.d(LOG_TAG, "after querying stop");
 	            }
 	        }
@@ -192,7 +193,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		this.map = map;
 	}
 
-	
+
 	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
 		ArrayList<LatLng> points = new ArrayList<LatLng>();
 		PolylineOptions polyLineOptions = new PolylineOptions();

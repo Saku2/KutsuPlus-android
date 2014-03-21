@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
- 
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,7 +34,6 @@ import android.widget.PopupWindow;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
@@ -77,13 +76,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 		// field requires API level 11, messes the textviews...
-		if (android.os.Build.VERSION.RELEASE.startsWith("1.") ||
-		        android.os.Build.VERSION.RELEASE.startsWith("2.") );
+		if (android.os.Build.VERSION.RELEASE.startsWith("1.") || android.os.Build.VERSION.RELEASE.startsWith("2."))
+			;
 		else
-           getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -180,7 +179,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				// Capture the detail fragment from the activity layout
 			isTwoPaneLayout = true;
 			
-			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			MapFragm mapFrag = getMapFragment();
 			isMapTabSelected = true;
 			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 			if(kp_button != null)
@@ -188,6 +187,28 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 
 	}
+	private MapFragm getMapFragment(){
+		MapFragm mapFragment = null;;
+		if(isTwoPaneLayout){
+			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+		}
+		else{
+			mapFragment = this.mapFrag;
+		}
+		return mapFragment;
+	}
+
+	private FormFragment getFormFragment(){
+		FormFragment formFragment = null;
+		if(isTwoPaneLayout){
+			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		}
+		else{
+			formFragment = this.formFrag;
+		}
+		return formFragment;
+	}
+
 
 	private void showHelsinkiArea(MapFragm mapFrag, float zoomLevel) {
 		if (mapFrag != null) {//
@@ -267,8 +288,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu_this = menu;
+
 		if(menu_this != null)
-			kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+		kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
 	    return true;
 	}
 	// creating action-bar menu
@@ -280,28 +302,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		inflater.inflate(R.menu.menu, menu);// inflate this menu with the XML
 											// resource that was created earlier
 		return true;// to allow method to be displayed
-	}
-	
-	private MapFragm getMapFragment(){
-		MapFragm mapFragment = null;;
-		if(isTwoPaneLayout){
-			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-		}
-		else{
-			mapFragment = this.mapFrag;
-		}
-		return mapFragment;
-	}
-
-	private FormFragment getFormFragment(){
-		FormFragment formFragment = null;
-		if(isTwoPaneLayout){
-			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		}
-		else{
-			formFragment = this.formFrag;
-		}
-		return formFragment;
 	}
 
 	@Override
@@ -351,30 +351,29 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(refresh);
 	}
 
-	// ISendStopName implementation
 	@Override
-	public void fillFromToTextBox(String street_address) {
+	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
 		formFragment.updateToFromText(street_address);
+		fillSelectedMapLocation(address_gps); 
 	}
 
-	@Override	
-	public void setPickupDropoff(StopObject so) {
+	@Override
+	public void setStopMarkerSelection(StopObject so,LatLng address_gps) {
 		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = getFormFragment();
-		formFragment.updatePickupDropOffText(so.getFinnishName()+" "+so.getShortId());
-	}
-	
-	public void fillPickupDropoffTextBox(String stopName) {
+		formFragment.updateToFromText(so.getFinnishAddress());
+		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
+		fillSelectedMapLocation(address_gps);
 	}
 
-	public void fillSelectedMapLocation(LatLng ll) {
+	private void fillSelectedMapLocation(LatLng ll) {
 		MapFragm mapFragment = getMapFragment();
 		
 		if(findViewById(R.id.from).hasFocus()){
 			mapFragment.startPoint = ll;
-		}
+		}		
 		else{
 			mapFragment.endPoint = ll;
 		}
@@ -384,8 +383,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 
 
-
 	
 
-
 }
+

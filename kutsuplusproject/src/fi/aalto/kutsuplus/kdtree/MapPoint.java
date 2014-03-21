@@ -1,6 +1,6 @@
 package fi.aalto.kutsuplus.kdtree;
 
-import com.savarese.spatial.Point;
+import com.savarese.spatial.Point;       
 
 public class MapPoint implements Point<Integer> {
 
@@ -22,7 +22,6 @@ public class MapPoint implements Point<Integer> {
 	
 	@Override
 	public Integer getCoord(int dimension) {
-		// TODO Auto-generated method stub
 		if (dimension > 1 || dimension < 0) {
 			throw new IllegalArgumentException("Dimension should be 0=x or 1=y");
 		}
@@ -39,7 +38,6 @@ public class MapPoint implements Point<Integer> {
 
 	@Override
 	public int getDimensions() {
-		// TODO Auto-generated method stub
 		return 2;
 	}
 

@@ -22,8 +22,8 @@ public class StopTreeHandler {
 	private boolean treeReady = false;
 	
 	//lists of latitudes and longitudes
-	private ArrayList<Double> latitudes = new ArrayList<Double>();
 	private ArrayList<Double> longitudes = new ArrayList<Double>();
+	private ArrayList<Double> latitudes = new ArrayList<Double>();
 	
 
 	private StopTreeHandler() {
@@ -67,11 +67,13 @@ public class StopTreeHandler {
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] data = line.trim().split("#");
-				double latitude = Double.parseDouble(data[12].trim());
-				double longitude = Double.parseDouble(data[13].trim());
+				//latitude  is a geographic coordinate that specifies the north-south position of a point on the Earth's surface. 
+				// At the file latitude=y is first then longitude=x 
+				double latitude= Double.parseDouble(data[12].trim());
+				double longitude  = Double.parseDouble(data[13].trim());
 				this.latitudes.add(latitude);
 				this.longitudes.add(longitude);
-				GoogleMapPoint gmpoint = new GoogleMapPoint(latitude, longitude);
+				GoogleMapPoint gmpoint = new GoogleMapPoint(longitude, latitude);
 				
 				StopObject stop = new StopObject(data[0], data[1],
 						data[3], data[4], data[5], data[6], gmpoint);
@@ -108,7 +110,7 @@ public class StopTreeHandler {
 		double maxLongitude = this.longitudes.get(longitudes.size()-1);
 		double lat_center = (minLatitude + maxLatitude)/2;
 		double lon_center = (minLongitude + maxLongitude)/2;
-		return new GoogleMapPoint(lat_center, lon_center);
+		return new GoogleMapPoint(lon_center, lat_center);
 	}
 	
 	
