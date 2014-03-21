@@ -46,7 +46,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	//min zoom level, for showing busstop markers
 	final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
-	private final String LOG_TAG = "PUNKTID";
+	
+	public boolean KPstopsAreVisible = false;
+	public boolean KPstopsAreCreated = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,12 +66,25 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
         LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
 		map.animateCamera(center);//moveCamera
-		addAllKutsuPlusStopMarkers();
+		//addAllKutsuPlusStopMarkers();
 		map.setOnMarkerClickListener((OnMarkerClickListener) this);
         map.setOnMapClickListener(this);  
 	}
 
-	public void addAllKutsuPlusStopMarkers(){
+	public void hideKutsuPlusStopMarkers(){
+		for(Marker m : markers){
+			m.setVisible(false);
+		}
+		KPstopsAreVisible = false;
+	}
+	public void showKutsuPlusStopMarkers(){
+		for(Marker m : markers){
+			m.setVisible(true);
+		}
+		KPstopsAreVisible = true;
+	}
+	
+	public void addAllKutsuPlusStopMarkers(){//
 		MarkerOptions markerOptions = new MarkerOptions();
 		markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker));
 
@@ -82,21 +97,24 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			             .snippet(so.getSwedishName());
             Marker marker = map.addMarker(markerOptions);
             haspMap.put(marker, so);
-            marker.setVisible(false);
+            marker.setVisible(true);
+            marker.setAlpha(0.5F);
             markers.add(marker);
             
 		}
+		KPstopsAreVisible = true;
+		KPstopsAreCreated = true;
             //show markers only on large zoom level
-            map.setOnCameraChangeListener(new OnCameraChangeListener(){
-				@Override
-				public void onCameraChange(CameraPosition cameraPosition) {
-					for(Marker m : markers){
-						m.setVisible(cameraPosition.zoom > minZoomLevel);
-						
-					}
-				}
-            	
-            });
+//            map.setOnCameraChangeListener(new OnCameraChangeListener(){
+//				@Override
+//				public void onCameraChange(CameraPosition cameraPosition) {
+//					for(Marker m : markers){
+//						m.setVisible(cameraPosition.zoom >= initialZoomLevel);////minZoomLevel
+//						
+//					}
+//				}
+//            	
+//            });
           
 	}
 	
@@ -132,7 +150,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		try {
 			Locale aLocale = new Locale("fi", "FI");
 	        Geocoder geo = new Geocoder(rootView.getContext().getApplicationContext(), aLocale);
-	        boolean isPresent = Geocoder.isPresent();
+	        //boolean isPresent = Geocoder.isPresent();
 	        List<Address> addresses = geo.getFromLocation(ll.latitude, ll.longitude, 1);
 	        if (addresses.isEmpty()) {
 	        	Toast.makeText(rootView.getContext().getApplicationContext(), "Waiting for Location", Toast.LENGTH_LONG).show();
@@ -143,6 +161,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
 	            	iSendSttreetAddress.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
+	            	//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
 	            	//Log.d(LOG_TAG, "after querying stop");
 	            }
 	        }

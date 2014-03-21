@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -70,6 +72,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private GoogleMap google_map = null;
 	private boolean isFirstVisitToMap = true;
+	private boolean isMapTabSelected = false;
+	
+	boolean isTwoPaneLayout;
+	
+	Menu menu_this;
+	MenuItem kp_button;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -110,6 +118,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// first fragment
 		// ONE-PANE LAYOUT
 		if (findViewById(R.id.phone_fragment_container) != null) {
+			isTwoPaneLayout = false;
 
 			// However, if we're being restored from a previous state,
 			// then we don't need to do anything and should return or else
@@ -173,8 +182,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// TWO-PANE LAYOUT
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout
+			isTwoPaneLayout = true;
+			
 			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			isMapTabSelected = true;
 			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
+			if(kp_button != null)
+				kp_button.setVisible(true);
 		}
 
 	}
@@ -203,12 +217,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
+		//MenuItem kp_button = (MenuItem) findViewById(R.id.kutsu_pysakkit);
 		// TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
 		if (isFirstVisitToMap) {
 			if (tab.getPosition() == MAPFRAG) {//
 				showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 				isFirstVisitToMap = false;
 			}
+		}
+		if (tab.getPosition() == MAPFRAG){
+			isMapTabSelected = true;
+			if(kp_button != null)
+				kp_button.setVisible(true);
+		}
+		else{
+			isMapTabSelected = false;
+			if(kp_button != null)
+				kp_button.setVisible(false);
 		}
 	}
 
@@ -243,7 +268,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		rides.addRide(from, to);
 	}
 
-	// called when user first clicks menu button
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu_this = menu;
+
+		if(menu_this != null)
+		kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+	    return true;
+	}
+	// creating action-bar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();// create a MenuInflater to
@@ -259,9 +292,32 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		switch (item.getItemId()) {// decide which MenuItem was pressed based on
 									// its id
 		case R.id.item_prefs:
-			startActivity(new Intent(this, SettingsActivity.class));// start the
-																	// PrefsActivity.java
+			startActivity(new Intent(this, SettingsActivity.class));// start the // PrefsActivity.java
 			break;
+		}
+		
+		if(item.getItemId() == R.id.kutsu_pysakkit){
+			MapFragm mapFragment;
+			if(isTwoPaneLayout){
+				mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			}
+			else{
+				mapFragment = this.mapFrag;
+			}
+			//add KP bus stops
+			if(mapFragment != null){
+				if(!mapFragment.KPstopsAreVisible){
+					if(!mapFragment.KPstopsAreCreated){
+						mapFragment.addAllKutsuPlusStopMarkers();
+					}
+					else{
+						mapFragment.showKutsuPlusStopMarkers();
+					}
+				}
+				else{
+					mapFragment.hideKutsuPlusStopMarkers();
+				}
+			}
 		}
 		return true; // to execute the event here
 	}
@@ -346,7 +402,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		google_map.addPolyline(polyLineOptions);
 		MapFragm mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
 		mapFragment.addAllKutsuPlusStopMarkers();
-
+		
 	}
 
+	
+
 }
+
