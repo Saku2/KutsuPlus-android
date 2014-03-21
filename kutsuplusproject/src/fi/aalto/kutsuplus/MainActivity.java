@@ -1,5 +1,6 @@
 package fi.aalto.kutsuplus;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +24,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,13 +31,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.savarese.spatial.NearestNeighbors;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
@@ -48,6 +45,7 @@ import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
+import fi.aalto.kutsuplus.utils.CoordinateConverter;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStreetAddress {
 
@@ -327,7 +325,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	}
 
-	Locale myLocale;
+	private Locale myLocale;
 
 	private void setLocale(String lang) {
 		myLocale = new Locale(lang);
@@ -340,30 +338,37 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(refresh);
 	}
 
+	private FormFragment getFormFragment()
+	{
+		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		if (formFragment != null) {// large view
+			return formFragment;
+		} else {// small view
+			return formFrag;
+		}
+	}
+	
 	@Override
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
-		//NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] nearest_stops=stopTreeHandler.getClosestStop(address_gps.latitude,1);
-		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		if (formFragment != null) {// large view
-			formFragment.updateToFromText(street_address);
-		} else {// small view
-			formFrag.updateToFromText(street_address);
-		}
+		
+		FormFragment formFrag=getFormFragment();
+		formFrag.updateToFromText(street_address);
 		fillSelectedMapLocation(address_gps); 
+		//TODO fix this to KKJ
+		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
+		//TODO: check that x is really x
+		//stopTreeHandler.
+		
 	}
 
 	@Override
 	public void setStopMarkerSelection(StopObject so,LatLng address_gps) {
 		Log.d("stop name", so.getFinnishName());
-		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		if (formFragment != null) {// large view
-			formFragment.updateToFromText(so.getFinnishAddress());
-			formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		} else {// small view
-			formFrag.updateToFromText(so.getFinnishAddress());
-			formFrag.updatePickupDropOffText(so.getFinnishName() + so.getShortId());			
-		}
+		FormFragment formFrag=getFormFragment();
+		formFrag.updateToFromText(so.getFinnishAddress());
+		formFrag.updatePickupDropOffText(so.getFinnishName() + so.getShortId());			
+		
 		fillSelectedMapLocation(address_gps);
 	}
 
@@ -401,8 +406,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 		google_map.addPolyline(polyLineOptions);
 		MapFragm mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-		mapFragment.addAllKutsuPlusStopMarkers();
-		
 	}
 
 	
