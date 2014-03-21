@@ -46,7 +46,7 @@ public class FormFragment extends Fragment{
 	ImageButton buttonShowDropDown_toExtras;
 	PopupWindow popupWindow_ExtrasList;
 	 
-
+    
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -293,19 +293,11 @@ public class FormFragment extends Fragment{
 		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		if(fromView.hasFocus())
 		{
-			fromView.setFocusable(false);
-			fromView.setFocusableInTouchMode(false);
 			fromView.setText(fromData);            
-			fromView.setFocusable(true);
-			fromView.setFocusableInTouchMode(true);
 		}
 		else
 		{
-			toView.setFocusable(false);
-			toView.setFocusableInTouchMode(false);
 			toView.setText(fromData);
-			toView.setFocusable(true);
-			toView.setFocusableInTouchMode(true);
 		}
 	}
 

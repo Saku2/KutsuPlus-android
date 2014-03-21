@@ -191,7 +191,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	public void setMap(GoogleMap map) {
 		this.map = map;
-	}
+	}//
 
 
 	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {

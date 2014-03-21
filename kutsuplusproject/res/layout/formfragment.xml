@@ -36,6 +36,7 @@
             android:ems="15" 
             android:focusable="true"           
             android:contentDescription="@string/OF_from_field_description">
+            <requestFocus/>
         </AutoCompleteTextView>
 
         <ImageButton
