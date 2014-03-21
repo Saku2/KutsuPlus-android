@@ -36,6 +36,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.savarese.spatial.NearestNeighbors;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
@@ -72,14 +73,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 		// field requires API level 11, messes the textviews...
-		if (android.os.Build.VERSION.RELEASE.startsWith("1.") ||
-		        android.os.Build.VERSION.RELEASE.startsWith("2.") )
-		        ;
+		if (android.os.Build.VERSION.RELEASE.startsWith("1.") || android.os.Build.VERSION.RELEASE.startsWith("2."))
+			;
 		else
-           getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -284,55 +284,51 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(refresh);
 	}
 
-	// ISendStopName implementation
 	@Override
-	public void fillFromToTextBox(String street_address) {
+	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
+		//NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] nearest_stops=stopTreeHandler.getClosestStop(address_gps.latitude,1);
 		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 		if (formFragment != null) {// large view
 			formFragment.updateToFromText(street_address);
 		} else {// small view
 			formFrag.updateToFromText(street_address);
 		}
+		fillSelectedMapLocation(address_gps); 
 	}
 
-	@Override	
-	public void setPickupDropoff(StopObject so) {
+	@Override
+	public void setStopMarkerSelection(StopObject so,LatLng address_gps) {
 		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 		if (formFragment != null) {// large view
-			formFragment.updatePickupDropOffText(so.getFinnishName()+" "+so.getShortId());
+			formFragment.updateToFromText(so.getFinnishAddress());
+			formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
 		} else {// small view
-			formFrag. updatePickupDropOffText(so.getFinnishName()+so.getShortId());
+			formFrag.updateToFromText(so.getFinnishAddress());
+			formFrag.updatePickupDropOffText(so.getFinnishName() + so.getShortId());			
 		}
-		
-		
-	}
-	
-	public void fillPickupDropoffTextBox(String stopName) {
+		fillSelectedMapLocation(address_gps);
 	}
 
-	public void fillSelectedMapLocation(LatLng address_gps) {
-		if(findViewById(R.id.from).hasFocus())
-		{
-			address_from_gps=address_gps;
-		}
-		else
-		{
-			address_to_gps=address_gps;
+	private void fillSelectedMapLocation(LatLng address_gps) {
+		if (findViewById(R.id.from).hasFocus()) {
+			address_from_gps = address_gps;
+		} else {
+			address_to_gps = address_gps;
 		}
 		showRouteOnMap();
 	}
 
-	LatLng address_from_gps=null;
-	LatLng address_to_gps=null;
-	
-	public void showRouteOnMap() {
-		if(address_from_gps==null)
+	LatLng address_from_gps = null;
+	LatLng address_to_gps = null;
+
+	private void showRouteOnMap() {
+		if (address_from_gps == null)
 			return;
-		if(address_to_gps==null)
+		if (address_to_gps == null)
 			return;
-		
+
 		ArrayList<LatLng> points = null;
 		PolylineOptions polyLineOptions = null;
 
@@ -346,14 +342,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		polyLineOptions.width(2);
 		polyLineOptions.color(Color.RED);
 		google_map.clear();
-		
+
 		google_map.addPolyline(polyLineOptions);
 		MapFragm mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
 		mapFragment.addAllKutsuPlusStopMarkers();
-		
+
 	}
-
-	
-
 
 }

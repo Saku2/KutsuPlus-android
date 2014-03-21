@@ -214,9 +214,10 @@ public class FormFragment extends Fragment{
 	/*
      * 
      */
+	// deprecation caused by new BitmapDrawable()
+	// new style is here http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
 	public PopupWindow getPopupWindow() {
-
 		PopupWindow popupWindow = new PopupWindow(rootView,
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		

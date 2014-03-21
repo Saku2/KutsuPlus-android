@@ -5,7 +5,6 @@ import com.google.android.gms.maps.model.LatLng;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 
 public interface ISendStreetAddress {
-	public void fillFromToTextBox(String streetAddress);	
-	public void fillSelectedMapLocation(LatLng address_gps);
-	public void setPickupDropoff(StopObject so);
+	public void setMapLocationSelection(String streetAddress,LatLng address_gps);
+	public void setStopMarkerSelection(StopObject so,LatLng address_gps);
 }

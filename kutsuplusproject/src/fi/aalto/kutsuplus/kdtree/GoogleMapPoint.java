@@ -23,4 +23,8 @@ public class GoogleMapPoint {
 		this.y = y;
 	}
 
+	public String toString() {
+		return "GoogleMapPoint [x=" + x + ", y=" + y + "]";
+	}
+
 }
