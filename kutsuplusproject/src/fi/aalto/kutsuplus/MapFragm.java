@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
@@ -52,7 +53,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public boolean KPstopsAreVisible = false;
 	public boolean KPstopsAreCreated = false;
 	private float markerAlpha = 0.5F;
-	
+
+
+	Polyline straightLine = null;
 	public LatLng startPoint= null;
 	public LatLng endPoint = null;
 	
@@ -191,20 +194,20 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	
 	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
-		ArrayList<LatLng> points = null;
-		PolylineOptions polyLineOptions = null;
-
-		points = new ArrayList<LatLng>();
-		polyLineOptions = new PolylineOptions();
-
+		ArrayList<LatLng> points = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions = new PolylineOptions();
+		
 		points.add(startPoint);
 		points.add(endPoint);
-
+		
 		polyLineOptions.addAll(points);
 		polyLineOptions.width(2);
 		polyLineOptions.color(Color.RED);
-		map.addPolyline(polyLineOptions);
 		
+		if(straightLine != null)
+			straightLine.remove();
+		
+		straightLine = map.addPolyline(polyLineOptions);
 	}
 	
 }
