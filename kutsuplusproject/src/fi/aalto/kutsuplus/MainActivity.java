@@ -10,8 +10,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-
-import android.graphics.Color;
+ 
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,7 +23,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,7 +30,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -270,9 +267,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu_this = menu;
-
 		if(menu_this != null)
-		kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+			kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
 	    return true;
 	}
 	// creating action-bar menu
@@ -285,6 +281,28 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 											// resource that was created earlier
 		return true;// to allow method to be displayed
 	}
+	
+	private MapFragm getMapFragment(){
+		MapFragm mapFragment = null;;
+		if(isTwoPaneLayout){
+			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+		}
+		else{
+			mapFragment = this.mapFrag;
+		}
+		return mapFragment;
+	}
+
+	private FormFragment getFormFragment(){
+		FormFragment formFragment = null;
+		if(isTwoPaneLayout){
+			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+		}
+		else{
+			formFragment = this.formFrag;
+		}
+		return formFragment;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -296,13 +314,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 		
 		if(item.getItemId() == R.id.kutsu_pysakkit){
-			MapFragm mapFragment;
-			if(isTwoPaneLayout){
-				mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-			}
-			else{
-				mapFragment = this.mapFrag;
-			}
+			MapFragm mapFragment = getMapFragment();
 			//add KP bus stops
 			if(mapFragment != null){
 				if(!mapFragment.KPstopsAreVisible){
@@ -343,68 +355,35 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void fillFromToTextBox(String street_address) {
 		Log.d("street adress", street_address);
-		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		if (formFragment != null) {// large view
-			formFragment.updateToFromText(street_address);
-		} else {// small view
-			formFrag.updateToFromText(street_address);
-		}
+		FormFragment formFragment = getFormFragment();
+		formFragment.updateToFromText(street_address);
 	}
 
 	@Override	
 	public void setPickupDropoff(StopObject so) {
 		Log.d("stop name", so.getFinnishName());
-		FormFragment formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		if (formFragment != null) {// large view
-			formFragment.updatePickupDropOffText(so.getFinnishName()+" "+so.getShortId());
-		} else {// small view
-			formFrag. updatePickupDropOffText(so.getFinnishName()+so.getShortId());
-		}
-		
-		
+		FormFragment formFragment = getFormFragment();
+		formFragment.updatePickupDropOffText(so.getFinnishName()+" "+so.getShortId());
 	}
 	
 	public void fillPickupDropoffTextBox(String stopName) {
 	}
 
-	public void fillSelectedMapLocation(LatLng address_gps) {
-		if(findViewById(R.id.from).hasFocus())
-		{
-			address_from_gps=address_gps;
+	public void fillSelectedMapLocation(LatLng ll) {
+		MapFragm mapFragment = getMapFragment();
+		
+		if(findViewById(R.id.from).hasFocus()){
+			mapFragment.startPoint = ll;
 		}
-		else
-		{
-			address_to_gps=address_gps;
+		else{
+			mapFragment.endPoint = ll;
 		}
-		showRouteOnMap();
+		
+		if(mapFragment.startPoint != null && mapFragment.endPoint != null)
+			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
 	}
 
-	LatLng address_from_gps=null;
-	LatLng address_to_gps=null;
-	
-	public void showRouteOnMap() {
-		if(address_from_gps==null)
-			return;
-		if(address_to_gps==null)
-			return;
-		
-		ArrayList<LatLng> points = null;
-		PolylineOptions polyLineOptions = null;
 
-		points = new ArrayList<LatLng>();
-		polyLineOptions = new PolylineOptions();
-
-		points.add(address_from_gps);
-		points.add(address_to_gps);
-
-		polyLineOptions.addAll(points);
-		polyLineOptions.width(2);
-		polyLineOptions.color(Color.RED);
-		google_map.clear();
-		
-		google_map.addPolyline(polyLineOptions);
-		
-	}
 
 	
 

@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.WeakHashMap;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -49,6 +51,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	public boolean KPstopsAreVisible = false;
 	public boolean KPstopsAreCreated = false;
+	private float markerAlpha = 0.5F;
+	
+	public LatLng startPoint= null;
+	public LatLng endPoint = null;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,7 +102,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             Marker marker = map.addMarker(markerOptions);
             haspMap.put(marker, so);
             marker.setVisible(true);
-            marker.setAlpha(0.5F);
+            marker.setAlpha(markerAlpha);//
             markers.add(marker);
             
 		}
@@ -184,5 +190,21 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 
 	
+	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
+		ArrayList<LatLng> points = null;
+		PolylineOptions polyLineOptions = null;
+
+		points = new ArrayList<LatLng>();
+		polyLineOptions = new PolylineOptions();
+
+		points.add(startPoint);
+		points.add(endPoint);
+
+		polyLineOptions.addAll(points);
+		polyLineOptions.width(2);
+		polyLineOptions.color(Color.RED);
+		map.addPolyline(polyLineOptions);
+		
+	}
 	
 }
