@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -69,6 +70,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private GoogleMap google_map = null;
 	private boolean isFirstVisitToMap = true;
+	private boolean isMapTabSelected = false;
+	
+	Menu menu_this;
+	MenuItem kp_button;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,8 +81,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		super.onCreate(savedInstanceState);
 		// field requires API level 11, messes the textviews...
 		if (android.os.Build.VERSION.RELEASE.startsWith("1.") ||
-		        android.os.Build.VERSION.RELEASE.startsWith("2.") )
-		        ;
+		        android.os.Build.VERSION.RELEASE.startsWith("2.") );
 		else
            getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
@@ -174,7 +178,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout
 			MapFragm mapFrag = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			isMapTabSelected = true;
 			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
+			if(kp_button != null)
+				kp_button.setVisible(true);
 		}
 
 	}
@@ -203,12 +210,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
+		//MenuItem kp_button = (MenuItem) findViewById(R.id.kutsu_pysakkit);
 		// TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
 		if (isFirstVisitToMap) {
 			if (tab.getPosition() == MAPFRAG) {//
 				showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 				isFirstVisitToMap = false;
 			}
+		}
+		if (tab.getPosition() == MAPFRAG){
+			isMapTabSelected = true;
+			if(kp_button != null)
+				kp_button.setVisible(true);
+		}
+		else{
+			isMapTabSelected = false;
+			if(kp_button != null)
+				kp_button.setVisible(false);
 		}
 	}
 
@@ -243,7 +261,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		rides.addRide(from, to);
 	}
 
-	// called when user first clicks menu button
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu_this = menu;
+
+		if(menu_this != null)
+		kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+	    return true;
+	}
+	// creating action-bar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();// create a MenuInflater to
@@ -261,6 +287,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		case R.id.item_prefs:
 			startActivity(new Intent(this, SettingsActivity.class));// start the
 																	// PrefsActivity.java
+		//case R.id.kutsu_pysakkit:
+			
 			break;
 		}
 		return true; // to execute the event here
