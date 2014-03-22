@@ -34,6 +34,7 @@ import android.widget.PopupWindow;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
@@ -181,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			isTwoPaneLayout = true;
 			
 			MapFragm mapFrag = getMapFragment();
-			isMapTabSelected = true;
+			
 			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
 			if(kp_button != null)
 				kp_button.setVisible(true);
@@ -289,11 +290,14 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu_this = menu;
-
-		if(menu_this != null)
-		kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+		if(menu_this != null){
+			kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+			if(isTwoPaneLayout)
+				kp_button.setVisible(true);//
+		}
 	    return true;
 	}
+	
 	// creating action-bar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -359,7 +363,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		formFragment.updateToFromText(street_address);
 
-		fillSelectedMapLocation(address_gps); 
+		//TODO! have to find marker for nearest KP-stop 
+			//in order to color marker and make path
+		fillSelectedMapLocation(address_gps, null); 
 		//TODO fix this to KKJ
 		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
 		//TODO: check that x is really x
@@ -368,27 +374,32 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 
 	@Override
-	public void setStopMarkerSelection(StopObject so,LatLng address_gps) {
+	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
 		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = getFormFragment();
 		formFragment.updateToFromText(so.getFinnishAddress());
 		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		fillSelectedMapLocation(address_gps);
+		fillSelectedMapLocation(address_gps, marker);
 	}
 
-	private void fillSelectedMapLocation(LatLng ll) {
+	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
 		MapFragm mapFragment = getMapFragment();
 //		View test = findViewById(R.id.from);
-//		boolean foc = test.hasFocus();		
+//		boolean foc = test.hasFocus();	
+		boolean isStartMarker = true;
 		if(findViewById(R.id.from).hasFocus()){
 			mapFragment.startPoint = ll;
+			isStartMarker = true;
 		}		
 		else{
 			mapFragment.endPoint = ll;//
+			isStartMarker = false;
 		}
+		mapFragment.updatePinkMarker(marker, isStartMarker);
 		
-		if(mapFragment.startPoint != null && mapFragment.endPoint != null)
+		if(mapFragment.startPoint != null && mapFragment.endPoint != null){
 			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
+		}
 
 	}
 

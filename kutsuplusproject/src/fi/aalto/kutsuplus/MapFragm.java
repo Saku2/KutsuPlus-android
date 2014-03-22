@@ -2,8 +2,12 @@ package fi.aalto.kutsuplus;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import android.app.Activity;
@@ -23,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -30,6 +35,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+ 
+ 
 
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -37,13 +44,13 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
 	private ISendStreetAddress iSendSttreetAddress;
-	WeakHashMap <Marker, StopObject> haspMap = new WeakHashMap <Marker, StopObject>();
+	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
 
 	
 	private View rootView;//
 	private GoogleMap map;
-	//list for managing markers
-	final private ArrayList<Marker> markers = new ArrayList<Marker>();
+	public HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
+	ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened
 	final public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
@@ -82,21 +89,33 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 
 	public void hideKutsuPlusStopMarkers(){
-		for(Marker m : markers){
-			m.setVisible(false);
+		for (Marker m : markers.keySet()) {
+		    m.setVisible(false);
 		}
+		Marker sm = startEndMarkers.get("start");
+		if(sm != null){sm.setVisible(true);}
+		Marker em = startEndMarkers.get("end");
+		if(em != null){em.setVisible(true);}
+		
 		KPstopsAreVisible = false;
 	}
 	public void showKutsuPlusStopMarkers(){
-		for(Marker m : markers){
-			m.setVisible(true);
+		for (Marker m : markers.keySet()) {
+		    if(m != startEndMarkers.get("start") || m != startEndMarkers.get("end"))
+	        	m.setVisible(true);
 		}
 		KPstopsAreVisible = true;
 	}
 	
+	private BitmapDescriptor setKPicon(){
+		BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+		return bd;
+	}
+	
 	public void addAllKutsuPlusStopMarkers(){//
 		MarkerOptions markerOptions = new MarkerOptions();
-		markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker));
+		//Hue h = new Hue();
+		markerOptions.icon(setKPicon());
 
 		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
 		for(StopObject so : pysakit){
@@ -106,10 +125,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
  			             .title(so.getFinnishName())
 			             .snippet(so.getSwedishName());
             Marker marker = map.addMarker(markerOptions);
-            haspMap.put(marker, so);
+            markers.put(marker, so);
             marker.setVisible(true);
-            marker.setAlpha(0.5F);
-            markers.add(marker);
+            marker.setAlpha(markerAlpha);
+            //markers.put(ll, marker);
             
 		}
 		KPstopsAreVisible = true;
@@ -133,11 +152,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		String stopName = marker.getTitle();
+	       LatLng pos = marker.getPosition();
 		//send data
-		StopObject so=haspMap.get(marker);
+		StopObject so = markers.get(marker);
 	    if(so!=null)
 	    {
-    	  iSendSttreetAddress.setStopMarkerSelection(so,marker.getPosition());
+    	    iSendSttreetAddress.setStopMarkerSelection(so, marker.getPosition(), marker);
 	    }
 		return false;
 	} 
@@ -154,6 +174,39 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
         }
 
     }
+	
+	public void updatePinkMarker(Marker marker, boolean isStartMarker) {
+		
+		if(marker == null)
+			return;
+		
+		if(isStartMarker){
+			startEndMarkers.put("start", marker);
+		}
+		else{
+			startEndMarkers.put("end", marker);
+		}
+		//new pink marker
+		if(marker != null){
+			marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+			marker.setAlpha(1);
+			marker.setVisible(true);
+			startEndMarkersWatcher.add(marker);
+		}
+		
+		//handle previously pinked markers
+		if(startEndMarkersWatcher.size() > 0){
+			Iterator<Marker> it = startEndMarkersWatcher.iterator();
+			while (it.hasNext()) {
+				Marker m = it.next();
+				if(m != startEndMarkers.get("end") && m != startEndMarkers.get("start")){
+					m.setIcon(setKPicon());
+					m.setAlpha(this.markerAlpha);
+					it.remove();
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onMapClick(LatLng ll) {
