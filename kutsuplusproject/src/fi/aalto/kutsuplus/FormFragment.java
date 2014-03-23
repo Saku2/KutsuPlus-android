@@ -18,7 +18,9 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +47,7 @@ public class FormFragment extends Fragment{
 	ImageButton buttonShowDropDown_fromExtras;
 	ImageButton buttonShowDropDown_toExtras;
 	PopupWindow popupWindow_ExtrasList;
-	 
-    
+	public static final int DIALOG_FRAGMENT = 1;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -149,6 +150,23 @@ public class FormFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		// Operating hours 6-23 Helsinki time
+		Time now = new Time("UCT");
+		now.setToNow();
+		now.switchTimezone("Europe/Helsinki");
+		if ((now.hour > 23) || (now.hour < 6)) {
+			DialogFragment operatingHoursFragment = new OperatingHoursDialogFragment();
+			// A click outside of the dialog box will not dismiss the box
+			// Back button will not dismiss the box
+			operatingHoursFragment.setCancelable(false);
+		    operatingHoursFragment.show(getFragmentManager(), "operating_hours");
+		}
+		
 	}
 
 	private void createDropDown(View rootView) {

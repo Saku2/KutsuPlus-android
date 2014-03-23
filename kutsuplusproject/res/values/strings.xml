@@ -39,6 +39,10 @@
     <string name="title_settings">Settings</string>
     <string name="show_kplus_stops">Show KutsuPlus stops</string>
     
+    <!-- Operating hours dialog -->
+    <string name="ok">OK</string>
+    <string name="operating_hours">Attention! Service is available only between 6am and 11pm</string>
+    
     <!-- SMS Handling -->
     <string name="title_sms_notification">Receive ticket</string>
     <string name="sms_waiting">Seconds </string>
