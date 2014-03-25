@@ -44,6 +44,9 @@ public class HttpHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+		 catch (Exception e) {
+	            e.printStackTrace();
+	    }
 		return response;
 	}
 	  
