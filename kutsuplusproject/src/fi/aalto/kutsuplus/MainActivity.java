@@ -362,14 +362,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
-		formFragment.updateToFromText(street_address);
 
-		//TODO! have to find marker for nearest KP-stop 
-			//in order to color marker and make path
-		fillSelectedMapLocation(address_gps, null); 
-		//TODO fix this to KKJ
+		
+		fillSelectedMapLocation(address_gps, null); 		
 		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
-		MapPoint mp=CoordinateConverter.toMercator(address_gps.latitude,address_gps.longitude);
+		MapPoint mp=CoordinateConverter.wGS84lalo_to_KKJ2(address_gps.longitude,address_gps.latitude);
 		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
 		try {
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
@@ -384,6 +381,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();
 		}
+		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
+		formFragment.updateToFromText(street_address);
 		
 	}
 
@@ -391,9 +390,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
 		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = getFormFragment();
-		formFragment.updateToFromText(so.getFinnishAddress());
+		
 		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
 		fillSelectedMapLocation(address_gps, marker);
+		
+		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
+		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId());
 	}
 
 	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
