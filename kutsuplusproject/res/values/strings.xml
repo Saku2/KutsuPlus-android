@@ -55,6 +55,9 @@
 
     <string name="stop_list_path">kutsupluspysakit_ext.txt</string>
     
+    <string name="reittiopas_api_user">aaltokutsuplus</string>
+    <string name="reittiopas_api_pass">jysn9-g4</string>    
+    
     <string-array name="planets_array">
         <item>Mercury</item>
         <item>Venus</item>

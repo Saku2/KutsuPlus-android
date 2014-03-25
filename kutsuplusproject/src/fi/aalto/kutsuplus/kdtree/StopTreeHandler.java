@@ -94,11 +94,11 @@ public class StopTreeHandler {
 	 * point-value mapping of the stop.
 	 * @throws TreeNotReadyException 
 	 */
-	public NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] getClosestStop(MapPoint p, int n) throws TreeNotReadyException {		
+	public NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] getClosestStops(MapPoint point, int numberOfStops) throws TreeNotReadyException {		
 		if (!treeReady) {
 			throw new TreeNotReadyException("Tree is not ready yet");
 		}
-		return finder.get(stopTree, p, n);
+		return finder.get(stopTree, point, numberOfStops);
 	}
 
     public GoogleMapPoint findInitialCenter(){
@@ -112,47 +112,8 @@ public class StopTreeHandler {
 		double lon_center = (minLongitude + maxLongitude)/2;
 		return new GoogleMapPoint(lon_center, lat_center);
 	}
-	
-	
-	///getters-setters
-	public static StopTreeHandler getINSTANCE() {
-		return INSTANCE;
-	}
-
-	public static void setINSTANCE(StopTreeHandler iNSTANCE) {
-		INSTANCE = iNSTANCE;
-	}
-
-	public KDTree<Integer, MapPoint, StopObject> getStopTree() {
-		return stopTree;
-	}
-
-	public void setStopTree(KDTree<Integer, MapPoint, StopObject> stopTree) {
-		this.stopTree = stopTree;
-	}
-
-	public NearestNeighbors<Integer, MapPoint, StopObject> getFinder() {
-		return finder;
-	}
-
-	public void setFinder(NearestNeighbors<Integer, MapPoint, StopObject> finder) {
-		this.finder = finder;
-	}
-
-	public static InputStream getFileStream() {
-		return fileStream;
-	}
-
-	public static void setFileStream(InputStream fileStream) {
-		StopTreeHandler.fileStream = fileStream;
-	}
-
-	public boolean isTreeReady() {
-		return treeReady;
-	}
-
-	public void setTreeReady(boolean treeReady) {
-		this.treeReady = treeReady;
-	}
-	
+    
+    public KDTree<Integer, MapPoint, StopObject> getStopTree() {
+    	return stopTree;
+    }
 }

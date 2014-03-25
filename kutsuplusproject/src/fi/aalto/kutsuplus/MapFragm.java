@@ -17,8 +17,11 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -69,10 +72,27 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
 		rootView = inflater.inflate(R.layout.mapfragment, container, false);
+        // Fix for black background on devices < 4.1
+        if (android.os.Build.VERSION.SDK_INT < 
+            android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            setMapTransparent((ViewGroup) rootView);
+        }
 		return rootView;
 	}
 
+	private void setMapTransparent(ViewGroup group) {
+	    int childCount = group.getChildCount();
+	    for (int i = 0; i < childCount; i++) {
+	        View child = group.getChildAt(i);
+	        if (child instanceof ViewGroup) {
+	            setMapTransparent((ViewGroup) child);
+	        } else if (child instanceof SurfaceView) {
+	            child.setBackgroundColor(0x00000000);
+	        }  
+	    }
+	}
 	@Override
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);

@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		Log.d(LOG_TAG, "after creating stopTree");
 		StopObject stop;
 		try {
-			stop = stopTreeHandler.getClosestStop(new MapPoint(0, 0), 1)[0].getNeighbor().getValue();
+			stop = stopTreeHandler.getClosestStops(new MapPoint(0, 0), 1)[0].getNeighbor().getValue();
 			Log.d(LOG_TAG, stop.getFinnishName());
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();

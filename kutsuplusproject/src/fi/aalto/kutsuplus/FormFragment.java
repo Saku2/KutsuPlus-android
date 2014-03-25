@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,9 +19,11 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +52,8 @@ public class FormFragment extends Fragment{
 	PopupWindow popupWindow_ExtrasList;
 	public static final int DIALOG_FRAGMENT = 1;
 
+	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -66,31 +71,49 @@ public class FormFragment extends Fragment{
 		
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 			
-			private Timer timer = new Timer();
 			
-			TimerTask getCoordinatesTask = new TimerTask() {
+			private Handler handler = new Handler();
+			
+			Runnable getCoordinatesTask = new Runnable() {
 				public void run() {
-					String queryText = adapter_from.getItem(0);
-					HttpHandler http = new HttpHandler();
-					List<NameValuePair> args = new ArrayList<NameValuePair>();
-					args.add(new BasicNameValuePair("key", queryText));
-					JSONObject json = null;
 					try {
-						json = new JSONObject(
-								http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args));
-					} catch (JSONException e) {
+						String queryText = adapter_from.getItem(0);
+						HttpHandler http = new HttpHandler();
+						List<NameValuePair> args = new ArrayList<NameValuePair>();
+						args.add(new BasicNameValuePair("key", queryText));
+						args.add(new BasicNameValuePair(
+								"user", getString(R.string.reittiopas_api_user)));
+						args.add(new BasicNameValuePair(
+								"pass", getString(R.string.reittiopas_api_pass)));
+						args.add(new BasicNameValuePair(
+								"request", "geocode"));
+						
+						
+						JSONArray jsonArray = null;
+						JSONObject json = null;
+						Log.d(LOG_TAG, "timer called");
+						try {
+							String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
+							Log.d(LOG_TAG, tmp);
+							jsonArray = new JSONArray(tmp);
+							json = jsonArray.getJSONObject(0);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
+						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
 				}
 			};
 			@Override
 			public void onChanged() {
+				Log.d(LOG_TAG, "onChanged called");
 				super.onChanged();
-				getCoordinatesTask.cancel();
-				timer.purge();
+				handler.removeCallbacks(getCoordinatesTask);
 				try
 				{
-				  timer.schedule(getCoordinatesTask, 500l);
+				  handler.postDelayed(getCoordinatesTask, 1000l);
 				}
 				catch(Exception e)
 				{
