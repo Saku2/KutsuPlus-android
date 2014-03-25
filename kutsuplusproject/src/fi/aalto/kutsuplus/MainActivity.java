@@ -372,7 +372,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
 		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
 		try {
-			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStop(mp, 1);
+			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
 			if(stops!=null)
 			{
 				if(stops.length>0)

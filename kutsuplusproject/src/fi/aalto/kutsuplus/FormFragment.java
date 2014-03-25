@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.savarese.spatial.NearestNeighbors;
+
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -40,6 +42,9 @@ import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.kdtree.MapPoint;
+import fi.aalto.kutsuplus.kdtree.StopObject;
+import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 
@@ -51,7 +56,10 @@ public class FormFragment extends Fragment{
 	ImageButton buttonShowDropDown_toExtras;
 	PopupWindow popupWindow_ExtrasList;
 	public static final int DIALOG_FRAGMENT = 1;
-
+	
+	private StopObject currentPickupStop = null;
+	private StopObject currentDropoffStop = null;
+	
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
 	
 	@Override
@@ -69,6 +77,8 @@ public class FormFragment extends Fragment{
 		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(
 				getActivity(), android.R.layout.simple_list_item_1, streets);
 		
+		final TextView pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
+		final TextView dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 			
 			
@@ -97,15 +107,35 @@ public class FormFragment extends Fragment{
 							Log.d(LOG_TAG, tmp);
 							jsonArray = new JSONArray(tmp);
 							json = jsonArray.getJSONObject(0);
+							
+							String[] coords = json.getString("coords").split(",");
+							String latitude = coords[0];
+							String longtitude = coords[1];
+							try {
+								currentPickupStop = StopTreeHandler.getInstance()
+									.getClosestStops(
+									new MapPoint(Integer.parseInt(latitude),
+											Integer.parseInt(longtitude)), 1)[0]
+											.getNeighbor().getValue();
+								pickupStop.setText(currentPickupStop.getFinnishName());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+
+							
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
+						
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
 				}
 			};
+			
 			@Override
 			public void onChanged() {
 				Log.d(LOG_TAG, "onChanged called");
@@ -127,8 +157,80 @@ public class FormFragment extends Fragment{
 		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView
 				.findViewById(R.id.to);
 		// Get the string array
-		StreetSearchAdapter adapter_to = new StreetSearchAdapter(
+		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(
 				getActivity(), android.R.layout.simple_list_item_1, streets);
+		adapter_to.registerDataSetObserver(new DataSetObserver() {
+			
+			
+			private Handler handler = new Handler();
+			
+			Runnable getCoordinatesTask = new Runnable() {
+				public void run() {
+					try {
+						String queryText = adapter_to.getItem(0);
+						HttpHandler http = new HttpHandler();
+						List<NameValuePair> args = new ArrayList<NameValuePair>();
+						args.add(new BasicNameValuePair("key", queryText));
+						args.add(new BasicNameValuePair(
+								"user", getString(R.string.reittiopas_api_user)));
+						args.add(new BasicNameValuePair(
+								"pass", getString(R.string.reittiopas_api_pass)));
+						args.add(new BasicNameValuePair(
+								"request", "geocode"));
+						
+						
+						JSONArray jsonArray = null;
+						JSONObject json = null;
+						Log.d(LOG_TAG, "timer called");
+						try {
+							String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
+							Log.d(LOG_TAG, tmp);
+							jsonArray = new JSONArray(tmp);
+							json = jsonArray.getJSONObject(0);
+							
+							String[] coords = json.getString("coords").split(",");
+							String latitude = coords[0];
+							String longtitude = coords[1];
+							try {
+								currentDropoffStop = StopTreeHandler.getInstance()
+									.getClosestStops(
+									new MapPoint(Integer.parseInt(latitude),
+											Integer.parseInt(longtitude)), 1)[0]
+											.getNeighbor().getValue();
+								dropoffStop.setText(currentDropoffStop.getFinnishName());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+
+							
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						
+					} catch (IndexOutOfBoundsException e) {
+						e.printStackTrace();
+						Log.d(LOG_TAG, "Adapter didn't have any items");
+					}
+				}
+			};
+			
+			@Override
+			public void onChanged() {
+				Log.d(LOG_TAG, "onChanged called");
+				super.onChanged();
+				handler.removeCallbacks(getCoordinatesTask);
+				try
+				{
+				  handler.postDelayed(getCoordinatesTask, 1000l);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
 		toView.setAdapter(adapter_to);
 		createDropDown(rootView);
 

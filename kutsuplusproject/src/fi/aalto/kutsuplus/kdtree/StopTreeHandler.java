@@ -77,7 +77,7 @@ public class StopTreeHandler {
 				
 				StopObject stop = new StopObject(data[0], data[1],
 						data[3], data[4], data[5], data[6], gmpoint);
-				MapPoint p = new MapPoint(Integer.parseInt(data[10]), Integer.parseInt(data[11]));
+				MapPoint p = new MapPoint(Integer.parseInt(data[11]), Integer.parseInt(data[10]));
 				stopTree.put(p, stop);
 			}
 		} catch (IOException e) {
