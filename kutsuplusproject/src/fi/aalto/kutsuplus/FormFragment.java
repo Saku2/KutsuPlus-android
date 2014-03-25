@@ -306,17 +306,25 @@ public class FormFragment extends Fragment{
 
 	
     //After clicking on a map, update from/to text
-	public void updateToFromText(String fromData){
+	public void updateToFromText(String selectedData){
 		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		if(fromView.hasFocus())
 		{
-			fromView.setText(fromData);            
+			fromView.setFocusable(false);  // DO NOT REMOVE THIS
+			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			fromView.setText(selectedData);            
+			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+			fromView.setFocusable(true); // DO NOT REMOVE THIS
 		}
 		else
 		{
-			toView.setText(fromData);
-		}
+			toView.setFocusable(false);  // DO NOT REMOVE THIS
+			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			toView.setText(selectedData);            
+			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+			toView.setFocusable(true); // DO NOT REMOVE THIS
+	}
 	}
 
 	public void updatePickupDropOffText(String fromData){
