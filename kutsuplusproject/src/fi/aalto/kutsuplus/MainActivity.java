@@ -35,6 +35,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.savarese.spatial.NearestNeighbors;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
@@ -367,9 +368,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			//in order to color marker and make path
 		fillSelectedMapLocation(address_gps, null); 
 		//TODO fix this to KKJ
+		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
 		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
-		//TODO: check that x is really x
-		//stopTreeHandler.
+		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
+		try {
+			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStop(mp, 1);
+			if(stops!=null)
+			{
+				if(stops.length>0)
+				{
+					StopObject so=stops[0].getNeighbor().getValue();
+					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
+				}
+			}
+		} catch (TreeNotReadyException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

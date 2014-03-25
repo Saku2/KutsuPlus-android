@@ -41,4 +41,11 @@ public class MapPoint implements Point<Integer> {
 		return 2;
 	}
 
+	@Override
+	public String toString() {
+		return "MapPoint [x=" + x + ", y=" + y + "]";
+	}
+
+	
+	
 }
