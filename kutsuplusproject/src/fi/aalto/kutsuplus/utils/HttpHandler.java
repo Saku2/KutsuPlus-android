@@ -15,39 +15,37 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 public class HttpHandler {
-	
+
 	public HttpHandler() {
-	
+
 	}
-	
+
 	public String makeHttpGet(String url, List<NameValuePair> params) {
-		
+
 		String response = "";
 		try {
 			HttpClient httpClient = new DefaultHttpClient();
 			HttpEntity httpEntity = null;
 			HttpResponse httpResponse = null;
-			
+
 			if (params != null) {
-				String paramString = URLEncodedUtils
-						.format(params, "utf-8");
+				String paramString = URLEncodedUtils.format(params, "utf-8");
 				url += "?" + paramString;
-		    }
-		    HttpGet httpGet = new HttpGet(url);
-		    httpResponse = httpClient.execute(httpGet);
-		    httpEntity = httpResponse.getEntity();
-		   	response = EntityUtils.toString(httpEntity);
+			}
+			HttpGet httpGet = new HttpGet(url);
+			httpResponse = httpClient.execute(httpGet);
+			httpEntity = httpResponse.getEntity();
+			response = EntityUtils.toString(httpEntity);
 		} catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-		 catch (Exception e) {
-	            e.printStackTrace();
-	    }
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return response;
 	}
-	  
+
 }

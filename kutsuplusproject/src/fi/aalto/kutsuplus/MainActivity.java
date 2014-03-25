@@ -369,7 +369,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		fillSelectedMapLocation(address_gps, null); 
 		//TODO fix this to KKJ
 		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
-		MapPoint mp=CoordinateConverter.toMercator(address_gps.longitude,address_gps.latitude);
+		MapPoint mp=CoordinateConverter.toMercator(address_gps.latitude,address_gps.longitude);
 		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
 		try {
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
