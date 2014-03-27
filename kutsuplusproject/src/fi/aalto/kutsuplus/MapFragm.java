@@ -180,10 +180,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    else
 	    {
 	    	// A route marker was clicked
-	    	/*if(marker==routeStart_marker)
+	    	if(marker==routeStart_marker)
 	    		iSendSttreetAddress.setFocusOnFromField();
 	    	if(marker==routeEnd_marker)
-	    		iSendSttreetAddress.setFocusOnToField();*/
+	    		iSendSttreetAddress.setFocusOnToField();
 	    	
 	    }
 		return false;
@@ -390,6 +390,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 		else
 			this.routeDropoff_marker.setPosition(dropoffPoint);	
+
+		this.routePickup_marker.setVisible(true);	
+		this.routeDropoff_marker.setVisible(true);	
+
 		
 		
 		for (Marker m : markers.keySet()) {
@@ -456,6 +460,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		else
 			this.routeEnd_marker.setPosition(endPoint);
 
+		
+		if(routePickup_marker!=null)
+			this.routePickup_marker.setVisible(false);	
+
+		if(routeDropoff_marker!=null)
+			this.routeDropoff_marker.setVisible(false);	
+		
+		
 		for (Marker m : markers.keySet()) {
 		    if(m.getPosition().equals(routeStart_marker.getPosition()))
 	        	m.setVisible(false);
