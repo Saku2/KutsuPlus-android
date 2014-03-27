@@ -48,7 +48,7 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendStreetAddress {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection, ISendFormSelection {
 
 	SharedPreferences preferences;
 
@@ -374,7 +374,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
 		 		
-		MapPoint mp=CoordinateConverter.wGS84lalo_to_KKJ2(address_gps.longitude,address_gps.latitude);
+		MapPoint mp=CoordinateConverter.wGS84lalo_to_kkj2(address_gps.longitude,address_gps.latitude);
 		StopObject bus_stop=null;
 		try {
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
@@ -457,6 +457,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		
 		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
 		toView.requestFocus();
+	}
+	@Override
+	public void setFromPosAndStop(LatLng address_gps, StopObject so) {
+		application.startPoint=address_gps;
+		application.pickup=so;
+	}
+	@Override
+	public void setToPosAndStop(LatLng address_gps, StopObject so) {
+		application.endPoint=address_gps;
+		application.dropoff=so;
+		
 	}
 
 

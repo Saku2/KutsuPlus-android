@@ -1,11 +1,12 @@
 package fi.aalto.kutsuplus.utils;
 
+import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 
 public class CoordinateConverter {
 	
 	// Converted from http://aapo.rista.net/tmp/coordinates.py
-	static public MapPoint wGS84lalo_to_KKJ2(double lo,double la)
+	static public MapPoint wGS84lalo_to_kkj2(double lo,double la)
 	{
 		  double dLa = Math.toRadians( -1.24766  + 0.269941 * la  - 0.191342 * lo  - 0.00356086 * la * la + 0.00122353 * la * lo +
 				  0.000335456 * lo * lo ) / 3600.0;
@@ -38,13 +39,19 @@ public class CoordinateConverter {
 	}
 
 	
+	static public GoogleMapPoint kkj2_to_wGS84lalo(int x,int y)
+	{
+		  return new GoogleMapPoint(0,0);
+		  
+	}
+	
 	
 	public static void main(String[] args) {
 		
 		try
 		{  
 			//6673679#2553277#
-			System.out.println(wGS84lalo_to_KKJ2(24.956570,60.171270));
+			System.out.println(wGS84lalo_to_kkj2(24.956570,60.171270));
 					
 	}
 		catch(Exception e)

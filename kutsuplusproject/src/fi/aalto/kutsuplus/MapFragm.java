@@ -46,7 +46,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
-	private ISendStreetAddress iSendSttreetAddress;
+	private ISendMapSelection iSendMapSelection;
 	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
 
 	
@@ -175,15 +175,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    {
 	    	String stopName = marker.getTitle();
 		    LatLng pos = marker.getPosition();
-    	    iSendSttreetAddress.setStopMarkerSelection(so, marker.getPosition(), marker);
+    	    iSendMapSelection.setStopMarkerSelection(so, marker.getPosition(), marker);
 	    }
 	    else
 	    {
 	    	// A route marker was clicked
 	    	if(marker.getTitle().equals("start") || marker.getTitle().equals("pickup stop"))
-	    		iSendSttreetAddress.setFocusOnFromField();
+	    		iSendMapSelection.setFocusOnFromField();
 	    	if(marker.getTitle().equals("end") || marker.getTitle().equals("dropoff stop"))
-	    		iSendSttreetAddress.setFocusOnToField();
+	    		iSendMapSelection.setFocusOnToField();
 	    	
 	    }
 		return false;
@@ -194,7 +194,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-        	iSendSttreetAddress = (ISendStreetAddress ) activity;
+        	iSendMapSelection = (ISendMapSelection ) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement interface");
@@ -250,7 +250,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
 	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendSttreetAddress.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
+	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
 	            	//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
 	            	//Log.d(LOG_TAG, "after querying stop");
 	            }

@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -35,13 +36,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
+import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
@@ -56,6 +62,7 @@ public class FormFragment extends Fragment {
 
 	private StopObject currentPickupStop = null;
 	private StopObject currentDropoffStop = null;
+	private ISendFormSelection iSendFormSelection;
 
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
 
@@ -107,10 +114,14 @@ public class FormFragment extends Fragment {
 							String latitude = coords[1];
 							
 							try {
-								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude)), 1)[0].getNeighbor()
+								MapPoint mp=new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor()
 										.getValue();
 								Log.d(LOG_TAG, "pickup stop: "+currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+								GoogleMapPoint gmp=CoordinateConverter.kkj2_to_wGS84lalo(mp.getX(), mp.getY());								
+								iSendFormSelection.setFromPosAndStop(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
+								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -176,10 +187,13 @@ public class FormFragment extends Fragment {
 							String longtitude = coords[0];
 							String latitude = coords[1];
 							try {
-								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude)), 1)[0].getNeighbor()
+								MapPoint mp=new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor()
 										.getValue();
 								Log.d(LOG_TAG, "dropoff stop: "+currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+								GoogleMapPoint gmp=CoordinateConverter.kkj2_to_wGS84lalo(mp.getX(), mp.getY());								
+								iSendFormSelection.setFromPosAndStop(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -427,4 +441,15 @@ public class FormFragment extends Fragment {
 		}
 	}
 
+	 public void onAttach(Activity activity) {
+	        super.onAttach(activity);
+	        System.out.println("joojoo");
+	        try {
+	        	iSendFormSelection = (ISendFormSelection ) activity;
+	        } catch (ClassCastException e) {
+	            throw new ClassCastException(activity.toString()
+	                    + " must implement interface");
+	        }
+
+	    }
 }
