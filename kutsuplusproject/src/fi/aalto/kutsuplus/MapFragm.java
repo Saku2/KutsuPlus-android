@@ -103,7 +103,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
         LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
 		map.animateCamera(center);//moveCamera
-		//addAllKutsuPlusStopMarkers();
 		map.setOnMarkerClickListener((OnMarkerClickListener) this);
         map.setOnMapClickListener(this);  
 	}
@@ -267,21 +266,52 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}//
 
 
-	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
+	
+	Marker marker_start=null;
+	Marker marker_stop=null;
+	public void addRouteLineOnMap(LatLng startPoint, LatLng endPoint) {
 		ArrayList<LatLng> points = new ArrayList<LatLng>();
 		PolylineOptions polyLineOptions = new PolylineOptions();
 		
 		points.add(startPoint);
 		points.add(endPoint);
 		
+		
 		polyLineOptions.addAll(points);
 		polyLineOptions.width(2);
-		polyLineOptions.color(Color.RED);
+		polyLineOptions.color(Color.BLACK);
 		
 		if(straightLine != null)
 			straightLine.remove();
 		
 		straightLine = map.addPolyline(polyLineOptions);
+		// http://mapicons.nicolasmollet.com/category/markers/transportation/
+		if(marker_start==null)
+		{
+		  MarkerOptions markerOptions_start = new MarkerOptions();
+		  markerOptions_start.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.direction_down));
+	      markerOptions_start.position(startPoint);
+          this.marker_start = map.addMarker(markerOptions_start);
+          this.marker_start.setVisible(true);
+		}
+		else
+			this.marker_start.setPosition(startPoint);	
+        
+
+		if(marker_stop==null)
+		{
+			MarkerOptions markerOptions_stop = new MarkerOptions();
+		
+		    markerOptions_stop.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.stop));
+	        markerOptions_stop.position(endPoint);
+            this.marker_stop = map.addMarker(markerOptions_stop);
+            this.marker_stop.setVisible(true);
+		}
+		else
+			this.marker_stop.setPosition(endPoint);
+
 	}
 	
 }

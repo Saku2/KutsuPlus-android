@@ -412,7 +412,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updatePinkMarker(marker, isStartMarker);
 		
 		if(mapFragment.startPoint != null && mapFragment.endPoint != null){
-			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
+			mapFragment.addRouteLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
 		}
 
 	}
