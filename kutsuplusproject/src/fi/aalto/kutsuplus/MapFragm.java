@@ -180,9 +180,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    else
 	    {
 	    	// A route marker was clicked
-	    	if(marker==routeStart_marker)
+	    	if(marker.getTitle().equals("start") || marker.getTitle().equals("pickup stop"))
 	    		iSendSttreetAddress.setFocusOnFromField();
-	    	if(marker==routeEnd_marker)
+	    	if(marker.getTitle().equals("end") || marker.getTitle().equals("dropoff stop"))
 	    		iSendSttreetAddress.setFocusOnToField();
 	    	
 	    }
@@ -344,6 +344,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.direction_down));
 	      markerOptions_start.position(startPoint);
           this.routeStart_marker = map.addMarker(markerOptions_start);
+          this.routeStart_marker.setTitle("start");
           this.routeStart_marker.setVisible(true);
           startEndMarkers.put("start", routeStart_marker);
 		}
@@ -359,6 +360,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.stop));
 	        markerOptions_stop.position(endPoint);
             this.routeEnd_marker = map.addMarker(markerOptions_stop);
+            this.routeEnd_marker.setTitle("end");
             this.routeEnd_marker.setVisible(true);
             startEndMarkers.put("start", routeEnd_marker);
 		}
@@ -372,6 +374,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.busstop));
 	      markerOptions_start.position(pickupPoint);
           this.routePickup_marker = map.addMarker(markerOptions_start);
+          this.routePickup_marker.setTitle("pickup stop");
           this.routePickup_marker.setVisible(true);
           startEndMarkers.put("start", this.routePickup_marker);
 		}
@@ -385,6 +388,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.busstop));
 	      markerOptions_start.position(dropoffPoint);
           this.routeDropoff_marker = map.addMarker(markerOptions_start);
+          this.routeDropoff_marker.setTitle("dropoff stop");
           this.routeDropoff_marker.setVisible(true);
           startEndMarkers.put("start", this.routeDropoff_marker);
 		}
@@ -439,6 +443,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.direction_down));
 	      markerOptions_start.position(startPoint);
           this.routeStart_marker = map.addMarker(markerOptions_start);
+          this.routeStart_marker.setTitle("start");
           this.routeStart_marker.setVisible(true);
           startEndMarkers.put("start", routeStart_marker);
 		}
@@ -454,6 +459,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
                 .fromResource(R.drawable.stop));
 	        markerOptions_stop.position(endPoint);
             this.routeEnd_marker = map.addMarker(markerOptions_stop);
+            this.routeEnd_marker.setTitle("end");
             this.routeEnd_marker.setVisible(true);
             startEndMarkers.put("start", routeEnd_marker);
 		}

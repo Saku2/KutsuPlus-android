@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -388,11 +389,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();
 		}
-		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(street_address);
 		
 		if(bus_stop!=null)
 		  fillSelectedMapLocationLocationSelection(address_gps, bus_stop);		
+		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
+		formFragment.updateToFromText(street_address);
 	}
 
 	@Override
