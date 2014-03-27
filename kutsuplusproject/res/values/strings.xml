@@ -26,8 +26,7 @@
     <string name="OF_max_price">Max price</string>
     <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
     
-    
-    <string name="OF_estimated_price">Estimated price</string>    
+    <string name="OF_estimated_price">Estimated price</string>
     
     <string name="OF_pickup_stop">Pickup stop</string>
     <string name="OF_dropoff_stop">Dropoff stop</string>
@@ -41,7 +40,7 @@
     
     <!-- Operating hours dialog -->
     <string name="ok">OK</string>
-    <string name="operating_hours">Attention! Service is available only between 6am and 11pm</string>
+    <string name="operating_hours">Attention! Service is available only on work days between 6am and 11pm</string>
     
     <!-- SMS Handling -->
     <string name="title_sms_notification">Receive ticket</string>
@@ -57,13 +56,6 @@
     
     <string name="reittiopas_api_user">aaltokutsuplus</string>
     <string name="reittiopas_api_pass">jysn9-g4</string>    
-    
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-    </string-array>
     
     <!--  SMS Parsing -->
     <string-array name="sms_keyword_array">

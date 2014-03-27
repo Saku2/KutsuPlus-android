@@ -12,5 +12,19 @@
         <item name="3">3</item>
         <item name="4">4</item>
     </string-array>
+    
+    <!--  SMS Parsing -->
+    <string-array name="sms_keyword_array">
+        <item>en</item>
+        <item>Pickup</item>
+        <item>stop</item>
+        <item>Vehicle</item>
+        <item>Code</item>
+        <item>pax</item>
+        <item>Drop-off</item>
+        <item>e</item>
+        <item>Order Id</item>
+        <item>https</item>
+    </string-array>
      
 </resources>

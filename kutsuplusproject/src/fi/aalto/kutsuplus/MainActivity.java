@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
@@ -27,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -92,11 +92,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		// field requires API level 11, messes the textviews...
-		if (android.os.Build.VERSION.RELEASE.startsWith("1.") || android.os.Build.VERSION.RELEASE.startsWith("2."))
-			;
-		else
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+
+		supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

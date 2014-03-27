@@ -277,7 +277,7 @@ public class FormFragment extends Fragment {
 		Time now = new Time("UCT");
 		now.setToNow();
 		now.switchTimezone("Europe/Helsinki");
-		if ((now.hour > 23) || (now.hour < 6)) {
+		if ((now.weekDay == 5) || (now.weekDay == 6) || (now.hour > 23) || (now.hour < 6)) {
 			DialogFragment operatingHoursFragment = new OperatingHoursDialogFragment();
 			// A click outside of the dialog box will not dismiss the box
 			// Back button will not dismiss the box
