@@ -400,8 +400,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
 		MapFragm mapFragment = getMapFragment();
-//		View test = findViewById(R.id.from);
-//		boolean foc = test.hasFocus();	
 		boolean isStartMarker = true;
 		if(findViewById(R.id.from).hasFocus()){
 			mapFragment.startPoint = ll;

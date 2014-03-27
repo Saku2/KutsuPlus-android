@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -14,14 +12,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.savarese.spatial.NearestNeighbors;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -45,10 +42,10 @@ import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
-import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
+import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
-public class FormFragment extends Fragment{
+public class FormFragment extends Fragment {
 
 	private View rootView;
 	String popUpContents[];
@@ -56,49 +53,45 @@ public class FormFragment extends Fragment{
 	ImageButton buttonShowDropDown_toExtras;
 	PopupWindow popupWindow_ExtrasList;
 	public static final int DIALOG_FRAGMENT = 1;
-	
+
 	private StopObject currentPickupStop = null;
 	private StopObject currentDropoffStop = null;
-	
+
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
-	
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
 
 		// Get the streets string array
 		String[] streets = readStreets(R.raw.kutsuplus_area_street_names);
 
 		// Get a reference to the AutoCompleteTextView in the layout
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView
-				.findViewById(R.id.from);
+		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		// Create the adapter and set it to the AutoCompleteTextView
-		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(
-				getActivity(), android.R.layout.simple_list_item_1, streets);
-		
+		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
+
 		final TextView pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
 		final TextView dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
-			
-			
+
 			private Handler handler = new Handler();
-			
+
 			Runnable getCoordinatesTask = new Runnable() {
 				public void run() {
 					try {
+						// To avoid the android.os.NetworkOnMainThreadException
+						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+						StrictMode.setThreadPolicy(policy); 
+						
 						String queryText = adapter_from.getItem(0);
 						HttpHandler http = new HttpHandler();
 						List<NameValuePair> args = new ArrayList<NameValuePair>();
 						args.add(new BasicNameValuePair("key", queryText));
-						args.add(new BasicNameValuePair(
-								"user", getString(R.string.reittiopas_api_user)));
-						args.add(new BasicNameValuePair(
-								"pass", getString(R.string.reittiopas_api_pass)));
-						args.add(new BasicNameValuePair(
-								"request", "geocode"));
-						
-						
+						args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+						args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
+						args.add(new BasicNameValuePair("request", "geocode"));
+
 						JSONArray jsonArray = null;
 						JSONObject json = null;
 						Log.d(LOG_TAG, "timer called");
@@ -107,78 +100,68 @@ public class FormFragment extends Fragment{
 							Log.d(LOG_TAG, tmp);
 							jsonArray = new JSONArray(tmp);
 							json = jsonArray.getJSONObject(0);
-							
+
 							String[] coords = json.getString("coords").split(",");
-							String latitude = coords[0];
-							String longtitude = coords[1];
+							// latitude  is a geographic coordinate that specifies the north-south position of a point
+							String longtitude = coords[0];
+							String latitude = coords[1];
+							
 							try {
-								currentPickupStop = StopTreeHandler.getInstance()
-									.getClosestStops(
-									new MapPoint(Integer.parseInt(latitude),
-											Integer.parseInt(longtitude)), 1)[0]
-											.getNeighbor().getValue();
-								pickupStop.setText(currentPickupStop.getFinnishName());
+								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude)), 1)[0].getNeighbor()
+										.getValue();
+								Log.d(LOG_TAG, "pickup stop: "+currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
-
-							
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						
+
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
 				}
 			};
-			
+
 			@Override
 			public void onChanged() {
 				Log.d(LOG_TAG, "onChanged called");
 				super.onChanged();
 				handler.removeCallbacks(getCoordinatesTask);
-				try
-				{
-				  handler.postDelayed(getCoordinatesTask, 1000l);
-				}
-				catch(Exception e)
-				{
+				try {
+					handler.postDelayed(getCoordinatesTask, 1000l);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 		fromView.setAdapter(adapter_from);
 
-		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView
-				.findViewById(R.id.to);
+		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		// Get the string array
-		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(
-				getActivity(), android.R.layout.simple_list_item_1, streets);
+		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 		adapter_to.registerDataSetObserver(new DataSetObserver() {
-			
-			
+
 			private Handler handler = new Handler();
-			
+
 			Runnable getCoordinatesTask = new Runnable() {
 				public void run() {
 					try {
+						// To avoid the android.os.NetworkOnMainThreadException
+						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+						StrictMode.setThreadPolicy(policy); 
 						String queryText = adapter_to.getItem(0);
 						HttpHandler http = new HttpHandler();
 						List<NameValuePair> args = new ArrayList<NameValuePair>();
 						args.add(new BasicNameValuePair("key", queryText));
-						args.add(new BasicNameValuePair(
-								"user", getString(R.string.reittiopas_api_user)));
-						args.add(new BasicNameValuePair(
-								"pass", getString(R.string.reittiopas_api_pass)));
-						args.add(new BasicNameValuePair(
-								"request", "geocode"));
-						
-						
+						args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+						args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
+						args.add(new BasicNameValuePair("request", "geocode"));
+
 						JSONArray jsonArray = null;
 						JSONObject json = null;
 						Log.d(LOG_TAG, "timer called");
@@ -187,46 +170,43 @@ public class FormFragment extends Fragment{
 							Log.d(LOG_TAG, tmp);
 							jsonArray = new JSONArray(tmp);
 							json = jsonArray.getJSONObject(0);
-							
+
 							String[] coords = json.getString("coords").split(",");
-							String latitude = coords[0];
-							String longtitude = coords[1];
+							// latitude  is a geographic coordinate that specifies the north-south position of a point
+							String longtitude = coords[0];
+							String latitude = coords[1];
 							try {
-								currentDropoffStop = StopTreeHandler.getInstance()
-									.getClosestStops(
-									new MapPoint(Integer.parseInt(latitude),
-											Integer.parseInt(longtitude)), 1)[0]
-											.getNeighbor().getValue();
-								dropoffStop.setText(currentDropoffStop.getFinnishName());
+								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude)), 1)[0].getNeighbor()
+										.getValue();
+								Log.d(LOG_TAG, "dropoff stop: "+currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
-
-							
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						
+
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 				}
 			};
-			
+
 			@Override
 			public void onChanged() {
 				Log.d(LOG_TAG, "onChanged called");
 				super.onChanged();
 				handler.removeCallbacks(getCoordinatesTask);
-				try
-				{
-				  handler.postDelayed(getCoordinatesTask, 1000l);
-				}
-				catch(Exception e)
-				{
+				try {
+					handler.postDelayed(getCoordinatesTask, 1000l);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -235,8 +215,7 @@ public class FormFragment extends Fragment{
 		createDropDown(rootView);
 
 		// Remember the last ride
-		RideDatabaseHandler rides = new RideDatabaseHandler(
-				rootView.getContext());
+		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
 		List<Ride> ride_list = rides.getAllStreetAddresses();
 		if (ride_list != null)
 			if (ride_list.size() > 0) {
@@ -276,7 +255,7 @@ public class FormFragment extends Fragment{
 		super.onCreate(savedInstanceState);
 
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -289,18 +268,15 @@ public class FormFragment extends Fragment{
 			// A click outside of the dialog box will not dismiss the box
 			// Back button will not dismiss the box
 			operatingHoursFragment.setCancelable(false);
-		    operatingHoursFragment.show(getFragmentManager(), "operating_hours");
+			operatingHoursFragment.show(getFragmentManager(), "operating_hours");
 		}
-		
+
 	}
 
 	private void createDropDown(View rootView) {
-		// add items on the array dynamically
-		// format is DogName::DogID
 		List<String> optionsList = new ArrayList<String>();
 		optionsList.add("Current location");
-		StreetDatabaseHandler stha = new StreetDatabaseHandler(
-				rootView.getContext());
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(rootView.getContext());
 		try {
 			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
 
@@ -309,7 +285,6 @@ public class FormFragment extends Fragment{
 		} catch (Exception e) {
 			e.printStackTrace(); // Possiblt legal
 		}
-		// convert to simple array
 		popUpContents = new String[optionsList.size()];
 		optionsList.toArray(popUpContents);
 
@@ -343,13 +318,11 @@ public class FormFragment extends Fragment{
 		};
 
 		// toExreas button
-		buttonShowDropDown_fromExtras = (ImageButton) rootView
-				.findViewById(R.id.from_extras);
+		buttonShowDropDown_fromExtras = (ImageButton) rootView.findViewById(R.id.from_extras);
 		buttonShowDropDown_fromExtras.setOnClickListener(extras_handler);
 
 		// fromExreas button
-		buttonShowDropDown_toExtras = (ImageButton) rootView
-				.findViewById(R.id.to_extras);
+		buttonShowDropDown_toExtras = (ImageButton) rootView.findViewById(R.id.to_extras);
 		buttonShowDropDown_toExtras.setOnClickListener(extras_handler);
 
 	}
@@ -358,12 +331,11 @@ public class FormFragment extends Fragment{
      * 
      */
 	// deprecation caused by new BitmapDrawable()
-	// new style is here http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
+	// new style is here
+	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
 	public PopupWindow getPopupWindow() {
-		PopupWindow popupWindow = new PopupWindow(rootView,
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		
+		PopupWindow popupWindow = new PopupWindow(rootView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		// the drop down list is a list view
 		ListView listViewExtras = new ListView(getActivity());
@@ -372,8 +344,7 @@ public class FormFragment extends Fragment{
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras
-				.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -382,19 +353,17 @@ public class FormFragment extends Fragment{
 									// the screen widths
 		popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 
-
-		LinearLayout layout=new LinearLayout(rootView.getContext());
+		LinearLayout layout = new LinearLayout(rootView.getContext());
 		layout.setOrientation(LinearLayout.VERTICAL);
 
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-		     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 		layoutParams.setMargins(5, 5, 5, 5);
 		layout.setBackgroundColor(getResources().getColor(R.color.light_gray));
 		// set the list view as pop up window content
-		layout.addView(listViewExtras,layoutParams);
+		layout.addView(listViewExtras, layoutParams);
 		popupWindow.setContentView(layout);
-        
+
 		return popupWindow;
 	}
 
@@ -403,8 +372,7 @@ public class FormFragment extends Fragment{
 	 */
 	private ArrayAdapter<String> extrasAdapter(String dogsArray[]) {
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_1, dogsArray) {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dogsArray) {
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
@@ -429,39 +397,32 @@ public class FormFragment extends Fragment{
 		return adapter;
 	}
 
-	
-    //After clicking on a map, update from/to text
-	public void updateToFromText(String selectedData){
+	// After clicking on a map, update from/to text
+	public void updateToFromText(String selectedData) {
 		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
-		if(fromView.hasFocus())
-		{
-			fromView.setFocusable(false);  // DO NOT REMOVE THIS
+		if (fromView.hasFocus()) {
+			fromView.setFocusable(false); // DO NOT REMOVE THIS
 			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-			fromView.setText(selectedData);            
+			fromView.setText(selectedData);
 			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			fromView.setFocusable(true); // DO NOT REMOVE THIS
-		}
-		else
-		{
-			toView.setFocusable(false);  // DO NOT REMOVE THIS
+		} else {
+			toView.setFocusable(false); // DO NOT REMOVE THIS
 			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-			toView.setText(selectedData);            
+			toView.setText(selectedData);
 			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			toView.setFocusable(true); // DO NOT REMOVE THIS
-	}
+		}
 	}
 
-	public void updatePickupDropOffText(String fromData){
+	public void updatePickupDropOffText(String fromData) {
 		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
 		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
-		if(fromView.hasFocus())
-		{
-			pickupView.setText(fromData);            
-		}
-		else
-		{
+		if (fromView.hasFocus()) {
+			pickupView.setText(fromData);
+		} else {
 			dropoffView.setText(fromData);
 		}
 	}
