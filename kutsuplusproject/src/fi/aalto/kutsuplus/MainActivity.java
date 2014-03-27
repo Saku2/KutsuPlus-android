@@ -76,6 +76,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 	Menu menu_this;
 	MenuItem kp_button;
+	
+	//Here are kept the core user selections 
+	private class Application_logic
+	{
+		public LatLng startPoint= null;
+		public StopObject pickup=null;
+		public StopObject dropoff=null;
+		public LatLng endPoint = null;
+	}
+	Application_logic application=new Application_logic();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -201,7 +211,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return mapFragment;
 	}
 
-	private FormFragment getFormFragment(){
+	public FormFragment getFormFragment(){
 		FormFragment formFragment = null;
 		if(isTwoPaneLayout){
 			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
@@ -362,20 +372,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
-
-		
-		fillSelectedMapLocation(address_gps, null); 		
-		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
+		 		
 		MapPoint mp=CoordinateConverter.wGS84lalo_to_KKJ2(address_gps.longitude,address_gps.latitude);
-		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
+		StopObject bus_stop=null;
 		try {
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
 			if(stops!=null)
 			{
 				if(stops.length>0)
 				{
-					StopObject so=stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
+					bus_stop=stops[0].getNeighbor().getValue();
+					formFragment.updatePickupDropOffText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());
 				}
 			}
 		} catch (TreeNotReadyException e) {
@@ -384,6 +391,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
 		formFragment.updateToFromText(street_address);
 		
+		if(bus_stop!=null)
+		  fillSelectedMapLocationLocationSelection(address_gps, bus_stop);		
 	}
 
 	@Override
@@ -392,29 +401,61 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		
 		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		fillSelectedMapLocation(address_gps, marker);
+		fillSelectedMapLocationMarkerSelection(address_gps, marker);
 		
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
 		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId());
 	}
 
-	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
+	private void fillSelectedMapLocationMarkerSelection(LatLng ll, Marker marker) {
 		MapFragm mapFragment = getMapFragment();
 		boolean isStartMarker = true;
 		if(findViewById(R.id.from).hasFocus()){
-			mapFragment.startPoint = ll;
+			application.startPoint = ll;
 			isStartMarker = true;
 		}		
 		else{
-			mapFragment.endPoint = ll;//
+			application.endPoint = ll;//
 			isStartMarker = false;
 		}
-		mapFragment.updatePinkMarker(marker, isStartMarker);
+		//The functionality is added to: addRouteLineOnMa  
+		//mapFragment.updatePinkMarker(marker, isStartMarker);
 		
-		if(mapFragment.startPoint != null && mapFragment.endPoint != null){
-			mapFragment.addRouteLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
+		if(application.startPoint != null && application.endPoint != null){
+			mapFragment.addRouteLineOnMap(application.startPoint, application.endPoint);
 		}
 
+	}
+	
+	private void fillSelectedMapLocationLocationSelection(LatLng ll, StopObject bus_stop) {
+		MapFragm mapFragment = getMapFragment();
+		if(findViewById(R.id.from).hasFocus()){
+			application.startPoint = ll;
+			application.pickup=bus_stop;
+		}		
+		else{
+			application.endPoint = ll;//
+			application.dropoff=bus_stop;
+		}
+		
+		if(application.startPoint != null && application.endPoint != null){
+			LatLng pickup_ll = new LatLng(application.pickup.getGmpoint().getY(),application.pickup.getGmpoint().getX());
+			LatLng dropoff_ll = new LatLng(application.dropoff.getGmpoint().getY(),application.dropoff.getGmpoint().getX());
+			mapFragment.addRouteLineOnMap(application.startPoint,pickup_ll,dropoff_ll, application.endPoint);
+		}
+
+	}
+
+	@Override
+	public void setFocusOnFromField() {
+		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
+		fromView.requestFocus();
+	}
+	@Override
+	public void setFocusOnToField() {
+		
+		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
+		toView.requestFocus();
 	}
 
 

@@ -66,9 +66,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private float markerAlpha = 0.5F;
 
 
-	Polyline straightLine = null;
-	public LatLng startPoint= null;
-	public LatLng endPoint = null;
+	List<Polyline> routeLines = null;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -170,13 +168,23 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		String stopName = marker.getTitle();
-	       LatLng pos = marker.getPosition();
+		
 		//send data
 		StopObject so = markers.get(marker);
 	    if(so!=null)
 	    {
+	    	String stopName = marker.getTitle();
+		    LatLng pos = marker.getPosition();
     	    iSendSttreetAddress.setStopMarkerSelection(so, marker.getPosition(), marker);
+	    }
+	    else
+	    {
+	    	// A route marker was clicked
+	    	/*if(marker==routeStart_marker)
+	    		iSendSttreetAddress.setFocusOnFromField();
+	    	if(marker==routeEnd_marker)
+	    		iSendSttreetAddress.setFocusOnToField();*/
+	    	
 	    }
 		return false;
 	} 
@@ -267,51 +275,194 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 
 	
-	Marker marker_start=null;
-	Marker marker_stop=null;
-	public void addRouteLineOnMap(LatLng startPoint, LatLng endPoint) {
-		ArrayList<LatLng> points = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions = new PolylineOptions();
+	Marker routeStart_marker=null;
+	Marker routePickup_marker=null;
+	Marker routeDropoff_marker=null;
+	Marker routeEnd_marker=null;
+
+	public void addRouteLineOnMap(LatLng startPoint,LatLng pickupPoint,LatLng dropoffPoint, LatLng endPoint) {
+		System.out.println("joo");
+		hideKutsuPlusStopMarkers();
+
 		
-		points.add(startPoint);
-		points.add(endPoint);
+		if(routeLines != null)
+		{
+			for(Polyline p:routeLines)
+				p.remove();
+			routeLines.clear();
+		}
+		else
+		{
+			routeLines=new ArrayList<Polyline>();
+		}
 		
+		// From start to pickup point
 		
-		polyLineOptions.addAll(points);
-		polyLineOptions.width(2);
-		polyLineOptions.color(Color.BLACK);
+		ArrayList<LatLng> points_toPickup = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions_toPickup = new PolylineOptions();
 		
-		if(straightLine != null)
-			straightLine.remove();
+		points_toPickup.add(startPoint);
+		points_toPickup.add(pickupPoint);
 		
-		straightLine = map.addPolyline(polyLineOptions);
+		polyLineOptions_toPickup.addAll(points_toPickup);
+		polyLineOptions_toPickup.width(2);
+		polyLineOptions_toPickup.color(Color.BLACK);
+		
+		routeLines.add(map.addPolyline(polyLineOptions_toPickup));
+
+		// From pickup point to dropoff point
+		ArrayList<LatLng> points_drive = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions_drive = new PolylineOptions();
+		
+		points_drive.add(pickupPoint);
+		points_drive.add(dropoffPoint);
+		
+		polyLineOptions_drive.addAll(points_drive);
+		polyLineOptions_drive.width(2);
+		polyLineOptions_drive.color(Color.RED);
+		
+		routeLines.add(map.addPolyline(polyLineOptions_drive));
+
+		// From dropoff point to the destination
+		ArrayList<LatLng> points_fromDropoff = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions_fromDropoff = new PolylineOptions();
+				
+		points_fromDropoff.add(dropoffPoint);
+		points_fromDropoff.add(endPoint);
+				
+		polyLineOptions_fromDropoff.addAll(points_fromDropoff);
+		polyLineOptions_fromDropoff.width(2);
+		polyLineOptions_fromDropoff.color(Color.BLACK);
+				
+		routeLines.add(map.addPolyline(polyLineOptions_fromDropoff));
+		
 		// http://mapicons.nicolasmollet.com/category/markers/transportation/
-		if(marker_start==null)
+		if(routeStart_marker==null)
 		{
 		  MarkerOptions markerOptions_start = new MarkerOptions();
 		  markerOptions_start.icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.direction_down));
 	      markerOptions_start.position(startPoint);
-          this.marker_start = map.addMarker(markerOptions_start);
-          this.marker_start.setVisible(true);
+          this.routeStart_marker = map.addMarker(markerOptions_start);
+          this.routeStart_marker.setVisible(true);
+          startEndMarkers.put("start", routeStart_marker);
 		}
 		else
-			this.marker_start.setPosition(startPoint);	
-        
+			this.routeStart_marker.setPosition(startPoint);	
+                
 
-		if(marker_stop==null)
+		if(routeEnd_marker==null)
 		{
 			MarkerOptions markerOptions_stop = new MarkerOptions();
 		
 		    markerOptions_stop.icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.stop));
 	        markerOptions_stop.position(endPoint);
-            this.marker_stop = map.addMarker(markerOptions_stop);
-            this.marker_stop.setVisible(true);
+            this.routeEnd_marker = map.addMarker(markerOptions_stop);
+            this.routeEnd_marker.setVisible(true);
+            startEndMarkers.put("start", routeEnd_marker);
 		}
 		else
-			this.marker_stop.setPosition(endPoint);
+			this.routeEnd_marker.setPosition(endPoint);
 
+		if(routePickup_marker==null)
+		{
+		  MarkerOptions markerOptions_start = new MarkerOptions();
+		  markerOptions_start.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.busstop));
+	      markerOptions_start.position(pickupPoint);
+          this.routePickup_marker = map.addMarker(markerOptions_start);
+          this.routePickup_marker.setVisible(true);
+          startEndMarkers.put("start", this.routePickup_marker);
+		}
+		else
+			this.routePickup_marker.setPosition(pickupPoint);	
+
+		if(routeDropoff_marker==null)
+		{
+		  MarkerOptions markerOptions_start = new MarkerOptions();
+		  markerOptions_start.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.busstop));
+	      markerOptions_start.position(dropoffPoint);
+          this.routeDropoff_marker = map.addMarker(markerOptions_start);
+          this.routeDropoff_marker.setVisible(true);
+          startEndMarkers.put("start", this.routeDropoff_marker);
+		}
+		else
+			this.routeDropoff_marker.setPosition(dropoffPoint);	
+		
+		
+		for (Marker m : markers.keySet()) {
+		    if(m.getPosition().equals(routeStart_marker.getPosition()))
+	        	m.setVisible(false);
+		    if(m.getPosition().equals(routeEnd_marker.getPosition()))
+	        	m.setVisible(false);
+		}
 	}
+
+	// When Pickup=start point and dropoff=end
+	public void addRouteLineOnMap(LatLng startPoint, LatLng endPoint) {
+		hideKutsuPlusStopMarkers();
+
+		ArrayList<LatLng> points = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions = new PolylineOptions();
+		
+		points.add(startPoint);
+		points.add(endPoint);
+		
+		polyLineOptions.addAll(points);
+		polyLineOptions.width(2);
+		polyLineOptions.color(Color.BLACK);
+		
+		if(routeLines != null)
+		{
+			for(Polyline p:routeLines)
+				p.remove();
+			routeLines.clear();
+		}
+		else
+		{
+			routeLines=new ArrayList<Polyline>();
+		}
+		routeLines.add(map.addPolyline(polyLineOptions));
+		
+		
+		// http://mapicons.nicolasmollet.com/category/markers/transportation/
+		if(routeStart_marker==null)
+		{
+		  MarkerOptions markerOptions_start = new MarkerOptions();
+		  markerOptions_start.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.direction_down));
+	      markerOptions_start.position(startPoint);
+          this.routeStart_marker = map.addMarker(markerOptions_start);
+          this.routeStart_marker.setVisible(true);
+          startEndMarkers.put("start", routeStart_marker);
+		}
+		else
+			this.routeStart_marker.setPosition(startPoint);	
+                
+
+		if(routeEnd_marker==null)
+		{
+			MarkerOptions markerOptions_stop = new MarkerOptions();
+		
+		    markerOptions_stop.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.stop));
+	        markerOptions_stop.position(endPoint);
+            this.routeEnd_marker = map.addMarker(markerOptions_stop);
+            this.routeEnd_marker.setVisible(true);
+            startEndMarkers.put("start", routeEnd_marker);
+		}
+		else
+			this.routeEnd_marker.setPosition(endPoint);
+
+		for (Marker m : markers.keySet()) {
+		    if(m.getPosition().equals(routeStart_marker.getPosition()))
+	        	m.setVisible(false);
+		    if(m.getPosition().equals(routeEnd_marker.getPosition()))
+	        	m.setVisible(false);
+		}
+	}
+
 	
 }
