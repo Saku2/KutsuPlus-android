@@ -281,9 +281,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	Marker routeEnd_marker=null;
 
 	public void addRouteLineOnMap(LatLng startPoint,LatLng pickupPoint,LatLng dropoffPoint, LatLng endPoint) {
-		System.out.println("joo");
 		hideKutsuPlusStopMarkers();
-
 		
 		if(routeLines != null)
 		{
@@ -296,6 +294,45 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			routeLines=new ArrayList<Polyline>();
 		}
 		
+		// From pickup point to dropoff
+		
+		ArrayList<LatLng> points_toPickup = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions_toPickup = new PolylineOptions();
+		
+		points_toPickup.add(pickupPoint);
+		points_toPickup.add(dropoffPoint);
+		
+		polyLineOptions_toPickup.addAll(points_toPickup);
+		polyLineOptions_toPickup.width(2);
+		polyLineOptions_toPickup.color(Color.RED);
+		
+		routeLines.add(map.addPolyline(polyLineOptions_toPickup));
+
+		addRouteLineStartOnMap_markings(startPoint,pickupPoint);
+		addRouteLineEndOnMap_markings(dropoffPoint,endPoint);
+		this.routePickup_marker.setVisible(true);	
+		this.routeDropoff_marker.setVisible(true);	
+
+	}
+	public void addRouteLineStartOnMap(LatLng startPoint,LatLng pickupPoint) {
+		hideKutsuPlusStopMarkers();
+		
+		if(routeLines != null)
+		{
+			for(Polyline p:routeLines)
+				p.remove();
+			routeLines.clear();
+		}
+		else
+		{
+			routeLines=new ArrayList<Polyline>();
+		}
+
+		addRouteLineStartOnMap_markings(startPoint,pickupPoint);
+	}
+	
+	private void addRouteLineStartOnMap_markings(LatLng startPoint,LatLng pickupPoint) {
+
 		// From start to pickup point
 		
 		ArrayList<LatLng> points_toPickup = new ArrayList<LatLng>();
@@ -310,31 +347,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		routeLines.add(map.addPolyline(polyLineOptions_toPickup));
 
-		// From pickup point to dropoff point
-		ArrayList<LatLng> points_drive = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions_drive = new PolylineOptions();
-		
-		points_drive.add(pickupPoint);
-		points_drive.add(dropoffPoint);
-		
-		polyLineOptions_drive.addAll(points_drive);
-		polyLineOptions_drive.width(2);
-		polyLineOptions_drive.color(Color.RED);
-		
-		routeLines.add(map.addPolyline(polyLineOptions_drive));
-
-		// From dropoff point to the destination
-		ArrayList<LatLng> points_fromDropoff = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions_fromDropoff = new PolylineOptions();
-				
-		points_fromDropoff.add(dropoffPoint);
-		points_fromDropoff.add(endPoint);
-				
-		polyLineOptions_fromDropoff.addAll(points_fromDropoff);
-		polyLineOptions_fromDropoff.width(2);
-		polyLineOptions_fromDropoff.color(Color.BLACK);
-				
-		routeLines.add(map.addPolyline(polyLineOptions_fromDropoff));
 		
 		// http://mapicons.nicolasmollet.com/category/markers/transportation/
 		if(routeStart_marker==null)
@@ -352,6 +364,54 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			this.routeStart_marker.setPosition(startPoint);	
                 
 
+		if(routePickup_marker==null)
+		{
+		  MarkerOptions markerOptions_start = new MarkerOptions();
+		  markerOptions_start.icon(BitmapDescriptorFactory
+                .fromResource(R.drawable.busstop));
+	      markerOptions_start.position(pickupPoint);
+          this.routePickup_marker = map.addMarker(markerOptions_start);
+          this.routePickup_marker.setTitle("pickup stop");
+          this.routePickup_marker.setVisible(true);
+          startEndMarkers.put("start", this.routePickup_marker);
+		}
+		else
+			this.routePickup_marker.setPosition(pickupPoint);	
+
+	}
+	public void addRouteLineEndOnMap(LatLng dropoffPoint, LatLng endPoint) {
+		hideKutsuPlusStopMarkers();
+		
+		if(routeLines != null)
+		{
+			for(Polyline p:routeLines)
+				p.remove();
+			routeLines.clear();
+		}
+		else
+		{
+			routeLines=new ArrayList<Polyline>();
+		}
+		addRouteLineEndOnMap_markings(dropoffPoint, endPoint);
+	}
+	
+	private void addRouteLineEndOnMap_markings(LatLng dropoffPoint, LatLng endPoint) {
+
+		// From dropoff point to the destination
+		ArrayList<LatLng> points_fromDropoff = new ArrayList<LatLng>();
+		PolylineOptions polyLineOptions_fromDropoff = new PolylineOptions();
+				
+		points_fromDropoff.add(dropoffPoint);
+		points_fromDropoff.add(endPoint);
+				
+		polyLineOptions_fromDropoff.addAll(points_fromDropoff);
+		polyLineOptions_fromDropoff.width(2);
+		polyLineOptions_fromDropoff.color(Color.BLACK);
+				
+		routeLines.add(map.addPolyline(polyLineOptions_fromDropoff));
+		
+		// http://mapicons.nicolasmollet.com/category/markers/transportation/
+
 		if(routeEnd_marker==null)
 		{
 			MarkerOptions markerOptions_stop = new MarkerOptions();
@@ -367,20 +427,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		else
 			this.routeEnd_marker.setPosition(endPoint);
 
-		if(routePickup_marker==null)
-		{
-		  MarkerOptions markerOptions_start = new MarkerOptions();
-		  markerOptions_start.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.busstop));
-	      markerOptions_start.position(pickupPoint);
-          this.routePickup_marker = map.addMarker(markerOptions_start);
-          this.routePickup_marker.setTitle("pickup stop");
-          this.routePickup_marker.setVisible(true);
-          startEndMarkers.put("start", this.routePickup_marker);
-		}
-		else
-			this.routePickup_marker.setPosition(pickupPoint);	
-
 		if(routeDropoff_marker==null)
 		{
 		  MarkerOptions markerOptions_start = new MarkerOptions();
@@ -395,19 +441,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		else
 			this.routeDropoff_marker.setPosition(dropoffPoint);	
 
-		this.routePickup_marker.setVisible(true);	
-		this.routeDropoff_marker.setVisible(true);	
-
-		
-		
-		for (Marker m : markers.keySet()) {
-		    if(m.getPosition().equals(routeStart_marker.getPosition()))
-	        	m.setVisible(false);
-		    if(m.getPosition().equals(routeEnd_marker.getPosition()))
-	        	m.setVisible(false);
-		}
 	}
 
+	
 	// When Pickup=start point and dropoff=end
 	public void addRouteLineOnMap(LatLng startPoint, LatLng endPoint) {
 		hideKutsuPlusStopMarkers();
@@ -473,13 +509,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		if(routeDropoff_marker!=null)
 			this.routeDropoff_marker.setVisible(false);	
 		
-		
-		for (Marker m : markers.keySet()) {
-		    if(m.getPosition().equals(routeStart_marker.getPosition()))
-	        	m.setVisible(false);
-		    if(m.getPosition().equals(routeEnd_marker.getPosition()))
-	        	m.setVisible(false);
-		}
 	}
 
 	

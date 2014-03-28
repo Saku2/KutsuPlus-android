@@ -441,6 +441,21 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			LatLng dropoff_ll = new LatLng(application.dropoff.getGmpoint().getY(),application.dropoff.getGmpoint().getX());
 			mapFragment.addRouteLineOnMap(application.startPoint,pickup_ll,dropoff_ll, application.endPoint);
 		}
+		else
+		{
+			if(application.startPoint != null )
+			{
+				LatLng pickup_ll = new LatLng(application.pickup.getGmpoint().getY(),application.pickup.getGmpoint().getX());
+				mapFragment.addRouteLineStartOnMap(application.startPoint,pickup_ll);
+				
+			}
+			if(application.endPoint != null)
+			{
+				LatLng dropoff_ll = new LatLng(application.dropoff.getGmpoint().getY(),application.dropoff.getGmpoint().getX());
+				mapFragment.addRouteLineEndOnMap(dropoff_ll,application.endPoint);
+				
+			}
+		}
 
 	}
 
