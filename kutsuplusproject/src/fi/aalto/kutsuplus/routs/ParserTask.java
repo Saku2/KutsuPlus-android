@@ -7,14 +7,26 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import fi.aalto.kutsuplus.MapFragm;
+import fi.aalto.kutsuplus.R;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.Paint.Align;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 
 public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
@@ -49,7 +61,8 @@ public ParserTask( MapFragm mapF_){
     protected void onPostExecute(List<List<HashMap<String, String>>> result) {
         ArrayList<LatLng> points = null;
         PolylineOptions lineOptions = null;
-        MarkerOptions markerOptions = new MarkerOptions();
+        String distance = "";
+        String duration = "";
 
         // Traversing through all the routes
         for(int i=0;i<result.size();i++){
@@ -63,6 +76,14 @@ public ParserTask( MapFragm mapF_){
             for(int j=0;j<path.size();j++){
                 HashMap<String,String> point = path.get(j);
 
+                if(j==0){    // Get distance from the list
+                    distance = (String)point.get("distance");
+                    continue;
+                }else if(j==1){ // Get duration from the list
+                    duration = (String)point.get("duration");
+                    continue;
+                }
+                
                 double lat = Double.parseDouble(point.get("lat"));
                 double lng = Double.parseDouble(point.get("lng"));
                 LatLng position = new LatLng(lat, lng);
@@ -76,20 +97,94 @@ public ParserTask( MapFragm mapF_){
             lineOptions.color(Color.GREEN);
         }
 
-        if(this.mapF.drawStartWalking){
+        drawDistancesAndLines(distance, duration, lineOptions);
+		 
+    }        
+
+    
+    private void drawDistancesAndLines(String distance, String duration, PolylineOptions lineOptions){
+        String dis_str = this.mapF.getString(R.string.walking_distance);
+        String dur_str = this.mapF.getString(R.string.walking_duration);
+        
+        Bitmap dis_bmp = drawTextMarkerOnMap(Color.GREEN, 35, distance);
+        Bitmap dur_bmp = drawTextMarkerOnMap(Color.BLUE, 35, duration);
+        
+        //distance
+        MarkerOptions markerOptions_dis = new MarkerOptions();
+        markerOptions_dis.icon(BitmapDescriptorFactory.fromBitmap(dis_bmp));
+        markerOptions_dis.title(dis_str)
+        			     .anchor(1, 0.5f);
+        
+        //duration
+        MarkerOptions markerOptions_dur = new MarkerOptions();
+		markerOptions_dur.icon(BitmapDescriptorFactory.fromBitmap(dur_bmp));
+        markerOptions_dur.title(dur_str)
+        			     .anchor(1, 0);
+        
+        //draw distance and duration text + lines
+    	if(this.mapF.drawStartWalking){
         	if(this.mapF.walkingToStartBusStopLine != null)
         		this.mapF.walkingToStartBusStopLine.remove();
         	// Drawing polyline in the Google Map for the i-th route
             this.mapF.walkingToStartBusStopLine = mapF.getMap().addPolyline(lineOptions);
+            
+            //draw distance text
+            LatLng disPoint = new LatLng(this.mapF.startPoint.latitude, this.mapF.startPoint.longitude);
+            markerOptions_dis.position(disPoint);
+			removePreviousNumbers( mapF.startDistanceMarkersWatcher);
+			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
+			mapF.startDistanceMarkersWatcher.add(marker);
+			
+			//draw duration text
+            markerOptions_dur.position(this.mapF.startPoint);
+			removePreviousNumbers( mapF.startDurationMarkersWatcher);
+			marker = mapF.getMap().addMarker(markerOptions_dur);
+			mapF.startDurationMarkersWatcher.add(marker);
+			
         }
         else if(!this.mapF.drawStartWalking){
         	if(this.mapF.walkingToFinishBusStopLine != null)
         		this.mapF.walkingToFinishBusStopLine.remove();
         	// Drawing polyline in the Google Map for the i-th route
             this.mapF.walkingToFinishBusStopLine = mapF.getMap().addPolyline(lineOptions);
+            
+            //draw distance text
+            LatLng disPoint = new LatLng(this.mapF.endPoint.latitude, this.mapF.endPoint.longitude);
+            markerOptions_dis.position(disPoint);
+			removePreviousNumbers( mapF.finishDistanceMarkersWatcher);
+			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
+			mapF.finishDistanceMarkersWatcher.add(marker);
+			
+			//draw duration text
+            markerOptions_dur.position(this.mapF.endPoint);
+			removePreviousNumbers( mapF.finishDurationMarkersWatcher);
+			marker = mapF.getMap().addMarker(markerOptions_dur);
+			mapF.finishDurationMarkersWatcher.add(marker);
         }
-		 
-        
     }
+    
+    private void removePreviousNumbers(ArrayList<Marker> alist){
+    	for(Marker m_old : alist){
+			m_old.remove();
+		}
+    }
+    
+    
+    private Bitmap drawTextMarkerOnMap(int textColor, int TextSize, String labelText){
+    	Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+ 	    Bitmap bmpText = Bitmap.createBitmap(270,100, conf);
+ 	    
+ 	    Canvas canvas = new Canvas(bmpText);
+ 		Paint paint = new Paint();
+ 		paint.setColor(textColor);
+ 		paint.setTextSize(TextSize);
+ 		paint.setTextAlign(Align.CENTER);
+ 		paint.setShadowLayer(8, 0, 0, Color.GRAY);
+ 		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
+ 		canvas.drawText(labelText, bmpText.getWidth()/2, bmpText.getHeight()/4, paint); // paint defines the text color, stroke width, size
+ 		BitmapDrawable draw = new BitmapDrawable(this.mapF.getResources(), bmpText);
+ 		Bitmap drawBmp = draw.getBitmap();
+ 		return drawBmp;
+	}
 
 }

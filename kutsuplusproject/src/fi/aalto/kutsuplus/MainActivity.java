@@ -382,9 +382,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
 					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-					getMapFragment().makeKPmarkers();
-					Marker mr = getMapFragment().markers_so.get(so);
-					fillSelectedMapLocation(address_gps, mr);
+					MapFragm mapFragment = getMapFragment();
+					mapFragment.makeKPmarkers();
+					Marker mr = mapFragment.markers_so.get(so);
+					mapFragment.updateMarkersAndRoute(address_gps, mr, this);
 				}
 			}
 		} catch (TreeNotReadyException e) {
@@ -400,34 +401,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
 		Log.d("stop name", so.getFinnishName());
 		FormFragment formFragment = getFormFragment();
+		MapFragm mapFragment = getMapFragment();
 		
 		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		fillSelectedMapLocation(address_gps, marker);
+		mapFragment.updateMarkersAndRoute(address_gps, marker, this);
 		
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
 		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId());
 	}
 
-	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
-		MapFragm mapFragment = getMapFragment();
-		boolean isStartMarker = true;
-		if(findViewById(R.id.from).hasFocus()){
-			mapFragment.startPoint = ll;
-			isStartMarker = true;
-		}		
-		else{
-			mapFragment.endPoint = ll;//
-			isStartMarker = false;
-		}
-		mapFragment.updatePinkMarker(marker, isStartMarker);
-		mapFragment.updateActualPointMarker(isStartMarker);
-		mapFragment.drawWalkingRoute(isStartMarker);
-		
-		if(mapFragment.startPoint != null && mapFragment.endPoint != null){
-			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
-		}
-
-	}
+	
 
 
 

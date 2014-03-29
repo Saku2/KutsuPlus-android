@@ -34,15 +34,10 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
@@ -73,6 +68,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
 	ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
 	public HashMap<String, Marker> startEndMarkers_onMapClick = new HashMap<String, Marker>(2);
+	public ArrayList <Marker> startDistanceMarkersWatcher = new ArrayList<Marker>();
+	public ArrayList <Marker> finishDistanceMarkersWatcher = new ArrayList<Marker>();
+	public ArrayList <Marker> startDurationMarkersWatcher = new ArrayList<Marker>();
+	public ArrayList <Marker> finishDurationMarkersWatcher = new ArrayList<Marker>();
+	//public boolean draggedStartMarker=false;
 	ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
@@ -91,7 +91,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public Polyline walkingToFinishBusStopLine = null;
 	public LatLng startPoint= null;
 	public LatLng endPoint = null;
-	public boolean drawStartWalking = false;
+	public boolean drawStartWalking = true;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -284,7 +284,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		if(isStartMarker){
 			String satrt_loc = getString(R.string.start_click_on_map);
-			Bitmap b = drawLocationIcn(R.drawable.location_start, Color.RED, 30, satrt_loc);
+			Bitmap b = drawLocationIcon(R.drawable.location_start, Color.RED, 30, satrt_loc);
 			markerOptions.position(startPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(satrt_loc);
@@ -295,7 +295,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 		else{
 			String finish_loc = getString(R.string.finish_click_on_map);
-			Bitmap b = drawLocationIcn(R.drawable.location_finish, Color.rgb(1, 88, 30), 30, finish_loc);
+			Bitmap b = drawLocationIcon(R.drawable.location_finish, Color.rgb(1, 88, 30), 30, finish_loc);
 			markerOptions.position(endPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(finish_loc);
@@ -318,7 +318,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		startEndMarkers_onMapClick_Watcher.add(marker);
 	}
 
-	private Bitmap drawLocationIcn(int R_resource, int textColor, int TextSize, String labelText){
+	private Bitmap drawLocationIcon(int R_resource, int textColor, int TextSize, String labelText){
 	    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
 	    Bitmap bm = BitmapFactory.decodeResource(getResources(), R_resource).copy(Bitmap.Config.ARGB_8888, true);
 		Canvas canvas = new Canvas(bm);
@@ -342,12 +342,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        List<Address> addresses = geo.getFromLocation(ll.latitude, ll.longitude, 1);
 	        
 	        if (addresses.isEmpty()) {
-	        	Toast.makeText(rootView.getContext().getApplicationContext(), "Waiting for Location", Toast.LENGTH_LONG).show();
+	        	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_not_found), Toast.LENGTH_LONG).show();
 	        }
 	        else {
 	            if (addresses.size() > 0) {//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_on_map_click) + " "+ addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
+	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);
 	            }
 	        }
 	    }
@@ -438,7 +438,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public void onMarkerDrag(Marker m) {
-		m.setAnchor(0.5f, 0.5f);
+		//m.setAnchor(0.5f, 0.5f);
 		map.animateCamera(CameraUpdateFactory.newLatLng(m.getPosition()));
 //		Marker startm = startEndMarkers_onMapClick.get("start");
 //		Marker finishm = startEndMarkers_onMapClick.get("end");
@@ -450,12 +450,39 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public void onMarkerDragEnd(Marker m) {
+		String satrt_loc = getString(R.string.start_click_on_map);
+		String markerTitle = m.getTitle();
+//		if(m.getTitle().equals(satrt_loc))
+//			draggedStartMarker = true;
+//		else
+//			draggedStartMarker = false;
 		onMapClick(m.getPosition());
-		
 	}
 
 	@Override
 	public void onMarkerDragStart(Marker m) {
+
+	}
+	
+	
+	public void updateMarkersAndRoute(LatLng ll, Marker marker, MainActivity mainActivity) {
+		
+		boolean isStartMarker = true;
+		if(mainActivity.findViewById(R.id.from).hasFocus()){
+			startPoint = ll;
+			isStartMarker = true;
+		}		
+		else{
+			endPoint = ll;//
+			isStartMarker = false;
+		}
+		updatePinkMarker(marker, isStartMarker);
+		updateActualPointMarker(isStartMarker);
+		drawWalkingRoute(isStartMarker);
+		
+		if(startPoint != null && endPoint != null){
+			drawStraightLineOnMap(startPoint, endPoint);
+		}
 
 	}
 
