@@ -9,9 +9,23 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -27,9 +41,11 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -44,29 +60,38 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
+import fi.aalto.kutsuplus.routs.DownloadTask;
 
-public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener{
+public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;
 	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
+	HashMap <StopObject, Marker> markers_so = new HashMap <StopObject, Marker>();
 
 	
 	private View rootView;//
 	private GoogleMap map;
 	public HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
 	ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
-	//default initial zoom level, when app is opened
+	public HashMap<String, Marker> startEndMarkers_onMapClick = new HashMap<String, Marker>(2);
+	ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
+	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
-	final public float minZoomLevel = 13.2F;
+	//final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
 	
 	public boolean KPstopsAreVisible = false;
 	public boolean KPstopsAreCreated = false;
 
-	private float markerAlpha = 0.5F;
+	private float markerAlpha = 0.7F;
 
 
-	List<Polyline> routeLines = null;
+	Polyline straightLine = null;
+	public Polyline walkingToStartBusStopLine = null;
+	public Polyline walkingToFinishBusStopLine = null;
+	public LatLng startPoint= null;
+	public LatLng endPoint = null;
+	public boolean drawStartWalking = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,15 +119,30 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
+        
+     // use map to move camera into position
+//        map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
     }
+
+	
 
 	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {
 		// The constructor takes (lat,long), lat=y, long=x
         LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
-		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
-		map.animateCamera(center);//moveCamera
+//		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
+//		map.animateCamera(center);//moveCamera
+		//addAllKutsuPlusStopMarkers();
+		CameraPosition INIT =
+                new CameraPosition.Builder()
+                .target(ll)
+                .zoom(zoomLevel)
+                .bearing(0F) // orientation
+                .tilt( 50F) // viewing angle
+                .build();
+		map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
 		map.setOnMarkerClickListener((OnMarkerClickListener) this);
         map.setOnMapClickListener(this);  
+        map.setOnMarkerDragListener(this);
 	}
 
 	public void hideKutsuPlusStopMarkers(){
@@ -125,29 +165,34 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 	
 	private BitmapDescriptor setKPicon(){
-		BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-		return bd;
+		return BitmapDescriptorFactory.fromResource(R.drawable.kp_marker);
 	}
 	
-	public void addAllKutsuPlusStopMarkers(){//
+	public void makeKPmarkers(){
 		MarkerOptions markerOptions = new MarkerOptions();
-		//Hue h = new Hue();
 		markerOptions.icon(setKPicon());
-
 		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
 		for(StopObject so : pysakit){
 			// Constructor uses (lat,long)  remember: latitude=y, longituden=x
 			LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
 			markerOptions.position(ll)
  			             .title(so.getFinnishName())
-			             .snippet(so.getSwedishName());
+			             .snippet(so.getSwedishName())
+			             .flat(true)
+			             .draggable(false);
             Marker marker = map.addMarker(markerOptions);
             markers.put(marker, so);
-            marker.setVisible(true);
+            markers_so.put(so, marker);
+            marker.setVisible(false);
             marker.setAlpha(markerAlpha);
-            //markers.put(ll, marker);
             
 		}
+	}
+	
+	public void addAllKutsuPlusStopMarkers(){//
+		if(markers.size() == 0)
+			makeKPmarkers();
+		showKutsuPlusStopMarkers();
 		KPstopsAreVisible = true;
 		KPstopsAreCreated = true;
             //show markers only on large zoom level
@@ -168,23 +213,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		
+		String stopName = marker.getTitle();
+	       LatLng pos = marker.getPosition();
 		//send data
 		StopObject so = markers.get(marker);
 	    if(so!=null)
 	    {
-	    	String stopName = marker.getTitle();
-		    LatLng pos = marker.getPosition();
-    	    iSendMapSelection.setStopMarkerSelection(so, marker.getPosition(), marker);
-	    }
-	    else
-	    {
-	    	// A route marker was clicked
-	    	if(marker.getTitle().equals("start") || marker.getTitle().equals("pickup stop"))
-	    		iSendMapSelection.setFocusOnFromField();
-	    	if(marker.getTitle().equals("end") || marker.getTitle().equals("dropoff stop"))
-	    		iSendMapSelection.setFocusOnToField();
-	    	
+	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition(), marker);
 	    }
 		return false;
 	} 
@@ -199,8 +234,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             throw new ClassCastException(activity.toString()
                     + " must implement interface");
         }
-
     }
+
 	
 	public void updatePinkMarker(Marker marker, boolean isStartMarker) {
 		
@@ -215,7 +250,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 		//new pink marker
 		if(marker != null){
-			marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+			//marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+			if(isStartMarker)
+				marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_pink));
+			else
+				marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
+
 			marker.setAlpha(1);
 			marker.setVisible(true);
 			startEndMarkersWatcher.add(marker);
@@ -229,10 +269,68 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 				if(m != startEndMarkers.get("end") && m != startEndMarkers.get("start")){
 					m.setIcon(setKPicon());
 					m.setAlpha(this.markerAlpha);
-					it.remove();
+					if(!KPstopsAreVisible)
+						m.setVisible(false);
 				}
 			}
 		}
+	}
+	
+	public void updateActualPointMarker(boolean isStartMarker) {
+		MarkerOptions markerOptions = new MarkerOptions();
+		markerOptions.alpha(0.9F)
+			         .draggable(true)
+			         .anchor(0.5F, 0.5F);
+		
+		if(isStartMarker){
+			String satrt_loc = getString(R.string.start_click_on_map);
+			Bitmap b = drawLocationIcn(R.drawable.location_start, Color.RED, 30, satrt_loc);
+			markerOptions.position(startPoint);
+			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
+			markerOptions.title(satrt_loc);
+			Marker marker = map.addMarker(markerOptions);
+			startEndMarkers_onMapClick.put("start", marker);
+			handlePreviousLocMarkers(marker);
+			
+		}
+		else{
+			String finish_loc = getString(R.string.finish_click_on_map);
+			Bitmap b = drawLocationIcn(R.drawable.location_finish, Color.rgb(1, 88, 30), 30, finish_loc);
+			markerOptions.position(endPoint);
+			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
+			markerOptions.title(finish_loc);
+			Marker marker = map.addMarker(markerOptions);
+			startEndMarkers_onMapClick.put("end", marker);
+			handlePreviousLocMarkers(marker);
+		}
+	}
+	
+	private void handlePreviousLocMarkers(Marker marker) {
+		if(startEndMarkers_onMapClick_Watcher.size() > 0){
+			Iterator<Marker> it = startEndMarkers_onMapClick_Watcher.iterator();
+			while (it.hasNext()) {
+				Marker wm = it.next();
+				if(wm != startEndMarkers_onMapClick.get("end") && wm != startEndMarkers_onMapClick.get("start")){
+					wm.remove();//.setVisible(false);
+				}
+			}
+		}
+		startEndMarkers_onMapClick_Watcher.add(marker);
+	}
+
+	private Bitmap drawLocationIcn(int R_resource, int textColor, int TextSize, String labelText){
+	    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+	    Bitmap bm = BitmapFactory.decodeResource(getResources(), R_resource).copy(Bitmap.Config.ARGB_8888, true);
+		Canvas canvas = new Canvas(bm);
+		Paint paint = new Paint();
+		paint.setColor(textColor);
+		paint.setTextSize(TextSize);
+		paint.setTextAlign(Align.CENTER);
+		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
+		canvas.drawText(labelText, bm.getWidth()/2, bm.getHeight()/4, paint); // paint defines the text color, stroke width, size
+		BitmapDrawable draw = new BitmapDrawable(getResources(), bm);
+		Bitmap drawBmp = draw.getBitmap();
+		return drawBmp;
 	}
 
 	@Override
@@ -242,17 +340,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        Geocoder geo = new Geocoder(rootView.getContext().getApplicationContext(), aLocale);
 	        //boolean isPresent = Geocoder.isPresent();
 	        List<Address> addresses = geo.getFromLocation(ll.latitude, ll.longitude, 1);
+	        
 	        if (addresses.isEmpty()) {
 	        	Toast.makeText(rootView.getContext().getApplicationContext(), "Waiting for Location", Toast.LENGTH_LONG).show();
 	        }
 	        else {
-	            if (addresses.size() > 0) {
-	                //yourtextfieldname.setText(addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
-	                //Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
-	            	Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
+	            if (addresses.size() > 0) {//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	            	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_on_map_click) + " "+ addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
 	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0),ll);
-	            	//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	//Log.d(LOG_TAG, "after querying stop");
 	            }
 	        }
 	    }
@@ -261,6 +356,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    }
 	}
 
+	
+	
+	
 	public void setStopTreeHandler(StopTreeHandler stopTreeHandler) {
 		this.stopTreeHandler = stopTreeHandler;
 	}
@@ -274,180 +372,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}//
 
 
-	
-	Marker routeStart_marker=null;
-	Marker routePickup_marker=null;
-	Marker routeDropoff_marker=null;
-	Marker routeEnd_marker=null;
-
-	public void addRouteLineOnMap(LatLng startPoint,LatLng pickupPoint,LatLng dropoffPoint, LatLng endPoint) {
-		hideKutsuPlusStopMarkers();
-		
-		if(routeLines != null)
-		{
-			for(Polyline p:routeLines)
-				p.remove();
-			routeLines.clear();
-		}
-		else
-		{
-			routeLines=new ArrayList<Polyline>();
-		}
-		
-		// From pickup point to dropoff
-		
-		ArrayList<LatLng> points_toPickup = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions_toPickup = new PolylineOptions();
-		
-		points_toPickup.add(pickupPoint);
-		points_toPickup.add(dropoffPoint);
-		
-		polyLineOptions_toPickup.addAll(points_toPickup);
-		polyLineOptions_toPickup.width(2);
-		polyLineOptions_toPickup.color(Color.RED);
-		
-		routeLines.add(map.addPolyline(polyLineOptions_toPickup));
-
-		addRouteLineStartOnMap_markings(startPoint,pickupPoint);
-		addRouteLineEndOnMap_markings(dropoffPoint,endPoint);
-		this.routePickup_marker.setVisible(true);	
-		this.routeDropoff_marker.setVisible(true);	
-
-	}
-	public void addRouteLineStartOnMap(LatLng startPoint,LatLng pickupPoint) {
-		hideKutsuPlusStopMarkers();
-		
-		if(routeLines != null)
-		{
-			for(Polyline p:routeLines)
-				p.remove();
-			routeLines.clear();
-		}
-		else
-		{
-			routeLines=new ArrayList<Polyline>();
-		}
-
-		addRouteLineStartOnMap_markings(startPoint,pickupPoint);
-	}
-	
-	private void addRouteLineStartOnMap_markings(LatLng startPoint,LatLng pickupPoint) {
-
-		// From start to pickup point
-		
-		ArrayList<LatLng> points_toPickup = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions_toPickup = new PolylineOptions();
-		
-		points_toPickup.add(startPoint);
-		points_toPickup.add(pickupPoint);
-		
-		polyLineOptions_toPickup.addAll(points_toPickup);
-		polyLineOptions_toPickup.width(2);
-		polyLineOptions_toPickup.color(Color.BLACK);
-		
-		routeLines.add(map.addPolyline(polyLineOptions_toPickup));
-
-		
-		// http://mapicons.nicolasmollet.com/category/markers/transportation/
-		if(routeStart_marker==null)
-		{
-		  MarkerOptions markerOptions_start = new MarkerOptions();
-		  markerOptions_start.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.direction_down));
-	      markerOptions_start.position(startPoint);
-          this.routeStart_marker = map.addMarker(markerOptions_start);
-          this.routeStart_marker.setTitle("start");
-          this.routeStart_marker.setVisible(true);
-          startEndMarkers.put("start", routeStart_marker);
-		}
-		else
-			this.routeStart_marker.setPosition(startPoint);	
-                
-
-		if(routePickup_marker==null)
-		{
-		  MarkerOptions markerOptions_start = new MarkerOptions();
-		  markerOptions_start.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.busstop));
-	      markerOptions_start.position(pickupPoint);
-          this.routePickup_marker = map.addMarker(markerOptions_start);
-          this.routePickup_marker.setTitle("pickup stop");
-          this.routePickup_marker.setVisible(true);
-          startEndMarkers.put("start", this.routePickup_marker);
-		}
-		else
-			this.routePickup_marker.setPosition(pickupPoint);	
-
-	}
-	public void addRouteLineEndOnMap(LatLng dropoffPoint, LatLng endPoint) {
-		hideKutsuPlusStopMarkers();
-		
-		if(routeLines != null)
-		{
-			for(Polyline p:routeLines)
-				p.remove();
-			routeLines.clear();
-		}
-		else
-		{
-			routeLines=new ArrayList<Polyline>();
-		}
-		addRouteLineEndOnMap_markings(dropoffPoint, endPoint);
-	}
-	
-	private void addRouteLineEndOnMap_markings(LatLng dropoffPoint, LatLng endPoint) {
-
-		// From dropoff point to the destination
-		ArrayList<LatLng> points_fromDropoff = new ArrayList<LatLng>();
-		PolylineOptions polyLineOptions_fromDropoff = new PolylineOptions();
-				
-		points_fromDropoff.add(dropoffPoint);
-		points_fromDropoff.add(endPoint);
-				
-		polyLineOptions_fromDropoff.addAll(points_fromDropoff);
-		polyLineOptions_fromDropoff.width(2);
-		polyLineOptions_fromDropoff.color(Color.BLACK);
-				
-		routeLines.add(map.addPolyline(polyLineOptions_fromDropoff));
-		
-		// http://mapicons.nicolasmollet.com/category/markers/transportation/
-
-		if(routeEnd_marker==null)
-		{
-			MarkerOptions markerOptions_stop = new MarkerOptions();
-		
-		    markerOptions_stop.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.stop));
-	        markerOptions_stop.position(endPoint);
-            this.routeEnd_marker = map.addMarker(markerOptions_stop);
-            this.routeEnd_marker.setTitle("end");
-            this.routeEnd_marker.setVisible(true);
-            startEndMarkers.put("start", routeEnd_marker);
-		}
-		else
-			this.routeEnd_marker.setPosition(endPoint);
-
-		if(routeDropoff_marker==null)
-		{
-		  MarkerOptions markerOptions_start = new MarkerOptions();
-		  markerOptions_start.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.busstop));
-	      markerOptions_start.position(dropoffPoint);
-          this.routeDropoff_marker = map.addMarker(markerOptions_start);
-          this.routeDropoff_marker.setTitle("dropoff stop");
-          this.routeDropoff_marker.setVisible(true);
-          startEndMarkers.put("start", this.routeDropoff_marker);
-		}
-		else
-			this.routeDropoff_marker.setPosition(dropoffPoint);	
-
-	}
-
-	
-	// When Pickup=start point and dropoff=end
-	public void addRouteLineOnMap(LatLng startPoint, LatLng endPoint) {
-		hideKutsuPlusStopMarkers();
-
+	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
 		ArrayList<LatLng> points = new ArrayList<LatLng>();
 		PolylineOptions polyLineOptions = new PolylineOptions();
 		
@@ -456,60 +381,82 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		polyLineOptions.addAll(points);
 		polyLineOptions.width(2);
-		polyLineOptions.color(Color.BLACK);
+		polyLineOptions.color(Color.RED);
 		
-		if(routeLines != null)
-		{
-			for(Polyline p:routeLines)
-				p.remove();
-			routeLines.clear();
-		}
-		else
-		{
-			routeLines=new ArrayList<Polyline>();
-		}
-		routeLines.add(map.addPolyline(polyLineOptions));
+		if(straightLine != null)
+			straightLine.remove();
+		
+		straightLine = map.addPolyline(polyLineOptions);
 		
 		
-		// http://mapicons.nicolasmollet.com/category/markers/transportation/
-		if(routeStart_marker==null)
-		{
-		  MarkerOptions markerOptions_start = new MarkerOptions();
-		  markerOptions_start.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.direction_down));
-	      markerOptions_start.position(startPoint);
-          this.routeStart_marker = map.addMarker(markerOptions_start);
-          this.routeStart_marker.setTitle("start");
-          this.routeStart_marker.setVisible(true);
-          startEndMarkers.put("start", routeStart_marker);
+	}
+	
+	void drawWalkingRoute(boolean isStartMarker){
+		DownloadTask downloadTask = new DownloadTask(this);
+		String url="";
+		if(isStartMarker && startPoint != null){
+			drawStartWalking = true;
+			LatLng st = this.startEndMarkers.get("start").getPosition();
+			url = getDirectionsUrl(st, startPoint);
 		}
-		else
-			this.routeStart_marker.setPosition(startPoint);	
-                
+		else if(!isStartMarker && endPoint != null){
+			drawStartWalking = false;
+			LatLng ed = this.startEndMarkers.get("end").getPosition();
+			url = getDirectionsUrl(endPoint, ed);
+		}
+		// Start downloading json data from Google Directions API
+		if(!url.isEmpty())
+			downloadTask.execute(url);
+	}
+	
 
-		if(routeEnd_marker==null)
-		{
-			MarkerOptions markerOptions_stop = new MarkerOptions();
-		
-		    markerOptions_stop.icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.stop));
-	        markerOptions_stop.position(endPoint);
-            this.routeEnd_marker = map.addMarker(markerOptions_stop);
-            this.routeEnd_marker.setTitle("end");
-            this.routeEnd_marker.setVisible(true);
-            startEndMarkers.put("start", routeEnd_marker);
-		}
-		else
-			this.routeEnd_marker.setPosition(endPoint);
+	  private String getDirectionsUrl(LatLng origin,LatLng dest){
+		  
+	        // Origin of route
+	        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+	 
+	        // Destination of route
+	        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+	 
+	        // Sensor enabled
+	        String sensor = "sensor=false";
+	        
+	        //walking mode
+	        String mode = "mode=walking";
+	 
+	        // Building the parameters to the web service
+	        String parameters = str_origin+"&"+str_dest+"&"+sensor+"&"+mode;
+	 
+	        // Output format
+	        String output = "json";
+	 
+	        // Building the url to the web service
+	        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+	 
+	        return url;
+	    }
 
-		
-		if(routePickup_marker!=null)
-			this.routePickup_marker.setVisible(false);	
+	@Override
+	public void onMarkerDrag(Marker m) {
+		m.setAnchor(0.5f, 0.5f);
+		map.animateCamera(CameraUpdateFactory.newLatLng(m.getPosition()));
+//		Marker startm = startEndMarkers_onMapClick.get("start");
+//		Marker finishm = startEndMarkers_onMapClick.get("end");
+//		if(startm == m)
+//			drawStraightLineOnMap(m.getPosition(), finishm.getPosition());
+//		else if(finishm == m)
+//			drawStraightLineOnMap(startm.getPosition(), m.getPosition());
+	}
 
-		if(routeDropoff_marker!=null)
-			this.routeDropoff_marker.setVisible(false);	
+	@Override
+	public void onMarkerDragEnd(Marker m) {
+		onMapClick(m.getPosition());
 		
 	}
 
-	
+	@Override
+	public void onMarkerDragStart(Marker m) {
+
+	}
+
 }

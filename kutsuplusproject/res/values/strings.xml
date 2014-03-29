@@ -70,4 +70,12 @@
         <item>Order Id</item>
         <item>https</item>
     </string-array>
+    
+    
+    <!--  marker title-->
+    <string name="start_click_on_map">start</string>   
+    <string name="finish_click_on_map">finish</string> 
+    
+    <!--  toast on map -->
+    <string name="toast_address_on_map_click">address: </string>
 </resources>

@@ -365,33 +365,36 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(refresh);
 	}
 
-
 	@Override
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
-		 		
+
+				
+		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
 		MapPoint mp=CoordinateConverter.wGS84lalo_to_kkj2(address_gps.longitude,address_gps.latitude);
-		StopObject bus_stop=null;
+		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
 		try {
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
 			if(stops!=null)
 			{
 				if(stops.length>0)
 				{
-					bus_stop=stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());
+					StopObject so=stops[0].getNeighbor().getValue();
+					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
+					getMapFragment().makeKPmarkers();
+					Marker mr = getMapFragment().markers_so.get(so);
+					fillSelectedMapLocation(address_gps, mr);
 				}
 			}
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();
 		}
-		
-		if(bus_stop!=null)
-		  fillSelectedMapLocationLocationSelection(address_gps, bus_stop);		
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
 		formFragment.updateToFromText(street_address);
+		
 	}
+
 
 	@Override
 	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
@@ -399,65 +402,34 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		
 		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		fillSelectedMapLocationMarkerSelection(address_gps, marker);
+		fillSelectedMapLocation(address_gps, marker);
 		
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
 		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId());
 	}
 
-	private void fillSelectedMapLocationMarkerSelection(LatLng ll, Marker marker) {
+	private void fillSelectedMapLocation(LatLng ll, Marker marker) {
 		MapFragm mapFragment = getMapFragment();
 		boolean isStartMarker = true;
 		if(findViewById(R.id.from).hasFocus()){
-			application.startPoint = ll;
+			mapFragment.startPoint = ll;
 			isStartMarker = true;
 		}		
 		else{
-			application.endPoint = ll;//
+			mapFragment.endPoint = ll;//
 			isStartMarker = false;
 		}
-		//The functionality is added to: addRouteLineOnMa  
-		//mapFragment.updatePinkMarker(marker, isStartMarker);
+		mapFragment.updatePinkMarker(marker, isStartMarker);
+		mapFragment.updateActualPointMarker(isStartMarker);
+		mapFragment.drawWalkingRoute(isStartMarker);
 		
-		if(application.startPoint != null && application.endPoint != null){
-			mapFragment.addRouteLineOnMap(application.startPoint, application.endPoint);
+		if(mapFragment.startPoint != null && mapFragment.endPoint != null){
+			mapFragment.drawStraightLineOnMap(mapFragment.startPoint, mapFragment.endPoint);
 		}
 
 	}
-	
-	private void fillSelectedMapLocationLocationSelection(LatLng ll, StopObject bus_stop) {
-		MapFragm mapFragment = getMapFragment();
-		if(findViewById(R.id.from).hasFocus()){
-			application.startPoint = ll;
-			application.pickup=bus_stop;
-		}		
-		else{
-			application.endPoint = ll;//
-			application.dropoff=bus_stop;
-		}
-		
-		if(application.startPoint != null && application.endPoint != null){
-			LatLng pickup_ll = new LatLng(application.pickup.getGmpoint().getY(),application.pickup.getGmpoint().getX());
-			LatLng dropoff_ll = new LatLng(application.dropoff.getGmpoint().getY(),application.dropoff.getGmpoint().getX());
-			mapFragment.addRouteLineOnMap(application.startPoint,pickup_ll,dropoff_ll, application.endPoint);
-		}
-		else
-		{
-			if(application.startPoint != null )
-			{
-				LatLng pickup_ll = new LatLng(application.pickup.getGmpoint().getY(),application.pickup.getGmpoint().getX());
-				mapFragment.addRouteLineStartOnMap(application.startPoint,pickup_ll);
-				
-			}
-			if(application.endPoint != null)
-			{
-				LatLng dropoff_ll = new LatLng(application.dropoff.getGmpoint().getY(),application.dropoff.getGmpoint().getX());
-				mapFragment.addRouteLineEndOnMap(dropoff_ll,application.endPoint);
-				
-			}
-		}
 
-	}
+
 
 	@Override
 	public void setFocusOnFromField() {
