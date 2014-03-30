@@ -72,7 +72,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public ArrayList <Marker> finishDistanceMarkersWatcher = new ArrayList<Marker>();
 	public ArrayList <Marker> startDurationMarkersWatcher = new ArrayList<Marker>();
 	public ArrayList <Marker> finishDurationMarkersWatcher = new ArrayList<Marker>();
-	//public boolean draggedStartMarker=false;
+	public boolean markerWasDragged = false;
+	public boolean draggedStartMarker=false;
 	ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
@@ -318,21 +319,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		startEndMarkers_onMapClick_Watcher.add(marker);
 	}
 
-	private Bitmap drawLocationIcon(int R_resource, int textColor, int TextSize, String labelText){
-	    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-	    Bitmap bm = BitmapFactory.decodeResource(getResources(), R_resource).copy(Bitmap.Config.ARGB_8888, true);
-		Canvas canvas = new Canvas(bm);
-		Paint paint = new Paint();
-		paint.setColor(textColor);
-		paint.setTextSize(TextSize);
-		paint.setTextAlign(Align.CENTER);
-		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
-		canvas.drawText(labelText, bm.getWidth()/2, bm.getHeight()/4, paint); // paint defines the text color, stroke width, size
-		BitmapDrawable draw = new BitmapDrawable(getResources(), bm);
-		Bitmap drawBmp = draw.getBitmap();
-		return drawBmp;
-	}
-
 	@Override
 	public void onMapClick(LatLng ll) {
 		try {
@@ -356,9 +342,21 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	    }
 	}
 
-	
-	
-	
+	private Bitmap drawLocationIcon(int R_resource, int textColor, int TextSize, String labelText){
+	    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+	    Bitmap bm = BitmapFactory.decodeResource(getResources(), R_resource).copy(Bitmap.Config.ARGB_8888, true);
+		Canvas canvas = new Canvas(bm);
+		Paint paint = new Paint();
+		paint.setColor(textColor);
+		paint.setTextSize(TextSize);
+		paint.setTextAlign(Align.CENTER);
+		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
+		canvas.drawText(labelText, bm.getWidth()/2, bm.getHeight()/4, paint); // paint defines the text color, stroke width, size
+		BitmapDrawable draw = new BitmapDrawable(getResources(), bm);
+		Bitmap drawBmp = draw.getBitmap();
+		return drawBmp;
+	}
+
 	public void setStopTreeHandler(StopTreeHandler stopTreeHandler) {
 		this.stopTreeHandler = stopTreeHandler;
 	}
@@ -451,12 +449,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
 	public void onMarkerDragEnd(Marker m) {
 		String satrt_loc = getString(R.string.start_click_on_map);
-		String markerTitle = m.getTitle();
-//		if(m.getTitle().equals(satrt_loc))
-//			draggedStartMarker = true;
-//		else
-//			draggedStartMarker = false;
+		//String markerTitle = m.getTitle();
+		if(m.getTitle().equals(satrt_loc))
+			draggedStartMarker = true;
+		else
+			draggedStartMarker = false;
+		
+		markerWasDragged = true;
 		onMapClick(m.getPosition());
+		//draggedMarker = false;
 	}
 
 	@Override
@@ -468,14 +469,27 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public void updateMarkersAndRoute(LatLng ll, Marker marker, MainActivity mainActivity) {
 		
 		boolean isStartMarker = true;
-		if(mainActivity.findViewById(R.id.from).hasFocus()){
-			startPoint = ll;
+		if(markerWasDragged){
+			if(draggedStartMarker)
+				isStartMarker = true;
+			else
+				isStartMarker = false;
+			
+			markerWasDragged = false;
+		}
+		else if(mainActivity.findViewById(R.id.from).hasFocus()){
 			isStartMarker = true;
 		}		
-		else{
-			endPoint = ll;//
+		else{//
 			isStartMarker = false;
 		}
+		
+		
+		if(isStartMarker)
+			startPoint = ll;
+		else
+			endPoint = ll;
+			
 		updatePinkMarker(marker, isStartMarker);
 		updateActualPointMarker(isStartMarker);
 		drawWalkingRoute(isStartMarker);

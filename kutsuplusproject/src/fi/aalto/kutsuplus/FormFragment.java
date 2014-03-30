@@ -65,6 +65,9 @@ public class FormFragment extends Fragment {
 	private ISendFormSelection iSendFormSelection;
 
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
+	
+	AutoCompleteTextView fromView;
+	AutoCompleteTextView toView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,7 +77,7 @@ public class FormFragment extends Fragment {
 		String[] streets = readStreets(R.raw.kutsuplus_area_street_names);
 
 		// Get a reference to the AutoCompleteTextView in the layout
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
+		fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		// Create the adapter and set it to the AutoCompleteTextView
 		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 
@@ -152,7 +155,7 @@ public class FormFragment extends Fragment {
 
 		fromView.setAdapter(adapter_from);
 
-		final AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		// Get the string array
 		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 		adapter_to.registerDataSetObserver(new DataSetObserver() {
@@ -412,32 +415,54 @@ public class FormFragment extends Fragment {
 	}
 
 	// After clicking on a map, update from/to text
-	public void updateToFromText(String selectedData) {
-		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
-		AutoCompleteTextView toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
-		if (fromView.hasFocus()) {
-			fromView.setFocusable(false); // DO NOT REMOVE THIS
-			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-			fromView.setText(selectedData);
-			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-			fromView.setFocusable(true); // DO NOT REMOVE THIS
-		} else {
-			toView.setFocusable(false); // DO NOT REMOVE THIS
-			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-			toView.setText(selectedData);
-			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-			toView.setFocusable(true); // DO NOT REMOVE THIS
+	public void updateToFromText(String selectedData, boolean markerWasDragged, boolean draggedStartMarker) {
+		if(markerWasDragged){
+			if(draggedStartMarker){
+				fromView.setText(selectedData);
+				fromView.requestFocus();
+			}
+			else{
+				toView.setText(selectedData);
+				toView.requestFocus();
+			}
+		}
+		else{
+			if (fromView.hasFocus()) {
+				fromView.setFocusable(false); // DO NOT REMOVE THIS
+				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+				fromView.setText(selectedData);
+				fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+				fromView.setFocusable(true); // DO NOT REMOVE THIS
+			} else {
+				toView.setFocusable(false); // DO NOT REMOVE THIS
+				toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+				toView.setText(selectedData);
+				toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+				toView.setFocusable(true); // DO NOT REMOVE THIS
+			}
 		}
 	}
 
-	public void updatePickupDropOffText(String fromData) {
-		AutoCompleteTextView fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
+	public void updatePickupDropOffText(String data, boolean markerWasDragged, boolean draggedStartMarker) {
 		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
 		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
-		if (fromView.hasFocus()) {
-			pickupView.setText(fromData);
-		} else {
-			dropoffView.setText(fromData);
+		if(markerWasDragged){
+			if(draggedStartMarker){
+				pickupView.setText(data);
+				fromView.requestFocus();
+			}
+			else{
+				dropoffView.setText(data);
+				toView.requestFocus();
+			}
+		}
+		else{
+			if (fromView.hasFocus()) {
+				pickupView.setText(data);
+				
+			} else {
+				dropoffView.setText(data);
+			}
 		}
 	}
 

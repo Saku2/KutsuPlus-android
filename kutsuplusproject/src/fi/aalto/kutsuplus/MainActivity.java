@@ -369,7 +369,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setMapLocationSelection(String street_address,LatLng address_gps) {
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
-
+        MapFragm mapFragment = getMapFragment();
 				
 		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
 		MapPoint mp=CoordinateConverter.wGS84lalo_to_kkj2(address_gps.longitude,address_gps.latitude);
@@ -381,8 +381,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				if(stops.length>0)
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-					MapFragm mapFragment = getMapFragment();
+					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+					 
 					mapFragment.makeKPmarkers();
 					Marker mr = mapFragment.markers_so.get(so);
 					mapFragment.updateMarkersAndRoute(address_gps, mr, this);
@@ -392,7 +392,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(street_address);
+		formFragment.updateToFromText(street_address, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 		
 	}
 
@@ -403,11 +403,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 		
-		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId());
-		mapFragment.updateMarkersAndRoute(address_gps, marker, this);
+		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		 // PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
+		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 		
-		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId());
+		mapFragment.updateMarkersAndRoute(address_gps, marker, this);
 	}
 
 	
