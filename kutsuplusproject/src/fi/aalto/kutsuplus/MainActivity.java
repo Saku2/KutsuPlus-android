@@ -28,9 +28,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -48,7 +50,7 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection, ISendFormSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection, ISendFormSelection {
 
 	SharedPreferences preferences;
 
@@ -77,16 +79,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 	Menu menu_this;
 	MenuItem kp_button;
-	
-	//Here are kept the core user selections 
-	private class Application_logic
-	{
-		public LatLng startPoint= null;
-		public StopObject pickup=null;
-		public StopObject dropoff=null;
-		public LatLng endPoint = null;
-	}
-	Application_logic application=new Application_logic();
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -417,41 +410,46 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void setFocusOnFromField() {
 		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
-		fromView.requestFocus();
+		//fromView.requestFocus();
 	}
 	@Override
 	public void setFocusOnToField() {
 		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
-		toView.requestFocus();
+		//toView.requestFocus();
 	}
 	
 	@Override
 	public void setFromPosAndStop(LatLng address_gps, StopObject so) {
-//		application.startPoint=address_gps;
-//		application.pickup=so;
 		MapFragm mapFragment = getMapFragment();
 		if(mapFragment.markers.size() == 0){
 			mapFragment.makeKPmarkers();
 		}
 		Marker m = mapFragment.markers_so.get(so);
-		//mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}
+		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
+	}//
 	
 	@Override
 	public void setToPosAndStop(LatLng address_gps, StopObject so) {
-//		application.endPoint=address_gps;
-//		application.dropoff=so;
-//
 		MapFragm mapFragment = getMapFragment();
 		if(mapFragment.markers.size() == 0){
 			mapFragment.makeKPmarkers();
 		}
 		Marker m = mapFragment.markers_so.get(so);
-		//mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
+		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
+	}//
+
+
+    @Override
+	public void onSuggestionClicked(LatLng latLng, StopObject so){
+		//Toast.makeText(this, "DROPDAWN CLICK!", Toast.LENGTH_LONG).show();
+    	MapFragm mapFragment = getMapFragment();
+		if(mapFragment.markers.size() == 0){
+			mapFragment.makeKPmarkers();
+		}
+		Marker m = mapFragment.markers_so.get(so);
+		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
 	}
-
-
-
+	
 	
 
 }

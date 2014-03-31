@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -115,13 +116,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 //        map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
     }
 
-	
+	private void moveCamera(LatLng ll, float zoomLevel){
+		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
+		map.animateCamera(center);//moveCamera
+	}
 
 	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {
 		// The constructor takes (lat,long), lat=y, long=x
         LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
-//		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
-//		map.animateCamera(center);//moveCamera
 		//addAllKutsuPlusStopMarkers();
 		CameraPosition INIT =
                 new CameraPosition.Builder()
@@ -265,6 +267,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 				}
 			}
 		}
+		
+		if(marker != null){
+			moveCamera(marker.getPosition(), this.initialZoomLevel);
+		}
 	}
 	
 	public void updateActualPointMarker(boolean isStartMarker) {
@@ -272,14 +278,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		markerOptions.alpha(0.9F)
 			         .draggable(true)
 			         .anchor(0.5F, 0.5F);
-		
+		Marker marker = null;
 		if(isStartMarker){
 			String satrt_loc = getString(R.string.start_click_on_map);
 			Bitmap b = drawLocationIcon(R.drawable.location_start, Color.RED, 30, satrt_loc);
 			markerOptions.position(startPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(satrt_loc);
-			Marker marker = map.addMarker(markerOptions);
+			marker = map.addMarker(markerOptions);
 			startEndMarkers_onMapClick.put("start", marker);
 			handlePreviousLocMarkers(marker);
 			
@@ -290,9 +296,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.position(endPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(finish_loc);
-			Marker marker = map.addMarker(markerOptions);
+			marker = map.addMarker(markerOptions);
 			startEndMarkers_onMapClick.put("end", marker);
 			handlePreviousLocMarkers(marker);
+		}
+		
+		if(marker != null){
+			moveCamera(marker.getPosition(), this.initialZoomLevel);
 		}
 	}
 	

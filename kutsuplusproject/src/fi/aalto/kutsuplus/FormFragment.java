@@ -29,6 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -36,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -47,11 +51,10 @@ import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
-import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
-public class FormFragment extends Fragment {
+public class FormFragment extends Fragment{
 
 	private View rootView;
 	String popUpContents[];
@@ -68,6 +71,8 @@ public class FormFragment extends Fragment {
 	
 	AutoCompleteTextView fromView;
 	AutoCompleteTextView toView;
+	TextView pickupStop;
+	TextView dropoffStop;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,11 +83,12 @@ public class FormFragment extends Fragment {
 
 		// Get a reference to the AutoCompleteTextView in the layout
 		fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
+		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		// Create the adapter and set it to the AutoCompleteTextView
 		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 
-		final TextView pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
-		final TextView dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
+		pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
+		dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -122,8 +128,7 @@ public class FormFragment extends Fragment {
 										.getValue();
 								Log.d(LOG_TAG, "pickup stop: "+currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-								GoogleMapPoint gmp=CoordinateConverter.kkj2_to_wGS84lalo(mp.getX(), mp.getY());								
-								iSendFormSelection.setFromPosAndStop(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
+						
 								
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -155,7 +160,6 @@ public class FormFragment extends Fragment {
 
 		fromView.setAdapter(adapter_from);
 
-		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
 		// Get the string array
 		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 		adapter_to.registerDataSetObserver(new DataSetObserver() {
@@ -195,8 +199,7 @@ public class FormFragment extends Fragment {
 										.getValue();
 								Log.d(LOG_TAG, "dropoff stop: "+currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								GoogleMapPoint gmp=CoordinateConverter.kkj2_to_wGS84lalo(mp.getX(), mp.getY());								
-								iSendFormSelection.setFromPosAndStop(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
+								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -287,7 +290,7 @@ public class FormFragment extends Fragment {
 			operatingHoursFragment.setCancelable(false);
 			operatingHoursFragment.show(getFragmentManager(), "operating_hours");
 		}
-
+      initView();
 	}
 
 	private void createDropDown(View rootView) {
@@ -471,10 +474,40 @@ public class FormFragment extends Fragment {
 	        System.out.println("joojoo");
 	        try {
 	        	iSendFormSelection = (ISendFormSelection ) activity;
+	        	mCallback = (OnItemClickListener) activity;
 	        } catch (ClassCastException e) {
 	            throw new ClassCastException(activity.toString()
 	                    + " must implement interface");
 	        }
 
 	    }
+	
+///////////////////////
+	
+	public OnItemClickListener mCallback;
+	private void initView(){
+		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            	pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+            	GoogleMapPoint gmp=currentPickupStop.getGmpoint();
+				mCallback.onSuggestionClicked(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
+				fromView.requestFocus();
+            }
+        });
+		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            	dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+            	GoogleMapPoint gmp=currentDropoffStop.getGmpoint();
+				mCallback.onSuggestionClicked(new LatLng(gmp.getX(),gmp.getY()), currentDropoffStop);
+				toView.requestFocus();
+            }
+        });
+    }
+	
+	public interface OnItemClickListener {
+	     /** Called by FormFragment when a suggestion list item is selected */
+		public void onSuggestionClicked(LatLng latLng, StopObject currentPickupStop);
+	}
 }
