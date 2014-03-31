@@ -421,20 +421,33 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 	@Override
 	public void setFocusOnToField() {
-		
 		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
 		toView.requestFocus();
 	}
+	
 	@Override
 	public void setFromPosAndStop(LatLng address_gps, StopObject so) {
-		application.startPoint=address_gps;
-		application.pickup=so;
+//		application.startPoint=address_gps;
+//		application.pickup=so;
+		MapFragm mapFragment = getMapFragment();
+		if(mapFragment.markers.size() == 0){
+			mapFragment.makeKPmarkers();
+		}
+		Marker m = mapFragment.markers_so.get(so);
+		//mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
 	}
+	
 	@Override
 	public void setToPosAndStop(LatLng address_gps, StopObject so) {
-		application.endPoint=address_gps;
-		application.dropoff=so;
-		
+//		application.endPoint=address_gps;
+//		application.dropoff=so;
+//
+		MapFragm mapFragment = getMapFragment();
+		if(mapFragment.markers.size() == 0){
+			mapFragment.makeKPmarkers();
+		}
+		Marker m = mapFragment.markers_so.get(so);
+		//mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
 	}
 
 

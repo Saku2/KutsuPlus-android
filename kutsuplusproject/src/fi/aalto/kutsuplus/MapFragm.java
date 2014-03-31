@@ -6,11 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -19,13 +14,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -179,7 +169,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.position(ll)
  			             .title(so.getFinnishName())
 			             .snippet(so.getSwedishName())
-			             .flat(true)
+			             .flat(false)
 			             .draggable(false);
             Marker marker = map.addMarker(markerOptions);
             markers.put(marker, so);
@@ -214,8 +204,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		String stopName = marker.getTitle();
-	       LatLng pos = marker.getPosition();
+		//String stopName = marker.getTitle();
+	       //LatLng pos = marker.getPosition();
 		//send data
 		StopObject so = markers.get(marker);
 	    if(so!=null)
@@ -343,7 +333,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 
 	private Bitmap drawLocationIcon(int R_resource, int textColor, int TextSize, String labelText){
-	    Bitmap.Config conf = Bitmap.Config.ARGB_8888;
 	    Bitmap bm = BitmapFactory.decodeResource(getResources(), R_resource).copy(Bitmap.Config.ARGB_8888, true);
 		Canvas canvas = new Canvas(bm);
 		Paint paint = new Paint();
@@ -438,12 +427,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public void onMarkerDrag(Marker m) {
 		//m.setAnchor(0.5f, 0.5f);
 		map.animateCamera(CameraUpdateFactory.newLatLng(m.getPosition()));
-//		Marker startm = startEndMarkers_onMapClick.get("start");
-//		Marker finishm = startEndMarkers_onMapClick.get("end");
-//		if(startm == m)
-//			drawStraightLineOnMap(m.getPosition(), finishm.getPosition());
-//		else if(finishm == m)
-//			drawStraightLineOnMap(startm.getPosition(), m.getPosition());
 	}
 
 	@Override
