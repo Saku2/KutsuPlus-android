@@ -484,12 +484,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		if(isStartMarker)
 		{
-			communication_bus.post(new StartLocationEvent(ll));
+			communication_bus.post(new StartLocationEvent(this,ll));
 			startPoint = ll;
 		}
 		else
 		{
-			communication_bus.post(new EndLocationEvent(ll));
+			communication_bus.post(new EndLocationEvent(this,ll));
 			endPoint = ll;
 		}
 			
