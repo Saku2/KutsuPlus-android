@@ -28,21 +28,24 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.savarese.spatial.NearestNeighbors;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.EndLocationEvent;
+import fi.aalto.kutsuplus.events.StartLocationEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -53,6 +56,7 @@ import fi.aalto.kutsuplus.utils.CoordinateConverter;
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection, ISendFormSelection {
 
 	SharedPreferences preferences;
+	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
 
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
@@ -189,8 +193,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
-
+		communication_bus.register(this);
 	}
+	
 	private MapFragm getMapFragment(){
 		MapFragm mapFragment = null;;
 		if(isTwoPaneLayout){
@@ -450,6 +455,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
 	}
 	
-	
+    @Subscribe
+    public void onStartLocationEvent(StartLocationEvent event){
+    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
+    }
 
+    @Subscribe
+    public void onEndLocationEvent(EndLocationEvent event){
+    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
+    }
 }

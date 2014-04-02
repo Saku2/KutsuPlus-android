@@ -40,9 +40,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
- 
- 
+import com.squareup.otto.Bus;
 
+import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.EndLocationEvent;
+import fi.aalto.kutsuplus.events.StartLocationEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
@@ -50,6 +52,8 @@ import fi.aalto.kutsuplus.routs.DownloadTask;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;
+	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
+
 	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
 	HashMap <StopObject, Marker> markers_so = new HashMap <StopObject, Marker>();
 
@@ -333,7 +337,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        else {
 	            if (addresses.size() > 0) {//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_on_map_click) + " "+ addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);
+	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);	            	
 	            }
 	        }
 	    }
@@ -479,9 +483,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		
 		if(isStartMarker)
+		{
+			communication_bus.post(new StartLocationEvent(ll));
 			startPoint = ll;
+		}
 		else
+		{
+			communication_bus.post(new EndLocationEvent(ll));
 			endPoint = ll;
+		}
 			
 		updatePinkMarker(marker, isStartMarker);
 		updateActualPointMarker(isStartMarker);

@@ -29,9 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -39,14 +37,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.otto.Bus;
 
 import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.events.CommunicationBus;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -55,7 +54,7 @@ import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
 public class FormFragment extends Fragment{
-
+	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
