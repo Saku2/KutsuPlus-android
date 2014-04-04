@@ -52,6 +52,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
+import fi.aalto.kutsuplus.utils.CustomViewPager;
 
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection, ISendFormSelection {
 
@@ -69,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	private FormFragment formFrag;
 	private MapFragm mapFrag;
 	private TabPagerAdapter mTabPagerAdapter;
-	private ViewPager mPager;
+	private CustomViewPager mPager;
 
 	private StopTreeHandler stopTreeHandler;
 
@@ -145,7 +146,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
 
-			mPager = (ViewPager) findViewById(R.id.pager);
+			mPager = (CustomViewPager) findViewById(R.id.pager);
 			mPager.setAdapter(mTabPagerAdapter);
 
 			mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -253,11 +254,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 		if (tab.getPosition() == MAPFRAG){
 			isMapTabSelected = true;
+			mPager.setPagingEnabled(false);
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
 		else{
 			isMapTabSelected = false;
+			mPager.setPagingEnabled(true);
 			if(kp_button != null)
 				kp_button.setVisible(false);
 		}
