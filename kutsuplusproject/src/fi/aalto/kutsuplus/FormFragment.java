@@ -64,7 +64,6 @@ public class FormFragment extends Fragment{
 
 	private StopObject currentPickupStop = null;
 	private StopObject currentDropoffStop = null;
-	private ISendFormSelection iSendFormSelection;
 
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
 	
@@ -417,14 +416,14 @@ public class FormFragment extends Fragment{
 	}
 
 	// After clicking on a map, update from/to text
-	public void updateToFromText(String selectedData, boolean markerWasDragged, boolean draggedStartMarker) {
+	public void updateToFromText(String street_address, boolean markerWasDragged, boolean draggedStartMarker) {
 		if(markerWasDragged){
 			if(draggedStartMarker){
-				fromView.setText(selectedData);
+				fromView.setText(street_address);
 				fromView.requestFocus();
 			}
 			else{
-				toView.setText(selectedData);
+				toView.setText(street_address);
 				toView.requestFocus();
 			}
 		}
@@ -432,57 +431,42 @@ public class FormFragment extends Fragment{
 			if (fromView.hasFocus()) {
 				fromView.setFocusable(false); // DO NOT REMOVE THIS
 				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-				fromView.setText(selectedData);
+				fromView.setText(street_address);
 				fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				fromView.setFocusable(true); // DO NOT REMOVE THIS
 			} else {
 				toView.setFocusable(false); // DO NOT REMOVE THIS
 				toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-				toView.setText(selectedData);
+				toView.setText(street_address);
 				toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				toView.setFocusable(true); // DO NOT REMOVE THIS
 			}
 		}
 	}
 
-	public void updatePickupDropOffText(String data, boolean markerWasDragged, boolean draggedStartMarker) {
+	public void updatePickupDropOffText(String stop_description, boolean markerWasDragged, boolean draggedStartMarker) {
 		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
 		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		if(markerWasDragged){
 			if(draggedStartMarker){
-				pickupView.setText(data);
+				pickupView.setText(stop_description);
 				fromView.requestFocus();
 			}
 			else{
-				dropoffView.setText(data);
+				dropoffView.setText(stop_description);
 				toView.requestFocus();
 			}
 		}
 		else{
 			if (fromView.hasFocus()) {
-				pickupView.setText(data);
+				pickupView.setText(stop_description);
 				
 			} else {
-				dropoffView.setText(data);
+				dropoffView.setText(stop_description);
 			}
 		}
 	}
 
-	 public void onAttach(Activity activity) {
-	        super.onAttach(activity);
-	        System.out.println("joojoo");
-	        try {
-	        	iSendFormSelection = (ISendFormSelection ) activity;
-	        	mCallback = (OnItemClickListener) activity;
-	        } catch (ClassCastException e) {
-	            throw new ClassCastException(activity.toString()
-	                    + " must implement interface");
-	        }
-
-	    }
-	
-///////////////////////
-	
 	public OnItemClickListener mCallback;
 	private void initView(){
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

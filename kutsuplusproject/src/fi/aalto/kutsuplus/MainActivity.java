@@ -54,7 +54,7 @@ import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection, ISendFormSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection {
 
 	SharedPreferences preferences;
 	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
@@ -412,41 +412,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 
 	
-
-
-
-	@Override
-	public void setFocusOnFromField() {
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
-		//fromView.requestFocus();
-	}
-	@Override
-	public void setFocusOnToField() {
-		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
-		//toView.requestFocus();
-	}
-	
-	@Override
-	public void setFromPosAndStop(LatLng address_gps, StopObject so) {
-		MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}//
-	
-	@Override
-	public void setToPosAndStop(LatLng address_gps, StopObject so) {
-		MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}//
-
-
     @Override
 	public void onSuggestionClicked(LatLng latLng, StopObject so){
 		//Toast.makeText(this, "DROPDAWN CLICK!", Toast.LENGTH_LONG).show();
