@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -46,6 +45,8 @@ import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.EndLocationEvent;
+import fi.aalto.kutsuplus.events.StartLocationEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -126,8 +127,8 @@ public class FormFragment extends Fragment{
 										.getValue();
 								Log.d(LOG_TAG, "pickup stop: "+currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-						
-								
+								LatLng ll = new LatLng(mp.getX(),mp.getY());
+								communication_bus.post(new StartLocationEvent(this,ll));								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -197,7 +198,8 @@ public class FormFragment extends Fragment{
 										.getValue();
 								Log.d(LOG_TAG, "dropoff stop: "+currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								
+								LatLng ll = new LatLng(mp.getX(),mp.getY());
+								communication_bus.post(new EndLocationEvent(this,ll));
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
