@@ -214,13 +214,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		//String stopName = marker.getTitle();
-	       //LatLng pos = marker.getPosition();
-		//send data
 		StopObject so = markers.get(marker);
 	    if(so!=null)
 	    {
-	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition(), marker);
+	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition());
 	    }
 		return false;
 	} 
@@ -466,8 +463,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 	
-	
-	public void updateMarkersAndRoute(LatLng ll, Marker marker, MainActivity mainActivity) {
+	public void updateMarkersAndRoute(LatLng ll, StopObject busstop,boolean focusAtFrom) {
 		
 		boolean isStartMarker = true;
 		if(markerWasDragged){
@@ -478,7 +474,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			
 			markerWasDragged = false;
 		}
-		else if(mainActivity.findViewById(R.id.from).hasFocus()){
+		else if(focusAtFrom){
 			isStartMarker = true;
 		}		
 		else{//
@@ -496,8 +492,16 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			communication_bus.post(new EndLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
 			endPoint = ll;
 		}
-			
-		updatePinkMarker(marker, isStartMarker);
+		
+		if(markers.size() == 0){
+			makeKPmarkers();
+		}
+	
+		Marker busstop_marker = markers_so.get(busstop);
+        if(busstop_marker!=null)
+        {
+		   updatePinkMarker(busstop_marker, isStartMarker);
+        }
 		updateActualPointMarker(isStartMarker);
 		drawWalkingRoute(isStartMarker);
 		

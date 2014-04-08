@@ -385,10 +385,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
 					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
-					 
-					mapFragment.makeKPmarkers();
-					Marker mr = mapFragment.markers_so.get(so);
-					mapFragment.updateMarkersAndRoute(address_gps, mr, this);
+					boolean focusAtFrom=findViewById(R.id.from).hasFocus();
+					mapFragment.updateMarkersAndRoute(address_gps, so, focusAtFrom);
 				}
 			}
 		} catch (TreeNotReadyException e) {
@@ -401,28 +399,24 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 
 	@Override
-	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
-		Log.d("stop name", so.getFinnishName());
+	public void setStopMarkerSelection(StopObject busstop,LatLng address_gps) {
+		Log.d("stop name", busstop.getFinnishName());
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 		
-		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updatePickupDropOffText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 		 // PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
-		
-		mapFragment.updateMarkersAndRoute(address_gps, marker, this);
+		formFragment.updateToFromText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+    	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
+		mapFragment.updateMarkersAndRoute(address_gps, busstop, focusAtFrom);
 	}
 
 	
     @Override
-	public void onSuggestionClicked(LatLng latLng, StopObject so){
-		//Toast.makeText(this, "DROPDAWN CLICK!", Toast.LENGTH_LONG).show();
+	public void onSuggestionActivation(LatLng latLng, StopObject busstop){
     	MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
+    	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
+		mapFragment.updateMarkersAndRoute(latLng, busstop, focusAtFrom);
 	}
 	
     @Subscribe

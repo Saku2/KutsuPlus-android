@@ -132,6 +132,15 @@ public class FormFragment extends Fragment {
 								Log.d(LOG_TAG, "pickup stop: " + currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								LatLng ll = new LatLng(mp.getX(), mp.getY());
+
+								// onItemClick FROM action moved here
+								// ------------->
+								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+								GoogleMapPoint gmp = currentPickupStop.getGmpoint();
+								mCallback.onSuggestionActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
+								fromView.requestFocus();
+								// <-----------------------------------------------
+
 								communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -145,7 +154,7 @@ public class FormFragment extends Fragment {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
-				}				
+				}
 			};
 
 			@Override
@@ -203,7 +212,16 @@ public class FormFragment extends Fragment {
 								Log.d(LOG_TAG, "dropoff stop: " + currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								LatLng ll = new LatLng(mp.getX(), mp.getY());
+
+								// onItemClick TO action moved here
+								// ------------->
+								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+								GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
+								mCallback.onSuggestionActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
+								toView.requestFocus();
+								// <-----------------------------------------------
 								communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
+
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -292,8 +310,7 @@ public class FormFragment extends Fragment {
 			// Back button will not dismiss the box
 			operatingHoursFragment.setCancelable(false);
 			operatingHoursFragment.show(getFragmentManager(), "operating_hours");
-		}
-		initView();
+		}		
 	}
 
 	private void createDropDown(View rootView) {
@@ -470,6 +487,11 @@ public class FormFragment extends Fragment {
 
 	public OnItemClickListener mCallback;
 
+	
+	/*
+	 * FormFragment uses timing to get the nearest bus stop, but this uses a mouse click activation:
+	   It is possible that a quick user clicks the list item too fast and there is a wrong stop ID at  the class variable
+
 	private void initView() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -478,6 +500,7 @@ public class FormFragment extends Fragment {
 				GoogleMapPoint gmp = currentPickupStop.getGmpoint();
 				mCallback.onSuggestionClicked(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
 				fromView.requestFocus();
+
 			}
 		});
 		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -489,11 +512,11 @@ public class FormFragment extends Fragment {
 				toView.requestFocus();
 			}
 		});
-	}
+	}*/
 
 	public interface OnItemClickListener {
 		/** Called by FormFragment when a suggestion list item is selected */
-		public void onSuggestionClicked(LatLng latLng, StopObject currentPickupStop);
+		public void onSuggestionActivation(LatLng latLng, StopObject currentPickupStop);
 	}
 
 	@Subscribe
