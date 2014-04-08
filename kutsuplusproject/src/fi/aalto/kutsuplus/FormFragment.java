@@ -137,7 +137,7 @@ public class FormFragment extends Fragment {
 								// ------------->
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								GoogleMapPoint gmp = currentPickupStop.getGmpoint();
-								mCallback.onSuggestionActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
+								mCallback.onFromFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
 								fromView.requestFocus();
 								// <-----------------------------------------------
 
@@ -217,7 +217,7 @@ public class FormFragment extends Fragment {
 								// ------------->
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
-								mCallback.onSuggestionActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
+								mCallback.onToFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
 								toView.requestFocus();
 								// <-----------------------------------------------
 								communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
@@ -515,8 +515,9 @@ public class FormFragment extends Fragment {
 	}*/
 
 	public interface OnItemActivationListener {
-		/** Called by FormFragment when a suggestion list item is selected */
-		public void onSuggestionActivation(LatLng latLng, StopObject currentPickupStop);
+		/** Called by FormFragment when a suggestion list item is selected: based on the timer above */
+		public void onFromFieldActivation(LatLng latLng, StopObject currentPickupStop);
+		public void onToFieldActivation(LatLng latLng, StopObject currentPickupStop);
 	}
 
 	@Subscribe

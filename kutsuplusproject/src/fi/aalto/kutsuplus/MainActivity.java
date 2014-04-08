@@ -413,12 +413,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	
     @Override
-	public void onSuggestionActivation(LatLng latLng, StopObject busstop){
+	public void onFromFieldActivation(LatLng latLng, StopObject busstop){
     	MapFragm mapFragment = getMapFragment();
-    	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
-		mapFragment.updateMarkersAndRoute(latLng, busstop, focusAtFrom);
+		mapFragment.updateMarkersAndRoute(latLng, busstop, true);
 	}
 	
+    @Override
+   	public void onToFieldActivation(LatLng latLng, StopObject busstop){
+       	MapFragm mapFragment = getMapFragment();
+   		mapFragment.updateMarkersAndRoute(latLng, busstop, false);
+   	}
+   	
     @Subscribe
     public void onStartLocationChangeEvent(StartLocationChangeEvent event){
     	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
