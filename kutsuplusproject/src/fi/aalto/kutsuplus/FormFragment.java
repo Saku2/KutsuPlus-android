@@ -36,17 +36,21 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.CommunicationBus;
-import fi.aalto.kutsuplus.events.EndLocationEvent;
-import fi.aalto.kutsuplus.events.StartLocationEvent;
+import fi.aalto.kutsuplus.events.DropOffChangeEvent;
+import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.PickUpChangeEvent;
+import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -54,8 +58,8 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
-public class FormFragment extends Fragment{
-	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
+public class FormFragment extends Fragment {
+	private Bus communication_bus = CommunicationBus.getInstance().getCommucicationBus();
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
@@ -67,7 +71,7 @@ public class FormFragment extends Fragment{
 	private StopObject currentDropoffStop = null;
 
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
-	
+
 	AutoCompleteTextView fromView;
 	AutoCompleteTextView toView;
 	TextView pickupStop;
@@ -97,8 +101,8 @@ public class FormFragment extends Fragment{
 					try {
 						// To avoid the android.os.NetworkOnMainThreadException
 						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-						StrictMode.setThreadPolicy(policy); 
-						
+						StrictMode.setThreadPolicy(policy);
+
 						String queryText = adapter_from.getItem(0);
 						HttpHandler http = new HttpHandler();
 						List<NameValuePair> args = new ArrayList<NameValuePair>();
@@ -117,18 +121,18 @@ public class FormFragment extends Fragment{
 							json = jsonArray.getJSONObject(0);
 
 							String[] coords = json.getString("coords").split(",");
-							// latitude  is a geographic coordinate that specifies the north-south position of a point
+							// latitude is a geographic coordinate that
+							// specifies the north-south position of a point
 							String longtitude = coords[0];
 							String latitude = coords[1];
-							
+
 							try {
-								MapPoint mp=new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor()
-										.getValue();
-								Log.d(LOG_TAG, "pickup stop: "+currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+								MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+								Log.d(LOG_TAG, "pickup stop: " + currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
 								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-								LatLng ll = new LatLng(mp.getX(),mp.getY());
-								communication_bus.post(new StartLocationEvent(this,ll));								
+								LatLng ll = new LatLng(mp.getX(), mp.getY());
+								communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -141,7 +145,7 @@ public class FormFragment extends Fragment{
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
-				}
+				}				
 			};
 
 			@Override
@@ -170,7 +174,7 @@ public class FormFragment extends Fragment{
 					try {
 						// To avoid the android.os.NetworkOnMainThreadException
 						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-						StrictMode.setThreadPolicy(policy); 
+						StrictMode.setThreadPolicy(policy);
 						String queryText = adapter_to.getItem(0);
 						HttpHandler http = new HttpHandler();
 						List<NameValuePair> args = new ArrayList<NameValuePair>();
@@ -189,17 +193,17 @@ public class FormFragment extends Fragment{
 							json = jsonArray.getJSONObject(0);
 
 							String[] coords = json.getString("coords").split(",");
-							// latitude  is a geographic coordinate that specifies the north-south position of a point
+							// latitude is a geographic coordinate that
+							// specifies the north-south position of a point
 							String longtitude = coords[0];
 							String latitude = coords[1];
 							try {
-								MapPoint mp=new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor()
-										.getValue();
-								Log.d(LOG_TAG, "dropoff stop: "+currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+								MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+								Log.d(LOG_TAG, "dropoff stop: " + currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
 								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								LatLng ll = new LatLng(mp.getX(),mp.getY());
-								communication_bus.post(new EndLocationEvent(this,ll));
+								LatLng ll = new LatLng(mp.getX(), mp.getY());
+								communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -211,11 +215,10 @@ public class FormFragment extends Fragment{
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					
+
 				}
 			};
 
@@ -246,7 +249,7 @@ public class FormFragment extends Fragment{
 					toView.setText(to);
 				}
 			}
-
+		communication_bus.register(this);
 		return rootView;
 	}
 
@@ -290,7 +293,7 @@ public class FormFragment extends Fragment{
 			operatingHoursFragment.setCancelable(false);
 			operatingHoursFragment.show(getFragmentManager(), "operating_hours");
 		}
-      initView();
+		initView();
 	}
 
 	private void createDropDown(View rootView) {
@@ -419,17 +422,15 @@ public class FormFragment extends Fragment{
 
 	// After clicking on a map, update from/to text
 	public void updateToFromText(String street_address, boolean markerWasDragged, boolean draggedStartMarker) {
-		if(markerWasDragged){
-			if(draggedStartMarker){
+		if (markerWasDragged) {
+			if (draggedStartMarker) {
 				fromView.setText(street_address);
 				fromView.requestFocus();
-			}
-			else{
+			} else {
 				toView.setText(street_address);
 				toView.requestFocus();
 			}
-		}
-		else{
+		} else {
 			if (fromView.hasFocus()) {
 				fromView.setFocusable(false); // DO NOT REMOVE THIS
 				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
@@ -449,20 +450,18 @@ public class FormFragment extends Fragment{
 	public void updatePickupDropOffText(String stop_description, boolean markerWasDragged, boolean draggedStartMarker) {
 		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
 		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
-		if(markerWasDragged){
-			if(draggedStartMarker){
+		if (markerWasDragged) {
+			if (draggedStartMarker) {
 				pickupView.setText(stop_description);
 				fromView.requestFocus();
-			}
-			else{
+			} else {
 				dropoffView.setText(stop_description);
 				toView.requestFocus();
 			}
-		}
-		else{
+		} else {
 			if (fromView.hasFocus()) {
 				pickupView.setText(stop_description);
-				
+
 			} else {
 				dropoffView.setText(stop_description);
 			}
@@ -470,29 +469,40 @@ public class FormFragment extends Fragment{
 	}
 
 	public OnItemClickListener mCallback;
-	private void initView(){
+
+	private void initView() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            	pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-            	GoogleMapPoint gmp=currentPickupStop.getGmpoint();
-				mCallback.onSuggestionClicked(new LatLng(gmp.getX(),gmp.getY()), currentPickupStop);
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+				GoogleMapPoint gmp = currentPickupStop.getGmpoint();
+				mCallback.onSuggestionClicked(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
 				fromView.requestFocus();
-            }
-        });
+			}
+		});
 		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            	dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-            	GoogleMapPoint gmp=currentDropoffStop.getGmpoint();
-				mCallback.onSuggestionClicked(new LatLng(gmp.getX(),gmp.getY()), currentDropoffStop);
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+				GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
+				mCallback.onSuggestionClicked(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
 				toView.requestFocus();
-            }
-        });
-    }
-	
+			}
+		});
+	}
+
 	public interface OnItemClickListener {
-	     /** Called by FormFragment when a suggestion list item is selected */
+		/** Called by FormFragment when a suggestion list item is selected */
 		public void onSuggestionClicked(LatLng latLng, StopObject currentPickupStop);
+	}
+
+	@Subscribe
+	public void onPickUpChangeEvent(PickUpChangeEvent event) {
+		Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+	}
+
+	@Subscribe
+	public void onDropOffChangeEvent(DropOffChangeEvent event) {
+		Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
 	}
 }

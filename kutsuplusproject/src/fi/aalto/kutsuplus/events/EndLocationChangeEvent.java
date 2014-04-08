@@ -2,11 +2,11 @@ package fi.aalto.kutsuplus.events;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class EndLocationEvent {
-	final private Object sender;
+public class EndLocationChangeEvent {
+	final private int sender;
 	final private LatLng location;
 
-	public EndLocationEvent(Object sender,LatLng location) {
+	public EndLocationChangeEvent(int sender,LatLng location) {
 		super();
 		this.sender=sender;
 		this.location = location;
@@ -17,13 +17,14 @@ public class EndLocationEvent {
 	}
 
 	
-	public Object getSender() {
+	public int getSender() {
 		return sender;
 	}
 
-	@Override	
+	@Override
 	public String toString() {
-		return "StartLocationEvent [location=" + location + "]";
+		return "EndLocationChangeEvent [sender=" + sender + ", location=" + location + "]";
 	}
+
 	
 }

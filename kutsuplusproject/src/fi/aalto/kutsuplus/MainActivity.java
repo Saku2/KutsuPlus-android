@@ -44,8 +44,10 @@ import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.CommunicationBus;
-import fi.aalto.kutsuplus.events.EndLocationEvent;
-import fi.aalto.kutsuplus.events.StartLocationEvent;
+import fi.aalto.kutsuplus.events.DropOffChangeEvent;
+import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.PickUpChangeEvent;
+import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -424,12 +426,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 	
     @Subscribe
-    public void onStartLocationEvent(StartLocationEvent event){
+    public void onStartLocationChangeEvent(StartLocationChangeEvent event){
     	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Subscribe
-    public void onEndLocationEvent(EndLocationEvent event){
+    public void onEndLocationChangeEvent(EndLocationChangeEvent event){
     	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
     }
+    
+    @Subscribe
+    public void onPickUpChangeEvent(PickUpChangeEvent event){
+    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onDropOffChangeEvent(DropOffChangeEvent event){
+    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
+    }
+
 }

@@ -41,10 +41,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.events.CommunicationBus;
-import fi.aalto.kutsuplus.events.EndLocationEvent;
-import fi.aalto.kutsuplus.events.StartLocationEvent;
+import fi.aalto.kutsuplus.events.DropOffChangeEvent;
+import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.PickUpChangeEvent;
+import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
@@ -98,6 +101,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
+        communication_bus.register(this);
 		return rootView;
 	}
 
@@ -484,12 +488,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		if(isStartMarker)
 		{
-			communication_bus.post(new StartLocationEvent(this,ll));
+			communication_bus.post(new StartLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
 			startPoint = ll;
 		}
 		else
 		{
-			communication_bus.post(new EndLocationEvent(this,ll));
+			communication_bus.post(new EndLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
 			endPoint = ll;
 		}
 			
@@ -503,4 +507,25 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 
+    @Subscribe
+    public void onStartLocationChangeEvent(StartLocationChangeEvent event){
+    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onEndLocationChangeEvent(EndLocationChangeEvent event){
+    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onPickUpChangeEvent(PickUpChangeEvent event){
+    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onDropOffChangeEvent(DropOffChangeEvent event){
+    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    }
+
+	
 }
