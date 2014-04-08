@@ -99,62 +99,15 @@ public class FormFragment extends Fragment {
 			Runnable getCoordinatesTask = new Runnable() {
 				public void run() {
 					try {
-						// To avoid the android.os.NetworkOnMainThreadException
-						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-						StrictMode.setThreadPolicy(policy);
-
 						String queryText = adapter_from.getItem(0);
-						HttpHandler http = new HttpHandler();
-						List<NameValuePair> args = new ArrayList<NameValuePair>();
-						args.add(new BasicNameValuePair("key", queryText));
-						args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
-						args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
-						args.add(new BasicNameValuePair("request", "geocode"));
-
-						JSONArray jsonArray = null;
-						JSONObject json = null;
-						Log.d(LOG_TAG, "timer called");
-						try {
-							String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
-							Log.d(LOG_TAG, tmp);
-							jsonArray = new JSONArray(tmp);
-							json = jsonArray.getJSONObject(0);
-
-							String[] coords = json.getString("coords").split(",");
-							// latitude is a geographic coordinate that
-							// specifies the north-south position of a point
-							String longtitude = coords[0];
-							String latitude = coords[1];
-
-							try {
-								MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-								currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-								Log.d(LOG_TAG, "pickup stop: " + currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-								LatLng ll = new LatLng(mp.getX(), mp.getY());
-
-								// onItemClick FROM action moved here
-								// ------------->
-								pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-								GoogleMapPoint gmp = currentPickupStop.getGmpoint();
-								mCallback.onFromFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
-								fromView.requestFocus();
-								// <-----------------------------------------------
-
-								communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-
+						if(queryText!=null)
+						  handleFromFieldActivation(queryText);
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
 				}
+
 			};
 
 			@Override
@@ -181,54 +134,9 @@ public class FormFragment extends Fragment {
 			Runnable getCoordinatesTask = new Runnable() {
 				public void run() {
 					try {
-						// To avoid the android.os.NetworkOnMainThreadException
-						StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-						StrictMode.setThreadPolicy(policy);
 						String queryText = adapter_to.getItem(0);
-						HttpHandler http = new HttpHandler();
-						List<NameValuePair> args = new ArrayList<NameValuePair>();
-						args.add(new BasicNameValuePair("key", queryText));
-						args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
-						args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
-						args.add(new BasicNameValuePair("request", "geocode"));
-
-						JSONArray jsonArray = null;
-						JSONObject json = null;
-						Log.d(LOG_TAG, "timer called");
-						try {
-							String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
-							Log.d(LOG_TAG, tmp);
-							jsonArray = new JSONArray(tmp);
-							json = jsonArray.getJSONObject(0);
-
-							String[] coords = json.getString("coords").split(",");
-							// latitude is a geographic coordinate that
-							// specifies the north-south position of a point
-							String longtitude = coords[0];
-							String latitude = coords[1];
-							try {
-								MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-								currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-								Log.d(LOG_TAG, "dropoff stop: " + currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								LatLng ll = new LatLng(mp.getX(), mp.getY());
-
-								// onItemClick TO action moved here
-								// ------------->
-								dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-								GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
-								mCallback.onToFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
-								toView.requestFocus();
-								// <-----------------------------------------------
-								communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
-
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
+						if(queryText!=null)
+						  handleToFieldActivation(queryText);
 
 					} catch (IndexOutOfBoundsException e) {
 						e.printStackTrace();
@@ -238,6 +146,7 @@ public class FormFragment extends Fragment {
 					}
 
 				}
+
 			};
 
 			@Override
@@ -268,6 +177,7 @@ public class FormFragment extends Fragment {
 				}
 			}
 		communication_bus.register(this);
+		initView();
 		return rootView;
 	}
 
@@ -488,31 +398,46 @@ public class FormFragment extends Fragment {
 	public OnItemActivationListener mCallback;
 
 	
-	/*
-	 * FormFragment uses timing to get the nearest bus stop, but this uses a mouse click activation:
-	   It is possible that a quick user clicks the list item too fast and there is a wrong stop ID at  the class variable
 
 	private void initView() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-				GoogleMapPoint gmp = currentPickupStop.getGmpoint();
-				mCallback.onSuggestionClicked(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
-				fromView.requestFocus();
+				String queryText =parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
+			}
+		});
+		this.fromView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
+				String queryText =parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
+		    }
 
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-				GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
-				mCallback.onSuggestionClicked(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
-				toView.requestFocus();
+				String queryText =parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
 			}
 		});
-	}*/
+		
+		this.toView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
+				String queryText =parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
+		    }
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {				
+			}
+		});
+	}
 
 	public interface OnItemActivationListener {
 		/** Called by FormFragment when a suggestion list item is selected: based on the timer above */
@@ -520,6 +445,110 @@ public class FormFragment extends Fragment {
 		public void onToFieldActivation(LatLng latLng, StopObject currentPickupStop);
 	}
 
+	private void handleFromFieldActivation(String queryText) {
+		// To avoid the android.os.NetworkOnMainThreadException
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		HttpHandler http = new HttpHandler();
+		List<NameValuePair> args = new ArrayList<NameValuePair>();
+		args.add(new BasicNameValuePair("key", queryText));
+		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
+		args.add(new BasicNameValuePair("request", "geocode"));
+
+		JSONArray jsonArray = null;
+		JSONObject json = null;
+		Log.d(LOG_TAG, "timer called");
+		try {
+			String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
+			Log.d(LOG_TAG, tmp);
+			jsonArray = new JSONArray(tmp);
+			json = jsonArray.getJSONObject(0);
+
+			String[] coords = json.getString("coords").split(",");
+			// latitude is a geographic coordinate that
+			// specifies the north-south position of a point
+			String longtitude = coords[0];
+			String latitude = coords[1];
+
+			try {
+				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+				currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+				Log.d(LOG_TAG, "pickup stop: " + currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+				LatLng ll = new LatLng(mp.getX(), mp.getY());
+
+				// onItemClick FROM action moved here
+				// ------------->
+				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
+				GoogleMapPoint gmp = currentPickupStop.getGmpoint();
+				mCallback.onFromFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
+				fromView.requestFocus();
+				// <-----------------------------------------------
+
+				communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void handleToFieldActivation(String queryText) {
+		// To avoid the android.os.NetworkOnMainThreadException
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		HttpHandler http = new HttpHandler();
+		List<NameValuePair> args = new ArrayList<NameValuePair>();
+		args.add(new BasicNameValuePair("key", queryText));
+		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
+		args.add(new BasicNameValuePair("request", "geocode"));
+
+		JSONArray jsonArray = null;
+		JSONObject json = null;
+		Log.d(LOG_TAG, "timer called");
+		try {
+			String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
+			Log.d(LOG_TAG, tmp);
+			jsonArray = new JSONArray(tmp);
+			json = jsonArray.getJSONObject(0);
+
+			String[] coords = json.getString("coords").split(",");
+			// latitude is a geographic coordinate that
+			// specifies the north-south position of a point
+			String longtitude = coords[0];
+			String latitude = coords[1];
+			try {
+				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
+				currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+				Log.d(LOG_TAG, "dropoff stop: " + currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+				LatLng ll = new LatLng(mp.getX(), mp.getY());
+
+				// onItemClick TO action moved here
+				// ------------->
+				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
+				GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
+				mCallback.onToFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
+				toView.requestFocus();
+				// <-----------------------------------------------
+				communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
 		Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
