@@ -485,7 +485,7 @@ public class FormFragment extends Fragment {
 		}
 	}
 
-	public OnItemClickListener mCallback;
+	public OnItemActivationListener mCallback;
 
 	
 	/*
@@ -514,7 +514,7 @@ public class FormFragment extends Fragment {
 		});
 	}*/
 
-	public interface OnItemClickListener {
+	public interface OnItemActivationListener {
 		/** Called by FormFragment when a suggestion list item is selected */
 		public void onSuggestionActivation(LatLng latLng, StopObject currentPickupStop);
 	}

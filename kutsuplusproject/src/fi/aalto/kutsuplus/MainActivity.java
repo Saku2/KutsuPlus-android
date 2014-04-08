@@ -56,7 +56,7 @@ import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemActivationListener, ISendMapSelection {
 
 	SharedPreferences preferences;
 	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
