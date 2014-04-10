@@ -4,19 +4,17 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 
 public class DropOffChangeEvent {
 	final private int sender;
-	final private StopObject so;
+	final private StopObject bus_stop;
 
-	public DropOffChangeEvent(int sender,StopObject so) {
+	public DropOffChangeEvent(int sender,StopObject bus_stop) {
 		super();
 		this.sender=sender;
-		this.so = so;
+		this.bus_stop = bus_stop;
 	}
 	
-	public StopObject getSo() {
-		return so;
+	public StopObject getBus_stop() {
+		return bus_stop;
 	}
-
-
 
 	public int getSender() {
 		return sender;
@@ -24,8 +22,10 @@ public class DropOffChangeEvent {
 
 	@Override
 	public String toString() {
-		return "DropOffChangeEvent [sender=" + sender + ", so=" + so + "]";
+		return "DropOffChangeEvent [sender=" + sender + ", bus_stop=" + bus_stop + "]";
 	}
+
+	
 
 	
 }

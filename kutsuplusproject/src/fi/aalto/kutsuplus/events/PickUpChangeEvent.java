@@ -4,19 +4,17 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 
 public class PickUpChangeEvent {
 	final private int sender;
-	final private StopObject so;
+	final private StopObject bus_stop;
 
-	public PickUpChangeEvent(int sender,StopObject so) {
+	public PickUpChangeEvent(int sender,StopObject bus_stop) {
 		super();
 		this.sender=sender;
-		this.so = so;
+		this.bus_stop = bus_stop;
 	}
 	
-	public StopObject getSo() {
-		return so;
+	public StopObject getBus_stop() {
+		return bus_stop;
 	}
-
-
 
 	public int getSender() {
 		return sender;
@@ -24,10 +22,9 @@ public class PickUpChangeEvent {
 
 	@Override
 	public String toString() {
-		return "PickUpChangeEvent [sender=" + sender + ", so=" + so + "]";
+		return "PickUpChangeEvent [sender=" + sender + ", bus_stop=" + bus_stop + "]";
 	}
 
-	
 
 	
 }

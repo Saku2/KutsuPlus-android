@@ -59,7 +59,7 @@ import fi.aalto.kutsuplus.utils.CustomViewPager;
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemActivationListener, ISendMapSelection {
 
 	SharedPreferences preferences;
-	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
+	private CommunicationBus communication_bus=CommunicationBus.getInstance();
 
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
@@ -196,7 +196,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
-		communication_bus.register(this);
 	}
 	
 	private MapFragm getMapFragment(){
@@ -279,9 +278,14 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void doOrder(View v) {
 		SmsManager smsManager = SmsManager.getDefault();
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, "from to", null, null);
+		// KPE: English message format
+		String sms_message="KPE "+communication_bus.getPick_up_stop().getShortId()+" "+communication_bus.getDrop_off_stop().getShortId();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
 		Intent intent = new Intent(this, SMSNotificationActivity.class);
 		startActivity(intent);
+		
+		
+		// Save the ride to the local database		
 		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
 		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
 		String from = fromView.getText().toString();
@@ -290,6 +294,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			return;
 		if (to == null)
 			return;
+		
 		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
 		stha.clearContent();
 		stha.addStreetAddress(new StreetAddress(from));
@@ -424,24 +429,5 @@ public class MainActivity extends ActionBarActivity implements android.support.v
    		mapFragment.updateMarkersAndRoute(latLng, busstop, false);
    	}
    	
-    @Subscribe
-    public void onStartLocationChangeEvent(StartLocationChangeEvent event){
-    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    @Subscribe
-    public void onEndLocationChangeEvent(EndLocationChangeEvent event){
-    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
-    }
-    
-    @Subscribe
-    public void onPickUpChangeEvent(PickUpChangeEvent event){
-    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    @Subscribe
-    public void onDropOffChangeEvent(DropOffChangeEvent event){
-    	Toast.makeText(this, event.toString(), Toast.LENGTH_LONG).show();
-    }
 
 }

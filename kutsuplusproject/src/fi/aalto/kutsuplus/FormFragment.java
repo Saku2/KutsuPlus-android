@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -36,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.otto.Bus;
@@ -55,6 +55,7 @@ import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
+import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
@@ -67,8 +68,6 @@ public class FormFragment extends Fragment {
 	PopupWindow popupWindow_ExtrasList;
 	public static final int DIALOG_FRAGMENT = 1;
 
-	private StopObject currentPickupStop = null;
-	private StopObject currentDropoffStop = null;
 
 	private final String LOG_TAG = "kutsuplus" + this.getClass().getName();
 
@@ -439,12 +438,6 @@ public class FormFragment extends Fragment {
 		});
 	}
 
-	public interface OnItemActivationListener {
-		/** Called by FormFragment when a suggestion list item is selected: based on the timer above */
-		public void onFromFieldActivation(LatLng latLng, StopObject currentPickupStop);
-		public void onToFieldActivation(LatLng latLng, StopObject currentPickupStop);
-	}
-
 	private void handleFromFieldActivation(String queryText) {
 		// To avoid the android.os.NetworkOnMainThreadException
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -474,17 +467,15 @@ public class FormFragment extends Fragment {
 
 			try {
 				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-				currentPickupStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				Log.d(LOG_TAG, "pickup stop: " + currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-				LatLng ll = new LatLng(mp.getX(), mp.getY());
+                StopObject pickupStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+				Log.d(LOG_TAG, "pickup stop: " + pickupStop_so.getFinnishName() + " " + pickupStop_so.getShortId());
+				pickupStop.setText(pickupStop_so.getFinnishName() + " " + pickupStop_so.getShortId());
+				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
+				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
 				// onItemClick FROM action moved here
 				// ------------->
-				pickupStop.setText(currentPickupStop.getFinnishName() + " " + currentPickupStop.getShortId());
-				GoogleMapPoint gmp = currentPickupStop.getGmpoint();
-				mCallback.onFromFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentPickupStop);
-				fromView.requestFocus();
+				mCallback.onFromFieldActivation(ll, pickupStop_so);
 				// <-----------------------------------------------
 
 				communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
@@ -524,17 +515,15 @@ public class FormFragment extends Fragment {
 			String latitude = coords[1];
 			try {
 				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-				currentDropoffStop = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				Log.d(LOG_TAG, "dropoff stop: " + currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-				LatLng ll = new LatLng(mp.getX(), mp.getY());
+				StopObject dropoffStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
+				Log.d(LOG_TAG, "dropoff stop: " + dropoffStop_so.getFinnishName() + " " + dropoffStop_so.getShortId());
+				dropoffStop.setText(dropoffStop_so.getFinnishName() + " " + dropoffStop_so.getShortId());
+				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
+				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
 				// onItemClick TO action moved here
 				// ------------->
-				dropoffStop.setText(currentDropoffStop.getFinnishName() + " " + currentDropoffStop.getShortId());
-				GoogleMapPoint gmp = currentDropoffStop.getGmpoint();
-				mCallback.onToFieldActivation(new LatLng(gmp.getX(), gmp.getY()), currentDropoffStop);
-				toView.requestFocus();
+				mCallback.onToFieldActivation(ll, dropoffStop_so);
 				// <-----------------------------------------------
 				communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
 
@@ -551,11 +540,38 @@ public class FormFragment extends Fragment {
 	
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
-		Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
+    	{
+    		//StopObject bus_stop=event.getBus_stop();
+    		//pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
+    	}
 	}
 
 	@Subscribe
 	public void onDropOffChangeEvent(DropOffChangeEvent event) {
-		Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
+    	{
+    		//StopObject bus_stop=event.getBus_stop();
+    		//pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
+    	}
 	}
+	
+	 public void onAttach(Activity activity) {
+	        super.onAttach(activity);
+	        try {
+	        	mCallback = (OnItemActivationListener) activity;
+	        } catch (ClassCastException e) {
+	            throw new ClassCastException(activity.toString()
+	                    + " must implement interface");
+	        }
+
+	    }
+
+
+		public interface OnItemActivationListener {
+			/** Called by FormFragment when a suggestion list item is selected: based on the timer above */
+			public void onFromFieldActivation(LatLng latLng, StopObject currentPickupStop);
+			public void onToFieldActivation(LatLng latLng, StopObject currentPickupStop);
+		}
+
 }

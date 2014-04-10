@@ -110,7 +110,7 @@ public class CoordinateConverter {
        double rLa=Math.toDegrees(Math.toRadians(la) + dLa);
        double rLo=Math.toDegrees(Math.toRadians(lo) + dLo);
 
-	   return new GoogleMapPoint (rLo,rLa);
+	   return new GoogleMapPoint (rLa,rLo);
 	}
 
 }

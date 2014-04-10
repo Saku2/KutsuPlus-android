@@ -485,11 +485,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		if(isStartMarker)
 		{
 			communication_bus.post(new StartLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
+			communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
 			startPoint = ll;
 		}
 		else
 		{
 			communication_bus.post(new EndLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
+			communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
 			endPoint = ll;
 		}
 		
@@ -513,22 +515,54 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
     @Subscribe
     public void onStartLocationChangeEvent(StartLocationChangeEvent event){
-    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		startPoint = event.getLocation();	
+    		Toast.makeText(rootView.getContext().getApplicationContext(), "Start location change", Toast.LENGTH_LONG).show();
+    		if(startPoint != null && endPoint != null){
+    			drawStraightLineOnMap(startPoint, endPoint);
+    		}
+    	}
     }
 
     @Subscribe
     public void onEndLocationChangeEvent(EndLocationChangeEvent event){
-    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+            endPoint= event.getLocation();
+    		Toast.makeText(rootView.getContext().getApplicationContext(), "End location change", Toast.LENGTH_LONG).show();
+            if(startPoint != null && endPoint != null){
+    			drawStraightLineOnMap(startPoint, endPoint);
+    		}
+    	}
     }
 
     @Subscribe
     public void onPickUpChangeEvent(PickUpChangeEvent event){
-    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		Marker busstop_marker = markers_so.get(event.getBus_stop());
+            if(busstop_marker!=null)
+            {
+    		   updatePinkMarker(busstop_marker, true);
+            }
+    		updateActualPointMarker(true);
+    		drawWalkingRoute(true);    		
+    	}
     }
 
     @Subscribe
     public void onDropOffChangeEvent(DropOffChangeEvent event){
-    	Toast.makeText(rootView.getContext().getApplicationContext(), event.toString(), Toast.LENGTH_LONG).show();
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		Marker busstop_marker = markers_so.get(event.getBus_stop());
+            if(busstop_marker!=null)
+            {
+    		   updatePinkMarker(busstop_marker, false);
+            }
+    		updateActualPointMarker(false);
+    		drawWalkingRoute(false);    		
+    	}
     }
 
 	
