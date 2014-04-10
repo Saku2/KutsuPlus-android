@@ -49,8 +49,10 @@ import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.CommunicationBus;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
 import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
+import fi.aalto.kutsuplus.events.ToAddressChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -86,6 +88,8 @@ public class FormFragment extends Fragment {
 		// Get a reference to the AutoCompleteTextView in the layout
 		fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+		restoretoMemory();
+
 		// Create the adapter and set it to the AutoCompleteTextView
 		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 
@@ -178,6 +182,27 @@ public class FormFragment extends Fragment {
 		communication_bus.register(this);
 		initView();
 		return rootView;
+	}
+	private void restoretoMemory()
+	{
+		CommunicationBus cb=CommunicationBus.getInstance();
+		if(cb.getFrom_address()!=null)
+		{
+		  fromView.setFocusable(false); // DO NOT REMOVE THIS
+		  fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		  fromView.setText(cb.getFrom_address());
+		  fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		  fromView.setFocusable(true); // DO NOT REMOVE THIS
+		}
+
+		if(cb.getTo_address()!=null)
+		{
+		toView.setFocusable(false); // DO NOT REMOVE THIS
+		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		toView.setText(cb.getTo_address());
+		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		toView.setFocusable(true); // DO NOT REMOVE THIS
+		}
 	}
 
 	private String[] readStreets(int resource_id) {
@@ -351,9 +376,11 @@ public class FormFragment extends Fragment {
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
 				fromView.setText(street_address);
+				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
 				fromView.requestFocus();
 			} else {
 				toView.setText(street_address);
+				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
 				toView.requestFocus();
 			}
 		} else {
@@ -361,12 +388,14 @@ public class FormFragment extends Fragment {
 				fromView.setFocusable(false); // DO NOT REMOVE THIS
 				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
 				fromView.setText(street_address);
+				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
 				fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				fromView.setFocusable(true); // DO NOT REMOVE THIS
 			} else {
 				toView.setFocusable(false); // DO NOT REMOVE THIS
 				toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
 				toView.setText(street_address);
+				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
 				toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				toView.setFocusable(true); // DO NOT REMOVE THIS
 			}
@@ -394,10 +423,6 @@ public class FormFragment extends Fragment {
 		}
 	}
 
-	public OnItemActivationListener mCallback;
-
-	
-
 	private void initView() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -421,7 +446,7 @@ public class FormFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				String queryText =parent.getItemAtPosition(position).toString();
-				handleFromFieldActivation(queryText);
+				handleToFieldActivation(queryText);
 			}
 		});
 		
@@ -429,7 +454,7 @@ public class FormFragment extends Fragment {
 		    @Override
 		    public void onItemSelected (AdapterView<?> parent, View view, int position, long id) {
 				String queryText =parent.getItemAtPosition(position).toString();
-				handleFromFieldActivation(queryText);
+				handleToFieldActivation(queryText);
 		    }
 
 			@Override
@@ -473,12 +498,9 @@ public class FormFragment extends Fragment {
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
-				// onItemClick FROM action moved here
-				// ------------->
-				mCallback.onFromFieldActivation(ll, pickupStop_so);
-				// <-----------------------------------------------
-
 				communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
+				communication_bus.post(new PickUpChangeEvent(CommunicationBus.FORM_FRAGMENT, pickupStop_so));
+				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, queryText));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -521,11 +543,9 @@ public class FormFragment extends Fragment {
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
-				// onItemClick TO action moved here
-				// ------------->
-				mCallback.onToFieldActivation(ll, dropoffStop_so);
-				// <-----------------------------------------------
 				communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
+				communication_bus.post(new DropOffChangeEvent(CommunicationBus.FORM_FRAGMENT, dropoffStop_so));
+				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, queryText));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -535,15 +555,13 @@ public class FormFragment extends Fragment {
 			e.printStackTrace();
 		}
 	}
-
-	
 	
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
     	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
     	{
-    		//StopObject bus_stop=event.getBus_stop();
-    		//pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
+    		StopObject bus_stop=event.getBus_stop();
+    		pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
     	}
 	}
 
@@ -551,27 +569,10 @@ public class FormFragment extends Fragment {
 	public void onDropOffChangeEvent(DropOffChangeEvent event) {
     	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
     	{
-    		//StopObject bus_stop=event.getBus_stop();
-    		//pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
+    		StopObject bus_stop=event.getBus_stop();
+    		pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
     	}
 	}
 	
-	 public void onAttach(Activity activity) {
-	        super.onAttach(activity);
-	        try {
-	        	mCallback = (OnItemActivationListener) activity;
-	        } catch (ClassCastException e) {
-	            throw new ClassCastException(activity.toString()
-	                    + " must implement interface");
-	        }
-
-	    }
-
-
-		public interface OnItemActivationListener {
-			/** Called by FormFragment when a suggestion list item is selected: based on the timer above */
-			public void onFromFieldActivation(LatLng latLng, StopObject currentPickupStop);
-			public void onToFieldActivation(LatLng latLng, StopObject currentPickupStop);
-		}
 
 }

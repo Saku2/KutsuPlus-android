@@ -20,6 +20,9 @@ public class CommunicationBus {
 	private StopObject pick_up_stop=null;
 	private StopObject drop_off_stop=null;
 
+	private String from_address=null;
+	private String to_address=null;
+	
 	public Bus getCommucicationBus() {
 		return commucication_bus;
 	}
@@ -61,6 +64,18 @@ public class CommunicationBus {
 		drop_off_stop=event.getBus_stop();
 	}
 
+	@Subscribe
+	public void onFromAddressChangeEvent(FromAddressChangeEvent event) {
+		Log.d(LOG_TAG, "from address event");
+		from_address=event.getStreet_address();
+	}
+
+	@Subscribe
+	public void onToAddressChangeEvent(ToAddressChangeEvent event) {
+		Log.d(LOG_TAG, "to address event");
+		to_address=event.getStreet_address();
+	}
+	
 	public LatLng getStart_location() {
 		return start_location;
 	}
@@ -92,6 +107,21 @@ public class CommunicationBus {
 	public void setDrop_off_stop(StopObject drop_off_stop) {
 		this.drop_off_stop = drop_off_stop;
 	}
-	
 
+	public String getFrom_address() {
+		return from_address;
+	}
+
+	public void setFrom_address(String from_address) {
+		this.from_address = from_address;
+	}
+
+	public String getTo_address() {
+		return to_address;
+	}
+
+	public void setTo_address(String to_address) {
+		this.to_address = to_address;
+	}
+	
 }

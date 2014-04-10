@@ -56,7 +56,7 @@ import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemActivationListener, ISendMapSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection {
 
 	SharedPreferences preferences;
 	private CommunicationBus communication_bus=CommunicationBus.getInstance();
@@ -416,18 +416,5 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updateMarkersAndRoute(address_gps, busstop, focusAtFrom);
 	}
 
-	
-    @Override
-	public void onFromFieldActivation(LatLng latLng, StopObject busstop){
-    	MapFragm mapFragment = getMapFragment();
-		mapFragment.updateMarkersAndRoute(latLng, busstop, true);
-	}
-	
-    @Override
-   	public void onToFieldActivation(LatLng latLng, StopObject busstop){
-       	MapFragm mapFragment = getMapFragment();
-   		mapFragment.updateMarkersAndRoute(latLng, busstop, false);
-   	}
-   	
 
 }

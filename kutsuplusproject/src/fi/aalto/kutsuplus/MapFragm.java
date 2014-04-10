@@ -102,9 +102,26 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             setMapTransparent((ViewGroup) rootView);
         }
         communication_bus.register(this);
+        restoretoMemory();
 		return rootView;
 	}
 
+	private void restoretoMemory()
+	{
+		CommunicationBus cb=CommunicationBus.getInstance();
+		if(cb.getStart_location()!=null)
+		  onStartLocationChangeEvent(new StartLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getStart_location()));
+
+		if(cb.getEnd_location()!=null)
+			  onEndLocationChangeEvent(new EndLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getEnd_location()));
+		
+		if(cb.getPick_up_stop()!=null)
+			  onPickUpChangeEvent(new PickUpChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getPick_up_stop()));
+		
+		if(cb.getDrop_off_stop()!=null)
+			  onDropOffChangeEvent(new DropOffChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getDrop_off_stop()));
+
+	}
 	private void setMapTransparent(ViewGroup group) {
 	    int childCount = group.getChildCount();
 	    for (int i = 0; i < childCount; i++) {
@@ -518,7 +535,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
     	{
     		startPoint = event.getLocation();	
-    		Toast.makeText(rootView.getContext().getApplicationContext(), "Start location change", Toast.LENGTH_LONG).show();
     		if(startPoint != null && endPoint != null){
     			drawStraightLineOnMap(startPoint, endPoint);
     		}
@@ -530,7 +546,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
     	{
             endPoint= event.getLocation();
-    		Toast.makeText(rootView.getContext().getApplicationContext(), "End location change", Toast.LENGTH_LONG).show();
             if(startPoint != null && endPoint != null){
     			drawStraightLineOnMap(startPoint, endPoint);
     		}
@@ -541,6 +556,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onPickUpChangeEvent(PickUpChangeEvent event){
     	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
     	{
+    		if(markers.size() == 0){
+    			makeKPmarkers();
+    		}
     		Marker busstop_marker = markers_so.get(event.getBus_stop());
             if(busstop_marker!=null)
             {
@@ -555,6 +573,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onDropOffChangeEvent(DropOffChangeEvent event){
     	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
     	{
+    		if(markers.size() == 0){
+    			makeKPmarkers();
+    		}
     		Marker busstop_marker = markers_so.get(event.getBus_stop());
             if(busstop_marker!=null)
             {
