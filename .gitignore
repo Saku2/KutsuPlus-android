@@ -41,3 +41,7 @@ Kutsuplusproject/.metadata/*
 kutsuplusproject/project.properties
 
 *project.properties
+
+/kutsuplus_test
+/kutsuplus_testserver
+/.gitignore
