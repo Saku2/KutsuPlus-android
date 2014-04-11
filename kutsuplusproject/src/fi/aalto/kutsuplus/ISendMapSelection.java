@@ -1,7 +1,6 @@
 package fi.aalto.kutsuplus;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 import fi.aalto.kutsuplus.kdtree.StopObject;
 

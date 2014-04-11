@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -403,8 +402,6 @@ public class FormFragment extends Fragment {
 	}
 
 	public void updatePickupDropOffText(StopObject bus_stop, boolean markerWasDragged, boolean draggedStartMarker) {
-		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
-		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
 				communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));

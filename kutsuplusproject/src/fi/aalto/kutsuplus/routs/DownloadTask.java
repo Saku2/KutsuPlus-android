@@ -7,13 +7,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Polyline;
-
-import fi.aalto.kutsuplus.MapFragm;
-
 import android.os.AsyncTask;
 import android.util.Log;
+import fi.aalto.kutsuplus.MapFragm;
 
 public class DownloadTask extends AsyncTask<String, Void, String>{
 

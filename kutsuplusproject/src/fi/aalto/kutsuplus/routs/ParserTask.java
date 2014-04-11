@@ -6,28 +6,23 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.google.android.gms.maps.GoogleMap;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import fi.aalto.kutsuplus.MapFragm;
 import fi.aalto.kutsuplus.R;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.Paint.Align;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 
 public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
 

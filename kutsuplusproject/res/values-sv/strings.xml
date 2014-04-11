@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_gray">#DDDDDD</color>
-    <string name="app_name">AaltoKutsuplus</string>
     
     <!-- Order Tabs -->
     <string name="TAB_form">Form</string>
