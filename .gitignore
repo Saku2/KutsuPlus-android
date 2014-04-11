@@ -7,6 +7,7 @@
 
 # Java class files
 *.class
+.classpath
 
 # generated files
 bin/
@@ -16,7 +17,6 @@ gen/
 local.properties
 
 # Eclipse project files
-*.classpath
 *.project
 kutsuplus_test/.settings/
 kutsuplusproject/.settings/
@@ -41,7 +41,14 @@ Kutsuplusproject/.metadata/*
 kutsuplusproject/project.properties
 
 *project.properties
+<<<<<<< HEAD
 
 /kutsuplus_test
 /kutsuplus_testserver
 /.gitignore
+=======
+kutsuplus_testserver/.classpath
+kutsuplus_test/.classpath
+google-play-services_lib/.classpath
+android-support-v7-appcompat/.classpath
+>>>>>>> 2e505c2ff99e7376243faad06286d798183d77a2

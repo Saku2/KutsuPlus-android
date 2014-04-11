@@ -40,9 +40,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
- 
- 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
+import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.DropOffChangeEvent;
+import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.PickUpChangeEvent;
+import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
@@ -50,6 +55,8 @@ import fi.aalto.kutsuplus.routs.DownloadTask;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;
+	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
+
 	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
 	HashMap <StopObject, Marker> markers_so = new HashMap <StopObject, Marker>();
 
@@ -94,9 +101,27 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
+        communication_bus.register(this);
+        restoretoMemory();
 		return rootView;
 	}
 
+	private void restoretoMemory()
+	{
+		CommunicationBus cb=CommunicationBus.getInstance();
+		if(cb.getStart_location()!=null)
+		  onStartLocationChangeEvent(new StartLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getStart_location()));
+
+		if(cb.getEnd_location()!=null)
+			  onEndLocationChangeEvent(new EndLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getEnd_location()));
+		
+		if(cb.getPick_up_stop()!=null)
+			  onPickUpChangeEvent(new PickUpChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getPick_up_stop()));
+		
+		if(cb.getDrop_off_stop()!=null)
+			  onDropOffChangeEvent(new DropOffChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getDrop_off_stop()));
+
+	}
 	private void setMapTransparent(ViewGroup group) {
 	    int childCount = group.getChildCount();
 	    for (int i = 0; i < childCount; i++) {
@@ -206,13 +231,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		//String stopName = marker.getTitle();
-	       //LatLng pos = marker.getPosition();
-		//send data
 		StopObject so = markers.get(marker);
 	    if(so!=null)
 	    {
-	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition(), marker);
+	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition());
 	    }
 		return false;
 	} 
@@ -333,7 +355,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        else {
 	            if (addresses.size() > 0) {//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_on_map_click) + " "+ addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
-	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);
+	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);	            	
 	            }
 	        }
 	    }
@@ -458,8 +480,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 	
-	
-	public void updateMarkersAndRoute(LatLng ll, Marker marker, MainActivity mainActivity) {
+	public void updateMarkersAndRoute(LatLng ll, StopObject busstop,boolean focusAtFrom) {
 		
 		boolean isStartMarker = true;
 		if(markerWasDragged){
@@ -470,7 +491,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			
 			markerWasDragged = false;
 		}
-		else if(mainActivity.findViewById(R.id.from).hasFocus()){
+		else if(focusAtFrom){
 			isStartMarker = true;
 		}		
 		else{//
@@ -479,11 +500,27 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		
 		if(isStartMarker)
+		{
+			communication_bus.post(new StartLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
+			communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
 			startPoint = ll;
+		}
 		else
+		{
+			communication_bus.post(new EndLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
+			communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
 			endPoint = ll;
-			
-		updatePinkMarker(marker, isStartMarker);
+		}
+		
+		if(markers.size() == 0){
+			makeKPmarkers();
+		}
+	
+		Marker busstop_marker = markers_so.get(busstop);
+        if(busstop_marker!=null)
+        {
+		   updatePinkMarker(busstop_marker, isStartMarker);
+        }
 		updateActualPointMarker(isStartMarker);
 		drawWalkingRoute(isStartMarker);
 		
@@ -493,4 +530,61 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 
+    @Subscribe
+    public void onStartLocationChangeEvent(StartLocationChangeEvent event){
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		startPoint = event.getLocation();	
+    		if(startPoint != null && endPoint != null){
+    			drawStraightLineOnMap(startPoint, endPoint);
+    		}
+    	}
+    }
+
+    @Subscribe
+    public void onEndLocationChangeEvent(EndLocationChangeEvent event){
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+            endPoint= event.getLocation();
+            if(startPoint != null && endPoint != null){
+    			drawStraightLineOnMap(startPoint, endPoint);
+    		}
+    	}
+    }
+
+    @Subscribe
+    public void onPickUpChangeEvent(PickUpChangeEvent event){
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		if(markers.size() == 0){
+    			makeKPmarkers();
+    		}
+    		Marker busstop_marker = markers_so.get(event.getBus_stop());
+            if(busstop_marker!=null)
+            {
+    		   updatePinkMarker(busstop_marker, true);
+            }
+    		updateActualPointMarker(true);
+    		drawWalkingRoute(true);    		
+    	}
+    }
+
+    @Subscribe
+    public void onDropOffChangeEvent(DropOffChangeEvent event){
+    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	{
+    		if(markers.size() == 0){
+    			makeKPmarkers();
+    		}
+    		Marker busstop_marker = markers_so.get(event.getBus_stop());
+            if(busstop_marker!=null)
+            {
+    		   updatePinkMarker(busstop_marker, false);
+            }
+    		updateActualPointMarker(false);
+    		drawWalkingRoute(false);    		
+    	}
+    }
+
+	
 }

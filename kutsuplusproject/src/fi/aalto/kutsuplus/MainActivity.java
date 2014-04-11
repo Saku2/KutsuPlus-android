@@ -28,31 +28,38 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.savarese.spatial.NearestNeighbors;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.DropOffChangeEvent;
+import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.PickUpChangeEvent;
+import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
+import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, FormFragment.OnItemClickListener, ISendMapSelection, ISendFormSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection {
 
 	SharedPreferences preferences;
+	private CommunicationBus communication_bus=CommunicationBus.getInstance();
 
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
@@ -65,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	private FormFragment formFrag;
 	private MapFragm mapFrag;
 	private TabPagerAdapter mTabPagerAdapter;
-	private ViewPager mPager;
+	private CustomViewPager mPager;
 
 	private StopTreeHandler stopTreeHandler;
 
@@ -141,7 +148,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
 
-			mPager = (ViewPager) findViewById(R.id.pager);
+			mPager = (CustomViewPager) findViewById(R.id.pager);
 			mPager.setAdapter(mTabPagerAdapter);
 
 			mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -189,8 +196,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
-
 	}
+	
 	private MapFragm getMapFragment(){
 		MapFragm mapFragment = null;;
 		if(isTwoPaneLayout){
@@ -248,11 +255,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 		if (tab.getPosition() == MAPFRAG){
 			isMapTabSelected = true;
+			mPager.setPagingEnabled(false);
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
 		else{
 			isMapTabSelected = false;
+			mPager.setPagingEnabled(true);
 			if(kp_button != null)
 				kp_button.setVisible(false);
 		}
@@ -269,9 +278,14 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void doOrder(View v) {
 		SmsManager smsManager = SmsManager.getDefault();
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, "from to", null, null);
+		// KPE: English message format
+		String sms_message="KPE "+communication_bus.getPick_up_stop().getShortId()+" "+communication_bus.getDrop_off_stop().getShortId();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
 		Intent intent = new Intent(this, SMSNotificationActivity.class);
 		startActivity(intent);
+		
+		
+		// Save the ride to the local database		
 		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
 		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
 		String from = fromView.getText().toString();
@@ -280,6 +294,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			return;
 		if (to == null)
 			return;
+		
 		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
 		stha.clearContent();
 		stha.addStreetAddress(new StreetAddress(from));
@@ -375,10 +390,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
 					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
-					 
-					mapFragment.makeKPmarkers();
-					Marker mr = mapFragment.markers_so.get(so);
-					mapFragment.updateMarkersAndRoute(address_gps, mr, this);
+					boolean focusAtFrom=findViewById(R.id.from).hasFocus();
+					mapFragment.updateMarkersAndRoute(address_gps, so, focusAtFrom);
 				}
 			}
 		} catch (TreeNotReadyException e) {
@@ -391,65 +404,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 
 	@Override
-	public void setStopMarkerSelection(StopObject so,LatLng address_gps, Marker marker) {
-		Log.d("stop name", so.getFinnishName());
+	public void setStopMarkerSelection(StopObject busstop,LatLng address_gps) {
+		Log.d("stop name", busstop.getFinnishName());
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 		
-		formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updatePickupDropOffText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 		 // PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
-		
-		mapFragment.updateMarkersAndRoute(address_gps, marker, this);
+		formFragment.updateToFromText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+    	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
+		mapFragment.updateMarkersAndRoute(address_gps, busstop, focusAtFrom);
 	}
 
-	
-
-
-
-	@Override
-	public void setFocusOnFromField() {
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
-		//fromView.requestFocus();
-	}
-	@Override
-	public void setFocusOnToField() {
-		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
-		//toView.requestFocus();
-	}
-	
-	@Override
-	public void setFromPosAndStop(LatLng address_gps, StopObject so) {
-		MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}//
-	
-	@Override
-	public void setToPosAndStop(LatLng address_gps, StopObject so) {
-		MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}//
-
-
-    @Override
-	public void onSuggestionClicked(LatLng latLng, StopObject so){
-		//Toast.makeText(this, "DROPDAWN CLICK!", Toast.LENGTH_LONG).show();
-    	MapFragm mapFragment = getMapFragment();
-		if(mapFragment.markers.size() == 0){
-			mapFragment.makeKPmarkers();
-		}
-		Marker m = mapFragment.markers_so.get(so);
-		mapFragment.updateMarkersAndRoute(m.getPosition(), m, this);
-	}
-	
-	
 
 }

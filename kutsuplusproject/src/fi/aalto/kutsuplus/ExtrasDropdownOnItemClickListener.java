@@ -9,6 +9,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
+import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
+import fi.aalto.kutsuplus.events.ToAddressChangeEvent;
 
 /*
  * Idea originally:
@@ -41,7 +44,10 @@ public class ExtrasDropdownOnItemClickListener implements OnItemClickListener {
 			if (selectedItemText.equals("Current location"))
 				fromView.setText("");
 			else
+			{
+				CommunicationBus.getInstance().getCommucicationBus().post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, selectedItemText));
 				fromView.setText(selectedItemText);
+			}
 			fromView.setFocusable(true);
 			fromView.setFocusableInTouchMode(true);
 		} else {
@@ -51,7 +57,10 @@ public class ExtrasDropdownOnItemClickListener implements OnItemClickListener {
 			if (selectedItemText.equals("Current location"))
 				toView.setText("");
 			else
+			{
+				CommunicationBus.getInstance().getCommucicationBus().post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, selectedItemText));
 				toView.setText(selectedItemText);
+			}
 			toView.setFocusable(true);
 			toView.setFocusableInTouchMode(true);
 		}
