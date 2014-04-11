@@ -30,24 +30,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.savarese.spatial.NearestNeighbors;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.CommunicationBus;
-import fi.aalto.kutsuplus.events.DropOffChangeEvent;
-import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
-import fi.aalto.kutsuplus.events.PickUpChangeEvent;
-import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -389,7 +381,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				if(stops.length>0)
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(so.getFinnishName() + " " + so.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+					formFragment.updatePickupDropOffText(so, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 					boolean focusAtFrom=findViewById(R.id.from).hasFocus();
 					mapFragment.updateMarkersAndRoute(address_gps, so, focusAtFrom);
 				}
@@ -404,16 +396,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 
 	@Override
-	public void setStopMarkerSelection(StopObject busstop,LatLng address_gps) {
-		Log.d("stop name", busstop.getFinnishName());
+	public void setStopMarkerSelection(StopObject bus_stop,LatLng address_gps) {
+		Log.d("stop name", bus_stop.getFinnishName());
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 		
-		formFragment.updatePickupDropOffText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updatePickupDropOffText(bus_stop, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
 		 // PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(busstop.getFinnishName() + " " + busstop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updateToFromText(bus_stop.getFinnishName() + " " + bus_stop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
     	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
-		mapFragment.updateMarkersAndRoute(address_gps, busstop, focusAtFrom);
+		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
 
 

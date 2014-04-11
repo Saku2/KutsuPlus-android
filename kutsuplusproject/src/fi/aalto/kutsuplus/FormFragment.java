@@ -402,23 +402,23 @@ public class FormFragment extends Fragment {
 		}
 	}
 
-	public void updatePickupDropOffText(String stop_description, boolean markerWasDragged, boolean draggedStartMarker) {
+	public void updatePickupDropOffText(StopObject bus_stop, boolean markerWasDragged, boolean draggedStartMarker) {
 		TextView pickupView = (TextView) rootView.findViewById(R.id.pickup_stop);
 		TextView dropoffView = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
-				pickupView.setText(stop_description);
+				communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
 				fromView.requestFocus();
 			} else {
-				dropoffView.setText(stop_description);
+				communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
 				toView.requestFocus();
 			}
 		} else {
 			if (fromView.hasFocus()) {
-				pickupView.setText(stop_description);
+				communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
 
 			} else {
-				dropoffView.setText(stop_description);
+				communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
 			}
 		}
 	}
@@ -493,8 +493,6 @@ public class FormFragment extends Fragment {
 			try {
 				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
                 StopObject pickupStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				Log.d(LOG_TAG, "pickup stop: " + pickupStop_so.getFinnishName() + " " + pickupStop_so.getShortId());
-				pickupStop.setText(pickupStop_so.getFinnishName() + " " + pickupStop_so.getShortId());
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
@@ -538,8 +536,6 @@ public class FormFragment extends Fragment {
 			try {
 				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
 				StopObject dropoffStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				Log.d(LOG_TAG, "dropoff stop: " + dropoffStop_so.getFinnishName() + " " + dropoffStop_so.getShortId());
-				dropoffStop.setText(dropoffStop_so.getFinnishName() + " " + dropoffStop_so.getShortId());
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
@@ -558,20 +554,18 @@ public class FormFragment extends Fragment {
 	
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
-    	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
-    	{
     		StopObject bus_stop=event.getBus_stop();
+			Log.d(LOG_TAG, "Pickup stop: " + bus_stop.getFinnishName() + " " + bus_stop.getShortId());
+
     		pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
-    	}
 	}
 
 	@Subscribe
 	public void onDropOffChangeEvent(DropOffChangeEvent event) {
-    	if(event.getSender()!=CommunicationBus.FORM_FRAGMENT)
-    	{
     		StopObject bus_stop=event.getBus_stop();
-    		pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
-    	}
+			Log.d(LOG_TAG, "Dropoff stop: " + bus_stop.getFinnishName() + " " + bus_stop.getShortId());
+
+    		dropoffStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
 	}
 	
 
