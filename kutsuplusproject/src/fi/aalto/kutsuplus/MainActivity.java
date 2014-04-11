@@ -270,6 +270,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void doOrder(View v) {
 		SmsManager smsManager = SmsManager.getDefault();
+		if(communication==null)
+		  return;
+		if((communication.getPick_up_stop()==null)||(communication.getDrop_off_stop()==null))
+		  return;
 		// KPE: English message format
 		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
