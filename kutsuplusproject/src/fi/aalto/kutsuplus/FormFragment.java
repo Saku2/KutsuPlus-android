@@ -45,7 +45,7 @@ import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
-import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
 import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
@@ -61,7 +61,7 @@ import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
 public class FormFragment extends Fragment {
-	private Bus communication_bus = CommunicationBus.getInstance().getCommucicationBus();
+	private OTTOCommunication communication = OTTOCommunication.getInstance();
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
@@ -178,13 +178,13 @@ public class FormFragment extends Fragment {
 					toView.setText(to);
 				}
 			}
-		communication_bus.register(this);
+		communication.register(this);
 		initView();
 		return rootView;
 	}
 	private void restoretoMemory()
 	{
-		CommunicationBus cb=CommunicationBus.getInstance();
+		OTTOCommunication cb=OTTOCommunication.getInstance();
 		if(cb.getFrom_address()!=null)
 		{
 		  fromView.setFocusable(false); // DO NOT REMOVE THIS
@@ -375,11 +375,11 @@ public class FormFragment extends Fragment {
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
 				fromView.setText(street_address);
-				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
+				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				fromView.requestFocus();
 			} else {
 				toView.setText(street_address);
-				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
+				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				toView.requestFocus();
 			}
 		} else {
@@ -387,14 +387,14 @@ public class FormFragment extends Fragment {
 				fromView.setFocusable(false); // DO NOT REMOVE THIS
 				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
 				fromView.setText(street_address);
-				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
+				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				fromView.setFocusable(true); // DO NOT REMOVE THIS
 			} else {
 				toView.setFocusable(false); // DO NOT REMOVE THIS
 				toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
 				toView.setText(street_address);
-				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, street_address));
+				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 				toView.setFocusable(true); // DO NOT REMOVE THIS
 			}
@@ -404,18 +404,18 @@ public class FormFragment extends Fragment {
 	public void updatePickupDropOffText(StopObject bus_stop, boolean markerWasDragged, boolean draggedStartMarker) {
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
-				communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
+				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
 				fromView.requestFocus();
 			} else {
-				communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
+				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
 				toView.requestFocus();
 			}
 		} else {
 			if (fromView.hasFocus()) {
-				communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
+				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
 
 			} else {
-				communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,bus_stop));
+				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
 			}
 		}
 	}
@@ -493,9 +493,9 @@ public class FormFragment extends Fragment {
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
-				communication_bus.post(new StartLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
-				communication_bus.post(new PickUpChangeEvent(CommunicationBus.FORM_FRAGMENT, pickupStop_so));
-				communication_bus.post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, queryText));
+				communication.setStart_location(OTTOCommunication.FORM_FRAGMENT, ll);
+				communication.setPick_up_stop(OTTOCommunication.FORM_FRAGMENT, pickupStop_so);
+				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -536,9 +536,9 @@ public class FormFragment extends Fragment {
 				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
 				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
-				communication_bus.post(new EndLocationChangeEvent(CommunicationBus.FORM_FRAGMENT, ll));
-				communication_bus.post(new DropOffChangeEvent(CommunicationBus.FORM_FRAGMENT, dropoffStop_so));
-				communication_bus.post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, queryText));
+				communication.setEnd_location(OTTOCommunication.FORM_FRAGMENT, ll);
+				communication.setDrop_off_stop(OTTOCommunication.FORM_FRAGMENT, dropoffStop_so);
+				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 
 			} catch (Exception e) {
 				e.printStackTrace();

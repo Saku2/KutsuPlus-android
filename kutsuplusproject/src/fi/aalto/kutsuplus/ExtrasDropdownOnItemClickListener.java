@@ -9,7 +9,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
-import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
 import fi.aalto.kutsuplus.events.ToAddressChangeEvent;
 
@@ -45,7 +45,7 @@ public class ExtrasDropdownOnItemClickListener implements OnItemClickListener {
 				fromView.setText("");
 			else
 			{
-				CommunicationBus.getInstance().getCommucicationBus().post(new FromAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, selectedItemText));
+				OTTOCommunication.getInstance().getCommucicationBus().post(new FromAddressChangeEvent(OTTOCommunication.FORM_FRAGMENT, selectedItemText));
 				fromView.setText(selectedItemText);
 			}
 			fromView.setFocusable(true);
@@ -58,7 +58,7 @@ public class ExtrasDropdownOnItemClickListener implements OnItemClickListener {
 				toView.setText("");
 			else
 			{
-				CommunicationBus.getInstance().getCommucicationBus().post(new ToAddressChangeEvent(CommunicationBus.FORM_FRAGMENT, selectedItemText));
+				OTTOCommunication.getInstance().getCommucicationBus().post(new ToAddressChangeEvent(OTTOCommunication.FORM_FRAGMENT, selectedItemText));
 				toView.setText(selectedItemText);
 			}
 			toView.setFocusable(true);

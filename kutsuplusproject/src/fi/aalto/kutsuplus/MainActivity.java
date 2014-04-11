@@ -39,7 +39,7 @@ import com.savarese.spatial.NearestNeighbors;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
-import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -51,7 +51,7 @@ import fi.aalto.kutsuplus.utils.CustomViewPager;
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection {
 
 	SharedPreferences preferences;
-	private CommunicationBus communication_bus=CommunicationBus.getInstance();
+	private OTTOCommunication communication=OTTOCommunication.getInstance();
 
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
@@ -271,7 +271,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void doOrder(View v) {
 		SmsManager smsManager = SmsManager.getDefault();
 		// KPE: English message format
-		String sms_message="KPE "+communication_bus.getPick_up_stop().getShortId()+" "+communication_bus.getDrop_off_stop().getShortId();
+		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
 		Intent intent = new Intent(this, SMSNotificationActivity.class);
 		startActivity(intent);

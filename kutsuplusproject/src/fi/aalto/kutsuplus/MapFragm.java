@@ -43,7 +43,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.events.CommunicationBus;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
@@ -55,7 +55,7 @@ import fi.aalto.kutsuplus.routs.DownloadTask;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;
-	private Bus communication_bus=CommunicationBus.getInstance().getCommucicationBus();
+	private OTTOCommunication communication=OTTOCommunication.getInstance();
 
 	HashMap <Marker, StopObject> markers = new HashMap <Marker, StopObject>();
 	HashMap <StopObject, Marker> markers_so = new HashMap <StopObject, Marker>();
@@ -101,25 +101,25 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
-        communication_bus.register(this);
+        communication.register(this);
         restoretoMemory();
 		return rootView;
 	}
 
 	private void restoretoMemory()
 	{
-		CommunicationBus cb=CommunicationBus.getInstance();
+		OTTOCommunication cb=OTTOCommunication.getInstance();
 		if(cb.getStart_location()!=null)
-		  onStartLocationChangeEvent(new StartLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getStart_location()));
+		  onStartLocationChangeEvent(new StartLocationChangeEvent(OTTOCommunication.MAIN_ACTIVITY,cb.getStart_location()));
 
 		if(cb.getEnd_location()!=null)
-			  onEndLocationChangeEvent(new EndLocationChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getEnd_location()));
+			  onEndLocationChangeEvent(new EndLocationChangeEvent(OTTOCommunication.MAIN_ACTIVITY,cb.getEnd_location()));
 		
 		if(cb.getPick_up_stop()!=null)
-			  onPickUpChangeEvent(new PickUpChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getPick_up_stop()));
+			  onPickUpChangeEvent(new PickUpChangeEvent(OTTOCommunication.MAIN_ACTIVITY,cb.getPick_up_stop()));
 		
 		if(cb.getDrop_off_stop()!=null)
-			  onDropOffChangeEvent(new DropOffChangeEvent(CommunicationBus.MAIN_ACTIVITY,cb.getDrop_off_stop()));
+			  onDropOffChangeEvent(new DropOffChangeEvent(OTTOCommunication.MAIN_ACTIVITY,cb.getDrop_off_stop()));
 
 	}
 	private void setMapTransparent(ViewGroup group) {
@@ -501,14 +501,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		if(isStartMarker)
 		{
-			communication_bus.post(new StartLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
-			communication_bus.post(new PickUpChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
+			communication.setStart_location(OTTOCommunication.MAP_FRAGMENT,ll);
+			communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,busstop);
 			startPoint = ll;
 		}
 		else
 		{
-			communication_bus.post(new EndLocationChangeEvent(CommunicationBus.MAP_FRAGMENT,ll));
-			communication_bus.post(new DropOffChangeEvent(CommunicationBus.MAP_FRAGMENT,busstop));
+			communication.setEnd_location(OTTOCommunication.MAP_FRAGMENT,ll);
+			communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,busstop);
 			endPoint = ll;
 		}
 		
@@ -532,7 +532,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
     @Subscribe
     public void onStartLocationChangeEvent(StartLocationChangeEvent event){
-    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
     		startPoint = event.getLocation();	
     		if(startPoint != null && endPoint != null){
@@ -543,7 +543,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
     @Subscribe
     public void onEndLocationChangeEvent(EndLocationChangeEvent event){
-    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
             endPoint= event.getLocation();
             if(startPoint != null && endPoint != null){
@@ -554,7 +554,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
     @Subscribe
     public void onPickUpChangeEvent(PickUpChangeEvent event){
-    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
     		if(markers.size() == 0){
     			makeKPmarkers();
@@ -571,7 +571,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
     @Subscribe
     public void onDropOffChangeEvent(DropOffChangeEvent event){
-    	if(event.getSender()!=CommunicationBus.MAP_FRAGMENT)
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
     		if(markers.size() == 0){
     			makeKPmarkers();
