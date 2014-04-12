@@ -16,6 +16,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import fi.aalto.kutsuplus.database.TicketInfo;
 import fi.aalto.kutsuplus.sms.SMSMessage;
 import fi.aalto.kutsuplus.sms.SMSParser;
 
@@ -96,7 +97,7 @@ public class SMSNotificationActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				String[] response=smsparser.parse(body);
+				TicketInfo response = smsparser.parse(body);
 				
 				if (smsparser.isTicket()) {
 					String template = "<body><img src=\"ticket.jpg\"><BR>(1)</body>";

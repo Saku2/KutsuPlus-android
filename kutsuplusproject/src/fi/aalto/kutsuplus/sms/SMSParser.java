@@ -1,5 +1,7 @@
 package fi.aalto.kutsuplus.sms;
 
+import fi.aalto.kutsuplus.database.TicketInfo;
+
 /**
  * SMSParser has methods for parsing a string into an array of strings
  * */
@@ -36,14 +38,14 @@ public class SMSParser {
 		keywords = keywordList;
 	}
 		
-	public String[] parse(String message) {
-		String[] result;
+	public TicketInfo parse(String message) {
+		//String[] result;
 		String[] lines;
+		TicketInfo ticketInfo = new TicketInfo();
 		lines = message.split("\n");
 		try {
 			if (lines.length == CONF_MSG_SIZE) {
 				//parse the confirmation message
-				result = new String[10];
 				
 				//Split first line
 				String[] words0 = lines[0].trim().split(" ");
@@ -55,9 +57,9 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line:" + lines[1]);
 				}
 				//Get pickup time, don't include ','
-				result[PICKUP_TIME] = words0[1].substring(0, words0[1].length() - 1);
+				ticketInfo.setPickupTime(words0[1].substring(0, words0[1].length() - 1));
 				//Get pickup stop code
-				result[PICKUP_STOP_CODE] = words0[3];
+				ticketInfo.setPickupStop(words0[3]);
 				
 				//Split second line
 				String[] words1 = lines[1].trim().split(" ");
@@ -69,7 +71,7 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line:" + lines[1]);
 				}
 				//Get vehicle code
-				result[VEHICLE_CODE] = words1[1];
+				ticketInfo.setVehicleCode(words1[1]);
 				
 				//Split third line
 				String[] words2 = lines[2].trim().split(" ");
@@ -81,7 +83,7 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[2]);
 				}
 				//Get order code
-				result[ORDER_CODE] = words2[1];
+				ticketInfo.setOrderCode(words2[1]);
 				
 				//Split fourth line
 				String[] words3 = lines[3].trim().split(" ");
@@ -95,7 +97,7 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[3]);
 				}
 				//Get amount of passengers
-				result[AMOUNT_OF_PASSENGERS] = words3[0];
+				ticketInfo.setPassengerAmount(words3[0]);
 				
 				//Split fifth line
 				String[] words4 = lines[4].trim().split(" ");
@@ -107,16 +109,16 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line, null pointer:" + lines[4]);
 				}
 				//Get drop-off time, don't include ','
-				result[DROP_OFF_TIME] = words4[1].substring(0, words4[1].length() - 1);
+				ticketInfo.setDropOffTime(words4[1].substring(0, words4[1].length() - 1));
 				//Get drop-off stop code
-				result[DROP_OFF_STOP_CODE] = words4[3];
+				ticketInfo.setDropOffStop(words4[3]);
 				
 				//Sixth line should contain only one string
 				if (!lines[5].contains(keywords[7]) || lines[5].contains(" ")) {
 					throw new SMSParsingException("Syntax error at line:" + lines[5]);
 				}
 				//Get price, don't include 'e'
-				result[PRICE] = lines[5].substring(0, lines[5].length() - 1);
+				ticketInfo.setPrice(lines[5].substring(0, lines[5].length() - 1));
 				
 				//Split seventh line
 				String[] words6 = lines[6].trim().split(" ");
@@ -130,10 +132,10 @@ public class SMSParser {
 				}
 				//Get order id
 				if (keywords[0].equals(new String("en"))) {
-					result[ORDER_ID] = words6[2];
+					ticketInfo.setOrderId(words6[2]);
 				}
 				else if (keywords[0].equals(new String("fi")) || keywords[0].equals(new String("sv"))) {
-					result[ORDER_ID] = words6[1];
+					ticketInfo.setOrderId(words6[1]);
 				}
 				
 				//Eighth line should contain only the URL
@@ -141,23 +143,21 @@ public class SMSParser {
 					throw new SMSParsingException("Syntax error at line 8");
 				}
 				//Get URL
-				result[URL] = lines[7];
+				ticketInfo.setUrl(lines[7]);
 				ticket = true;
 			}
 			// An error message was received, let's just display it.
 			else {
-				result = new String[1];
-				result[ERROR_MESSAGE] = message;
+				ticketInfo.setErrorMessage(message);
 				ticket = false;
 			}
 		} catch (SMSParsingException e) {
 			System.err.println(e.getMessage());
-			String[] msg = new String[1];
-			msg[0] = message;
+			TicketInfo nullInfo = new TicketInfo();
 			ticket = false;
-			return msg;
+			return nullInfo;
 		}
-		return result;
+		return ticketInfo;
 	}
 
 	public boolean isTicket() {
