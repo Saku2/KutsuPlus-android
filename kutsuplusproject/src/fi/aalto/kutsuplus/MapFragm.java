@@ -63,34 +63,34 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	private View rootView;//
 	private GoogleMap map;
-	public HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
+	private HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
 	ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
-	public HashMap<String, Marker> startEndMarkers_onMapClick = new HashMap<String, Marker>(2);
-	public ArrayList <Marker> startDistanceMarkersWatcher = new ArrayList<Marker>();
-	public ArrayList <Marker> finishDistanceMarkersWatcher = new ArrayList<Marker>();
-	public ArrayList <Marker> startDurationMarkersWatcher = new ArrayList<Marker>();
-	public ArrayList <Marker> finishDurationMarkersWatcher = new ArrayList<Marker>();
-	public boolean markerWasDragged = false;
-	public boolean draggedStartMarker=false;
-	ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
+	private HashMap<String, Marker> startEndMarkers_onMapClick = new HashMap<String, Marker>(2);
+	private ArrayList <Marker> startDistanceMarkersWatcher = new ArrayList<Marker>();
+	private ArrayList <Marker> finishDistanceMarkersWatcher = new ArrayList<Marker>();
+	private ArrayList <Marker> startDurationMarkersWatcher = new ArrayList<Marker>();
+	private ArrayList <Marker> finishDurationMarkersWatcher = new ArrayList<Marker>();
+	private boolean markerWasDragged = false;
+	private boolean draggedStartMarker=false;
+	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
 	//min zoom level, for showing busstop markers
 	//final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
 	
-	public boolean KPstopsAreVisible = false;
-	public boolean KPstopsAreCreated = false;
+	private boolean KPstopsAreVisible = false;
+	private boolean KPstopsAreCreated = false;
 
 	private float markerAlpha = 0.7F;
 
 
 	Polyline straightLine = null;
-	public Polyline walkingToStartBusStopLine = null;
-	public Polyline walkingToFinishBusStopLine = null;
-	public LatLng startPoint= null;
-	public LatLng endPoint = null;
-	public boolean drawStartWalking = true;
+	private Polyline walkingToStartBusStopLine = null;
+	private Polyline walkingToFinishBusStopLine = null;
+	private LatLng startPoint= null;
+	private LatLng endPoint = null;
+	private boolean drawStartWalking = true;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -586,5 +586,66 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	}
     }
 
+	public boolean isDraggedStartMarker() {
+		return draggedStartMarker;
+	}
+
+	public LatLng getEndPoint() {
+		return endPoint;
+	}
+
+	public boolean isDrawStartWalking() {
+		return drawStartWalking;
+	}
+
+	public ArrayList<Marker> getStartDistanceMarkersWatcher() {
+		return startDistanceMarkersWatcher;
+	}
+
+	public ArrayList<Marker> getFinishDistanceMarkersWatcher() {
+		return finishDistanceMarkersWatcher;
+	}
+
+	public boolean isKPstopsAreVisible() {
+		return KPstopsAreVisible;
+	}
+
+	public boolean isKPstopsAreCreated() {
+		return KPstopsAreCreated;
+	}
+
+	public Polyline getWalkingToFinishBusStopLine() {
+		return walkingToFinishBusStopLine;
+	}
+
+	public LatLng getStartPoint() {
+		return startPoint;
+	}
+
+	public boolean isMarkerWasDragged() {
+		return markerWasDragged;
+	}
+
+	public Polyline getWalkingToStartBusStopLine() {
+		return walkingToStartBusStopLine;
+	}
+
+	public void setWalkingToStartBusStopLine(Polyline walkingToStartBusStopLine) {
+		this.walkingToStartBusStopLine = walkingToStartBusStopLine;
+	}
+
+	public ArrayList<Marker> getStartDurationMarkersWatcher() {
+		return startDurationMarkersWatcher;
+	}
+
+	public void setWalkingToFinishBusStopLine(Polyline walkingToFinishBusStopLine) {
+		this.walkingToFinishBusStopLine = walkingToFinishBusStopLine;
+	}
+
+	public ArrayList<Marker> getFinishDurationMarkersWatcher() {
+		return finishDurationMarkersWatcher;
+	}
+
 	
+    
 }

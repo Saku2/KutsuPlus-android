@@ -117,44 +117,44 @@ public ParserTask( MapFragm mapF_){
         			     .anchor(1, 0);
         
         //draw distance and duration text + lines
-    	if(this.mapF.drawStartWalking){
-        	if(this.mapF.walkingToStartBusStopLine != null)
-        		this.mapF.walkingToStartBusStopLine.remove();
+    	if(this.mapF.isDrawStartWalking()){
+        	if(this.mapF.getWalkingToStartBusStopLine() != null)
+        		this.mapF.getWalkingToStartBusStopLine().remove();
         	// Drawing polyline in the Google Map for the i-th route
-            this.mapF.walkingToStartBusStopLine = mapF.getMap().addPolyline(lineOptions);
+            this.mapF.setWalkingToStartBusStopLine(mapF.getMap().addPolyline(lineOptions));
             
             //draw distance text
-            LatLng disPoint = new LatLng(this.mapF.startPoint.latitude, this.mapF.startPoint.longitude);
+            LatLng disPoint = new LatLng(this.mapF.getStartPoint().latitude, this.mapF.getStartPoint().longitude);
             markerOptions_dis.position(disPoint);
-			removePreviousNumbers( mapF.startDistanceMarkersWatcher);
+			removePreviousNumbers( mapF.getStartDistanceMarkersWatcher());
 			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
-			mapF.startDistanceMarkersWatcher.add(marker);
+			mapF.getStartDistanceMarkersWatcher().add(marker);
 			
 			//draw duration text
-            markerOptions_dur.position(this.mapF.startPoint);
-			removePreviousNumbers( mapF.startDurationMarkersWatcher);
+            markerOptions_dur.position(this.mapF.getStartPoint());
+			removePreviousNumbers( mapF.getStartDurationMarkersWatcher());
 			marker = mapF.getMap().addMarker(markerOptions_dur);
-			mapF.startDurationMarkersWatcher.add(marker);
+			mapF.getStartDurationMarkersWatcher().add(marker);
 			
         }
-        else if(!this.mapF.drawStartWalking){
-        	if(this.mapF.walkingToFinishBusStopLine != null)
-        		this.mapF.walkingToFinishBusStopLine.remove();
+        else if(!this.mapF.isDrawStartWalking()){
+        	if(this.mapF.getWalkingToFinishBusStopLine() != null)
+        		this.mapF.getWalkingToFinishBusStopLine().remove();
         	// Drawing polyline in the Google Map for the i-th route
-            this.mapF.walkingToFinishBusStopLine = mapF.getMap().addPolyline(lineOptions);
+            this.mapF.setWalkingToFinishBusStopLine(mapF.getMap().addPolyline(lineOptions));
             
             //draw distance text
-            LatLng disPoint = new LatLng(this.mapF.endPoint.latitude, this.mapF.endPoint.longitude);
+            LatLng disPoint = new LatLng(this.mapF.getEndPoint().latitude, this.mapF.getEndPoint().longitude);
             markerOptions_dis.position(disPoint);
-			removePreviousNumbers( mapF.finishDistanceMarkersWatcher);
+			removePreviousNumbers( mapF.getFinishDistanceMarkersWatcher());
 			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
-			mapF.finishDistanceMarkersWatcher.add(marker);
+			mapF.getFinishDistanceMarkersWatcher().add(marker);
 			
 			//draw duration text
-            markerOptions_dur.position(this.mapF.endPoint);
-			removePreviousNumbers( mapF.finishDurationMarkersWatcher);
+            markerOptions_dur.position(this.mapF.getEndPoint());
+			removePreviousNumbers( mapF.getFinishDurationMarkersWatcher());
 			marker = mapF.getMap().addMarker(markerOptions_dur);
-			mapF.finishDurationMarkersWatcher.add(marker);
+			mapF.getFinishDurationMarkersWatcher().add(marker);
         }
     }
     

@@ -72,7 +72,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private GoogleMap google_map = null;
 	private boolean isFirstVisitToMap = true;
-	private boolean isMapTabSelected = false;
 	
 	boolean isTwoPaneLayout;
 	
@@ -246,13 +245,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			}
 		}
 		if (tab.getPosition() == MAPFRAG){
-			isMapTabSelected = true;
 			mPager.setPagingEnabled(false);
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
 		else{
-			isMapTabSelected = false;
 			mPager.setPagingEnabled(true);
 			if(kp_button != null)
 				kp_button.setVisible(false);
@@ -335,8 +332,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			MapFragm mapFragment = getMapFragment();
 			//add KP bus stops
 			if(mapFragment != null){
-				if(!mapFragment.KPstopsAreVisible){
-					if(!mapFragment.KPstopsAreCreated){
+				if(!mapFragment.isKPstopsAreVisible()){
+					if(!mapFragment.isKPstopsAreCreated()){
 						mapFragment.addAllKutsuPlusStopMarkers();
 					}
 					else{
@@ -385,7 +382,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				if(stops.length>0)
 				{
 					StopObject so=stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(so, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+					formFragment.updatePickupDropOffText(so, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
 					boolean focusAtFrom=findViewById(R.id.from).hasFocus();
 					mapFragment.updateMarkersAndRoute(address_gps, so, focusAtFrom);
 				}
@@ -394,7 +391,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(street_address, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updateToFromText(street_address, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
 		
 	}
 
@@ -405,9 +402,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 		
-		formFragment.updatePickupDropOffText(bus_stop, mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updatePickupDropOffText(bus_stop, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
 		 // PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(bus_stop.getFinnishName() + " " + bus_stop.getShortId(), mapFragment.markerWasDragged, mapFragment.draggedStartMarker);
+		formFragment.updateToFromText(bus_stop.getFinnishName() + " " + bus_stop.getShortId(), mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
     	boolean focusAtFrom=findViewById(R.id.from).hasFocus();
 		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
