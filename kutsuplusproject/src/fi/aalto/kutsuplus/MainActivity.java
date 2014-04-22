@@ -61,8 +61,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	private final String LOG_TAG = "kutsuplus";
 
 	private List<Fragment> mFragments;
-	private FormFragment formFrag;
-	private MapFragm mapFrag;
+	private FormFragment formFragment;
+	private MapFragm mapFragment;
 	private TabPagerAdapter mTabPagerAdapter;
 	private CustomViewPager mPager;
 
@@ -126,15 +126,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 			// Create an instance of ExampleFragment
 			mFragments = new ArrayList<Fragment>();
-			formFrag = new FormFragment();
-			mapFrag = new MapFragm();
+			formFragment = new FormFragment();
+			mapFragment = new MapFragm();
 
 			// In case this activity was started with special instructions from
 			// an Intent,
 			// pass the Intent's extras to the fragment as arguments
-			formFrag.setArguments(getIntent().getExtras());
-			mFragments.add(formFrag);
-			mFragments.add(mapFrag);
+			formFragment.setArguments(getIntent().getExtras());
+			mFragments.add(formFragment);
+			mFragments.add(mapFragment);
 
 			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
 
@@ -180,34 +180,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				// Capture the detail fragment from the activity layout
 			isTwoPaneLayout = true;
 			
-			MapFragm mapFrag = getMapFragment();
+			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
 			
-			showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
+			showHelsinkiArea(mapFragment, mapFragment.initialZoomLevel);
 			if(kp_button != null)
 				kp_button.setVisible(true);
 		}
 	}
 	
 	private MapFragm getMapFragment(){
-		MapFragm mapFragment = null;;
-		if(isTwoPaneLayout){
-			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-		}
-		else{
-			mapFragment = this.mapFrag;
-		}
-		return mapFragment;
+		
+		return this.mapFragment;
 	}
 
-	public FormFragment getFormFragment(){
-		FormFragment formFragment = null;
-		if(isTwoPaneLayout){
-			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
-		}
-		else{
-			formFragment = this.formFrag;
-		}
-		return formFragment;
+	private FormFragment getFormFragment(){
+		return this.formFragment;
 	}
 
 
@@ -239,7 +227,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
 		if (isFirstVisitToMap) {
 			if (tab.getPosition() == MAPFRAG) {//
-				showHelsinkiArea(mapFrag, mapFrag.initialZoomLevel);
+				showHelsinkiArea(mapFragment, mapFragment.initialZoomLevel);
 				isFirstVisitToMap = false;
 			}
 		}
@@ -264,37 +252,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		startActivity(browserIntent);
 	}
 
-	public void doOrder(View v) {
-		SmsManager smsManager = SmsManager.getDefault();
-		if(communication==null)
-		  return;
-		if((communication.getPick_up_stop()==null)||(communication.getDrop_off_stop()==null))
-		  return;
-		// KPE: English message format
-		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
-		Intent intent = new Intent(this, SMSNotificationActivity.class);
-		startActivity(intent);
-		
-		
-		// Save the ride to the local database		
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
-		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
-		String from = fromView.getText().toString();
-		String to = toView.getText().toString();
-		if (from == null)
-			return;
-		if (to == null)
-			return;
-		
-		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
-		stha.clearContent();
-		stha.addStreetAddress(new StreetAddress(from));
-		stha.addStreetAddress(new StreetAddress(to));
-		RideDatabaseHandler rides = new RideDatabaseHandler(getApplicationContext());
-		rides.clearContent();
-		rides.addRide(from, to);
-	}
+
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -408,5 +366,36 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
 
+	public void doOrder(View v) {
+		SmsManager smsManager = SmsManager.getDefault();
+		if(communication==null)
+		  return;
+		if((communication.getPick_up_stop()==null)||(communication.getDrop_off_stop()==null))
+		  return;
+		// KPE: English message format
+		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
+		Intent intent = new Intent(this, SMSNotificationActivity.class);
+		startActivity(intent);
+		
+		
+		// Save the ride to the local database		
+		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
+		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
+		String from = fromView.getText().toString();
+		String to = toView.getText().toString();
+		if (from == null)
+			return;
+		if (to == null)
+			return;
+		
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
+		stha.clearContent();
+		stha.addStreetAddress(new StreetAddress(from));
+		stha.addStreetAddress(new StreetAddress(to));
+		RideDatabaseHandler rides = new RideDatabaseHandler(getApplicationContext());
+		rides.clearContent();
+		rides.addRide(from, to);
+	}
 
 }
