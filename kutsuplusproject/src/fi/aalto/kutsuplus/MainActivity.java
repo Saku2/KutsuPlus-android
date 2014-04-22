@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private final String LOG_TAG = "kutsuplus";
 
-	private List<Fragment> mFragments;
+	private List<Fragment> mFragmentList;
 	private FormFragment formFragment;
 	private MapFragm mapFragment;
 	private TabPagerAdapter mTabPagerAdapter;
@@ -88,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		setContentView(R.layout.fragments);
+		setContentView(R.layout.main_fragments);
 
 		// Create stop tree
 		// This seems to be fast enough
@@ -125,7 +125,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			}
 
 			// Create an instance of ExampleFragment
-			mFragments = new ArrayList<Fragment>();
+			mFragmentList = new ArrayList<Fragment>();
 			formFragment = new FormFragment();
 			mapFragment = new MapFragm();
 
@@ -133,10 +133,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			// an Intent,
 			// pass the Intent's extras to the fragment as arguments
 			formFragment.setArguments(getIntent().getExtras());
-			mFragments.add(formFragment);
-			mFragments.add(mapFragment);
+			mFragmentList.add(formFragment);
+			mFragmentList.add(mapFragment);
 
-			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragments);
+			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragmentList);
 
 			mPager = (CustomViewPager) findViewById(R.id.pager);
 			mPager.setAdapter(mTabPagerAdapter);
@@ -375,7 +375,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// KPE: English message format
 		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
-		Intent intent = new Intent(this, SMSNotificationActivity.class);
+		Intent intent = new Intent(this, TicketActivity.class);
 		startActivity(intent);
 		
 		

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/large_fragment_container"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false">
 
+    
     <fragment android:name="fi.aalto.kutsuplus.FormFragment"
               android:id="@+id/large_form_fragment"
               android:layout_weight="1"

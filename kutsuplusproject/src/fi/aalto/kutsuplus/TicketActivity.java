@@ -20,7 +20,7 @@ import fi.aalto.kutsuplus.database.TicketInfo;
 import fi.aalto.kutsuplus.sms.SMSMessage;
 import fi.aalto.kutsuplus.sms.SMSParser;
 
-public class SMSNotificationActivity extends Activity {
+public class TicketActivity extends Activity {
 	private BroadcastReceiver mIntentReceiver;
 	TextView timerText;
 	WebView sms_message;

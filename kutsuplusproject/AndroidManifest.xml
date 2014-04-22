@@ -55,7 +55,7 @@
         
         <!-- SMS handling -->
         <activity
-          android:name="fi.aalto.kutsuplus.SMSNotificationActivity"
+          android:name="fi.aalto.kutsuplus.TicketActivity"
           android:label="@string/title_sms_notification"
           android:parentActivityName="fi.aalto.kutsuplus.MainActivity" >
           <meta-data
