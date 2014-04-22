@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		setContentView(R.layout.fragments);
 
 		// Create stop tree
-		// TODO: Run in new thread?
+		// This seems to be fast enough
 		Log.d(LOG_TAG, "before creating stopTree");
 		try {
 			stopTreeHandler = StopTreeHandler.getInstance(getAssets().open(getString(R.string.stop_list_path)));
@@ -133,7 +133,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			// an Intent,
 			// pass the Intent's extras to the fragment as arguments
 			formFrag.setArguments(getIntent().getExtras());
-
 			mFragments.add(formFrag);
 			mFragments.add(mapFrag);
 

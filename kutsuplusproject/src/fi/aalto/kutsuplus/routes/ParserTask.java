@@ -1,4 +1,4 @@
-package fi.aalto.kutsuplus.routs;
+package fi.aalto.kutsuplus.routes;
 
 import java.util.ArrayList;
 import java.util.HashMap;

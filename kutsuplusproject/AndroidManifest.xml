@@ -53,12 +53,6 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         
-
-        <!-- form -->
-        <activity
-            android:name="fi.aalto.kutsuplus.FormFragment">
-        </activity>
-        
         <!-- SMS handling -->
         <activity
           android:name="fi.aalto.kutsuplus.SMSNotificationActivity"

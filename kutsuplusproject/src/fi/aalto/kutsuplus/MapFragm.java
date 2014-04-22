@@ -51,7 +51,7 @@ import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
-import fi.aalto.kutsuplus.routs.DownloadTask;
+import fi.aalto.kutsuplus.routes.DownloadTask;
 
 public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;

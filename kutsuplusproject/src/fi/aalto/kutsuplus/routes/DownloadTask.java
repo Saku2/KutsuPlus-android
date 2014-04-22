@@ -1,4 +1,4 @@
-package fi.aalto.kutsuplus.routs;
+package fi.aalto.kutsuplus.routes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
