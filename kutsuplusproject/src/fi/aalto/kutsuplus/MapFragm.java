@@ -405,7 +405,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		if(straightLine != null)
 			straightLine.remove();
 		
-		straightLine = map.addPolyline(polyLineOptions);
+		if(map != null)
+		  straightLine = map.addPolyline(polyLineOptions);
 		
 		
 	}

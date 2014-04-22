@@ -38,20 +38,15 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.Ride;
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
-import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
-import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
-import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
-import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
-import fi.aalto.kutsuplus.events.ToAddressChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
@@ -59,7 +54,7 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
-
+ 
 public class FormFragment extends Fragment {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
 	private View rootView;
