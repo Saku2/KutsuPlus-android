@@ -64,7 +64,14 @@ public class TicketFragment extends Fragment {
 			}
 
 			public void onFinish() {
-				timerText.setText(getString(R.string.sms_timeout));
+				try
+				{
+				 timerText.setText(getString(R.string.sms_timeout));
+				}
+				catch(Exception e)
+				{
+					
+				}
 			}
 		}.start();
 	}

@@ -3,11 +3,11 @@ package fi.aalto.kutsuplus;
 import java.util.List;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class TabPagerAdapter extends FragmentPagerAdapter {
+public class TabPagerAdapter extends FragmentStatePagerAdapter {
 	
-	List<Fragment> fragList;
+	private List<Fragment> fragList;
 	
 	public TabPagerAdapter(android.support.v4.app.FragmentManager fm, List<Fragment> fragments) {
 		super(fm);
@@ -30,5 +30,8 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 		//TODO should this do something?
 		return "null";
 	}
+
+	
+	
 	
 }

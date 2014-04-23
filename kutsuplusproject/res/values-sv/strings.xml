@@ -2,11 +2,15 @@
 <resources>
     <color name="light_gray">#DDDDDD</color>
     
-    <!-- Order Tabs -->
+    <!-- Tabs at the phone screen-->
     <string name="TAB_form">Form</string>
     <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
+    <string name="TAB_ticket">Ticket</string>
+    <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>  
     <string name="TAB_map">Map</string>
     <string name="TAB_map_description">This tab contains a map to select the from and destionation points.</string>
+    
+    
     <!-- Order Form -->
     <string name="OF_current_location">Current location</string>
     <string name="OF_from">From</string>

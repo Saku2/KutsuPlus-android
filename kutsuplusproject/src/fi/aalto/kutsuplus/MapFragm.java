@@ -185,7 +185,16 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 	
 	private BitmapDescriptor setKPicon(){
-		return BitmapDescriptorFactory.fromResource(R.drawable.kp_marker);
+		try
+		{
+		   return BitmapDescriptorFactory.fromResource(R.drawable.kp_marker);
+		}
+		catch(Exception e)
+		{
+			// If not initialized, the application will continue
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public void makeKPmarkers(){
@@ -528,7 +537,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		drawWalkingRoute(isStartMarker);
 		
 		if(startPoint != null && endPoint != null){
-			drawStraightLineOnMap(startPoint, endPoint);
+			try
+			{
+			 drawStraightLineOnMap(startPoint, endPoint);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -539,7 +555,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	{
     		startPoint = event.getLocation();	
     		if(startPoint != null && endPoint != null){
-    			drawStraightLineOnMap(startPoint, endPoint);
+    			try
+    			{
+    			  drawStraightLineOnMap(startPoint, endPoint);
+    			}
+    			catch(Exception e)
+    			{
+    				e.printStackTrace();
+    			}
     		}
     	}
     }
@@ -559,6 +582,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onPickUpChangeEvent(PickUpChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
+    		try
+    		{
     		if(markers.size() == 0){
     			makeKPmarkers();
     		}
@@ -568,7 +593,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     		   updatePinkMarker(busstop_marker, true);
             }
     		updateActualPointMarker(true);
-    		drawWalkingRoute(true);    		
+    		drawWalkingRoute(true);
+    		}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     	}
     }
 
@@ -576,16 +606,23 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onDropOffChangeEvent(DropOffChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
-    		if(markers.size() == 0){
+    		try
+    		{
+    		 if(markers.size() == 0){
     			makeKPmarkers();
-    		}
-    		Marker busstop_marker = markers_so.get(event.getBus_stop());
-            if(busstop_marker!=null)
-            {
+    		 }
+    		 Marker busstop_marker = markers_so.get(event.getBus_stop());
+             if(busstop_marker!=null)
+             {
     		   updatePinkMarker(busstop_marker, false);
-            }
-    		updateActualPointMarker(false);
-    		drawWalkingRoute(false);    		
+             }
+    		 updateActualPointMarker(false);
+    		 drawWalkingRoute(false);
+    		}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     	}
     }
 

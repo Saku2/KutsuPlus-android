@@ -29,6 +29,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -65,16 +66,18 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	final static int EXTRAS_TO = 1;
 	public int extras_list = EXTRAS_FROM;
 
+	
 	private final String LOG_TAG = "kutsuplus";
 
-	private List<Fragment> mFragmentList;
-	private FormFragment formFragment;
-	private TicketFragment ticketFragment;
+	// Tabs for phone
+	private List<Fragment> fragmentList;
 	
+	private FormFragment formFragment;
+	private TicketFragment ticketFragment;	
 	private MapFragm mapFragment;
 	
 	
-	private TabPagerAdapter mTabPagerAdapter;
+	private TabPagerAdapter tabPagerAdapter;
 	private CustomViewPager mPager;
 
 	private StopTreeHandler stopTreeHandler;
@@ -127,21 +130,24 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				return;
 			}
 
-			mFragmentList = new ArrayList<Fragment>();
 			formFragment = new FormFragment();
+			ticketFragment = new TicketFragment();
 			mapFragment = new MapFragm();
 
 			// In case this activity was started with special instructions from
 			// an Intent,
 			// pass the Intent's extras to the fragment as arguments
 			formFragment.setArguments(getIntent().getExtras());
-			mFragmentList.add(formFragment);
-			mFragmentList.add(mapFragment);
+			
+			fragmentList = new ArrayList<Fragment>();			
+			fragmentList.add(formFragment);
+			fragmentList.add(mapFragment);
+			fragmentList.add(ticketFragment);
 
-			mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), mFragmentList);
+			tabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), fragmentList);
 
 			mPager = (CustomViewPager) findViewById(R.id.pager);
-			mPager.setAdapter(mTabPagerAdapter);
+			mPager.setAdapter(tabPagerAdapter);
 
 			mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -210,8 +216,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
-		//MenuItem kp_button = (MenuItem) findViewById(R.id.kutsu_pysakkit);
-		// TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
+		
 		if (isFirstVisitToMap) {
 			if (tab.getPosition() == MAPFRAG) {//
 				mapFragment.showHelsinkiArea(mapFragment.initialZoomLevel);
@@ -425,8 +430,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		
 		if(ticketFragment==null)
 			ticketFragment=new TicketFragment();
-		FragmentManager fm = getSupportFragmentManager();
-		fm.beginTransaction().add(R.id.large_form_fragment,ticketFragment,"Ticket").commit();   
+		if(isTwoPaneLayout)
+		{
+		  FragmentManager fm = getSupportFragmentManager();
+		  fm.beginTransaction().add(R.id.large_form_fragment,ticketFragment,"Ticket").commit();
+		}
+		else
+		{
+			final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+
+			Tab tickettab = actionBar.newTab();
+			tickettab.setText(getString(R.string.TAB_ticket));
+			tickettab.setContentDescription(getString(R.string.TAB_ticket_description));
+			tickettab.setTabListener(this);
+			actionBar.addTab(tickettab);
+			
+			mPager.setCurrentItem(2);
+		}
 		
 		SmsManager smsManager = SmsManager.getDefault();
 		if(communication==null)
