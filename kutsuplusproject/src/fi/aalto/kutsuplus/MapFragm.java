@@ -658,7 +658,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			setMap(google_map);
 			
 			// center point on map
-			GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
+			GoogleMapPoint centerPoint = new GoogleMapPoint(24.939029, 60.170187);
 			// view-changing method in map-fragmet:
 			try {
 				updateMapView(centerPoint, zoomLevel);

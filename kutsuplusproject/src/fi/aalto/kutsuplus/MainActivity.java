@@ -353,44 +353,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
 
-	public void doOrder(View v) {
-		
-		if(ticketFragment==null)
-			ticketFragment=new TicketFragment();
-		FragmentManager fm = getSupportFragmentManager();
-		fm.beginTransaction().add(R.id.large_form_fragment,ticketFragment,"Ticket").commit();   
-		
-		SmsManager smsManager = SmsManager.getDefault();
-		if(communication==null)
-		  return;
-		if((communication.getPick_up_stop()==null)||(communication.getDrop_off_stop()==null))
-		  return;
-		// KPE: English message format
-		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
-		
-		// Save the ride to the local database		
-		String from = communication.getFrom_address();
-		String to = communication.getTo_address();
-		if (from == null)
-			return;
-		if (to == null)
-			return;
-		
-		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
-		stha.clearContent();
-		stha.addStreetAddress(new StreetAddress(from));
-		stha.addStreetAddress(new StreetAddress(to));
-		RideDatabaseHandler rides = new RideDatabaseHandler(getApplicationContext());
-		rides.clearContent();
-		rides.addRide(from, to); 
-
-	}
-
-	public StopTreeHandler getStopTreeHandler() {
-		return stopTreeHandler;
-	}
-
 
 	private void checkOldSMSs() {
 		final long one_day = 1000 * 60 * 60 * 24;
@@ -457,4 +419,41 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		this.registerReceiver(sms_receiver, intentFilter);
 	
 	}
+	
+	
+	public void doOrder(View v) {
+		
+		if(ticketFragment==null)
+			ticketFragment=new TicketFragment();
+		FragmentManager fm = getSupportFragmentManager();
+		fm.beginTransaction().add(R.id.large_form_fragment,ticketFragment,"Ticket").commit();   
+		
+		SmsManager smsManager = SmsManager.getDefault();
+		if(communication==null)
+		  return;
+		if((communication.getPick_up_stop()==null)||(communication.getDrop_off_stop()==null))
+		  return;
+		// KPE: English message format
+		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
+		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
+		
+		// Save the ride to the local database		
+		String from = communication.getFrom_address();
+		String to = communication.getTo_address();
+		if (from == null)
+			return;
+		if (to == null)
+			return;
+		
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(getApplicationContext());
+		stha.clearContent();
+		stha.addStreetAddress(new StreetAddress(from));
+		stha.addStreetAddress(new StreetAddress(to));
+		RideDatabaseHandler rides = new RideDatabaseHandler(getApplicationContext());
+		rides.clearContent();
+		rides.addRide(from, to); 
+
+	}
+
+
 }
