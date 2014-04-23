@@ -22,7 +22,8 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center">
     <TextView
-        android:id="@+id/SW_TimeRemainigTv"
+        android:id="@+id/SW_TimeRemainig"
+        android:tag="time_remaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"

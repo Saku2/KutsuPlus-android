@@ -53,15 +53,7 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         
-        <!-- SMS handling -->
-        <activity
-          android:name="fi.aalto.kutsuplus.TicketActivity"
-          android:label="@string/title_sms_notification"
-          android:parentActivityName="fi.aalto.kutsuplus.MainActivity" >
-          <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="fi.aalto.kutsuplus.MainActivity" />
-        </activity>
+        <!-- SMS handling -->       
         <activity android:name="fi.aalto.kutsuplus.SettingsActivity" android:label="@string/title_settings" />
                 
           <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >

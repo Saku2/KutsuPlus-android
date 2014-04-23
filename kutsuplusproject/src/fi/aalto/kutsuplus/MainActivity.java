@@ -3,18 +3,25 @@ package fi.aalto.kutsuplus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.WindowCompat;
@@ -31,20 +38,20 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.savarese.spatial.NearestNeighbors;
 
 import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
+import fi.aalto.kutsuplus.database.TicketInfo;
 import fi.aalto.kutsuplus.events.OTTOCommunication;
-import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
+import fi.aalto.kutsuplus.sms.SMSMessage;
+import fi.aalto.kutsuplus.sms.SMSParser;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
@@ -62,7 +69,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private List<Fragment> mFragmentList;
 	private FormFragment formFragment;
+	private TicketFragment ticketFragment;
+	
 	private MapFragm mapFragment;
+	
+	
 	private TabPagerAdapter mTabPagerAdapter;
 	private CustomViewPager mPager;
 
@@ -70,15 +81,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public PopupWindow popupWindow_ExtrasList;
 
-	private GoogleMap google_map = null;
 	private boolean isFirstVisitToMap = true;
 	
 	boolean isTwoPaneLayout;
 	
 	Menu menu_this;
 	MenuItem kp_button;
+	private BroadcastReceiver sms_receiver;
 
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -99,14 +110,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
-		StopObject stop;
-		try {
-			stop = stopTreeHandler.getClosestStops(new MapPoint(0, 0), 1)[0].getNeighbor().getValue();
-			Log.d(LOG_TAG, stop.getFinnishName());
-		} catch (TreeNotReadyException e) {
-			e.printStackTrace();
-		}
-		Log.d(LOG_TAG, "after querying stop");
 
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
@@ -124,7 +127,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				return;
 			}
 
-			// Create an instance of ExampleFragment
 			mFragmentList = new ArrayList<Fragment>();
 			formFragment = new FormFragment();
 			mapFragment = new MapFragm();
@@ -169,7 +171,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			maptab.setTabListener(this);
 			actionBar.addTab(maptab);
 
-			// The preferences menu//s
+			// The preferences menu
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			preferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -180,16 +182,20 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				// Capture the detail fragment from the activity layout
 			isTwoPaneLayout = true;
 			
-			mapFragment = (MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-			formFragment = (FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+			formFragment = new FormFragment();//(FormFragment) getSupportFragmentManager().findFragmentById(R.id.large_form_fragment);
+			mapFragment =  new MapFragm();//(MapFragm) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+						
+			FragmentManager fm = getSupportFragmentManager();
+			fm.beginTransaction().add(R.id.large_form_fragment,formFragment,"Form").commit();   
+			getSupportFragmentManager().beginTransaction().add(R.id.map_fragment,mapFragment,"Map").commit();
 			
-			showHelsinkiArea(mapFragment, mapFragment.initialZoomLevel);
+			mapFragment.setStopTreeHandler(stopTreeHandler);
 			if(kp_button != null)
 				kp_button.setVisible(true);
-		}
+		}		
 	}
 	
-	private MapFragm getMapFragment(){
+	public MapFragm getMapFragment(){
 		
 		return this.mapFragment;
 	}
@@ -198,25 +204,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return this.formFragment;
 	}
 
-
-	private void showHelsinkiArea(MapFragm mapFrag, float zoomLevel) {
-		if (mapFrag != null) {//
-			// get map object
-			SupportMapFragment mySupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-			google_map = mySupportMapFragment.getMap();
-			mapFrag.setMap(google_map);
-			mapFrag.setStopTreeHandler(stopTreeHandler);
-			// center point on map
-			GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
-			// view-changing method in map-fragmet:
-			try {
-				mapFrag.updateMapView(centerPoint, zoomLevel);
-			} catch (Exception e) {
-				System.out.println("Probably no map initialized: " + e.getMessage());
-			}
-
-		}
-	}
 
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 	}
@@ -227,7 +214,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// TabPagerAdapter adapter = (TabPagerAdapter) mPager.getAdapter();
 		if (isFirstVisitToMap) {
 			if (tab.getPosition() == MAPFRAG) {//
-				showHelsinkiArea(mapFragment, mapFragment.initialZoomLevel);
+				mapFragment.showHelsinkiArea(mapFragment.initialZoomLevel);
 				isFirstVisitToMap = false;
 			}
 		}
@@ -367,6 +354,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 
 	public void doOrder(View v) {
+		
+		if(ticketFragment==null)
+			ticketFragment=new TicketFragment();
+		FragmentManager fm = getSupportFragmentManager();
+		fm.beginTransaction().add(R.id.large_form_fragment,ticketFragment,"Ticket").commit();   
+		
 		SmsManager smsManager = SmsManager.getDefault();
 		if(communication==null)
 		  return;
@@ -375,15 +368,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// KPE: English message format
 		String sms_message="KPE "+communication.getPick_up_stop().getShortId()+" "+communication.getDrop_off_stop().getShortId();
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
-		Intent intent = new Intent(this, TicketActivity.class);
-		startActivity(intent);
-		
 		
 		// Save the ride to the local database		
-		final AutoCompleteTextView fromView = (AutoCompleteTextView) findViewById(R.id.from);
-		final AutoCompleteTextView toView = (AutoCompleteTextView) findViewById(R.id.to);
-		String from = fromView.getText().toString();
-		String to = toView.getText().toString();
+		String from = communication.getFrom_address();
+		String to = communication.getTo_address();
 		if (from == null)
 			return;
 		if (to == null)
@@ -395,7 +383,78 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		stha.addStreetAddress(new StreetAddress(to));
 		RideDatabaseHandler rides = new RideDatabaseHandler(getApplicationContext());
 		rides.clearContent();
-		rides.addRide(from, to);
+		rides.addRide(from, to); 
+
 	}
 
+	public StopTreeHandler getStopTreeHandler() {
+		return stopTreeHandler;
+	}
+
+
+	private void checkOldSMSs() {
+		final long one_day = 1000 * 60 * 60 * 24;
+		Uri uriSMSURI = Uri.parse("content://sms/inbox");
+		Date filterDateStart = new Date();
+		String filter = "date>=" + (filterDateStart.getTime() - one_day);
+		Cursor c = getContentResolver().query(uriSMSURI, null, filter, null, null);
+		while (c.moveToNext()) {
+
+			// Only Inbox messages
+			if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+
+				SMSMessage read_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
+						c.getString(c.getColumnIndexOrThrow("date")));
+				
+			}
+
+			c.moveToNext();
+		}
+		return;
+	}
+
+	protected void onPause() {
+
+		super.onPause();
+		this.unregisterReceiver(sms_receiver);
+	}
+	
+	public void onResume() {
+		super.onResume();
+
+		IntentFilter intentFilter = new IntentFilter("SmsMessage.intent.MAIN");
+		sms_receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(ticketFragment==null)
+					return;
+				String msg = intent.getStringExtra("get_msg");
+
+				// Process the sms format and extract body &amp; phoneNumber
+
+				String body = msg.substring(msg.indexOf(":") + 1);
+				//String pNumber = msg.substring(0, msg.lastIndexOf(":"));				
+                //sms_message.setText(body);
+				SMSParser smsparser = null;
+				try {
+					smsparser = new SMSParser(getResources().getStringArray(R.array.sms_keyword_array));
+				} catch (NotFoundException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				TicketInfo response = smsparser.parse(body);
+				
+				if (smsparser.isTicket()) {
+					ticketFragment.showTicket(body);
+				} else {
+					ticketFragment.showErrorMessage(body);
+				}
+				ticketFragment.stopAnimation();
+
+			}
+		};
+		this.registerReceiver(sms_receiver, intentFilter);
+	
+	}
 }

@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
@@ -101,6 +102,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
+        showHelsinkiArea(initialZoomLevel); 
         communication.register(this);
         restoretoMemory();
 		return rootView;
@@ -647,6 +649,24 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		return finishDurationMarkersWatcher;
 	}
 
-	
+
+	public void showHelsinkiArea(float zoomLevel) {
+			// get map object
+			SupportMapFragment mySupportMapFragment = (SupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
+			
+			GoogleMap google_map = mySupportMapFragment.getMap();
+			setMap(google_map);
+			
+			// center point on map
+			GoogleMapPoint centerPoint = this.stopTreeHandler.findInitialCenter();
+			// view-changing method in map-fragmet:
+			try {
+				updateMapView(centerPoint, zoomLevel);
+			} catch (Exception e) {
+				System.out.println("Probably no map initialized: " + e.getMessage());
+			}
+
+	}
+
     
 }
