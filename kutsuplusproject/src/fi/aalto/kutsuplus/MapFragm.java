@@ -595,6 +595,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     		updateActualPointMarker(true);
     		drawWalkingRoute(true);
     		}
+    		catch(IllegalStateException is)
+    		{
+    			//This can be hapend at the beginning, when the map is not ready and the first messages are sent
+    		}
     		catch(Exception e)
     		{
     			e.printStackTrace();
@@ -618,6 +622,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
              }
     		 updateActualPointMarker(false);
     		 drawWalkingRoute(false);
+    		}
+    		catch(IllegalStateException is)
+    		{
+    			// Can be caused then events are send when map is not yet ready
     		}
     		catch(Exception e)
     		{

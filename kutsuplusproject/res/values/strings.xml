@@ -7,7 +7,7 @@
     <string name="app_name">ÄlyBussi</string>
     
     <!-- Order Tabs -->
-    <string name="TAB_form">Form</string>
+    <string name="TAB_form">Order</string>
     <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
     <string name="TAB_ticket">Ticket</string>
     <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>

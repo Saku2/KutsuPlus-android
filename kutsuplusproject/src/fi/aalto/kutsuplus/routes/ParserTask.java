@@ -120,8 +120,18 @@ public ParserTask( MapFragm mapF_){
     	if(this.mapF.isDrawStartWalking()){
         	if(this.mapF.getWalkingToStartBusStopLine() != null)
         		this.mapF.getWalkingToStartBusStopLine().remove();
+        	if(mapF.getMap()==null)
+        		return;
         	// Drawing polyline in the Google Map for the i-th route
-            this.mapF.setWalkingToStartBusStopLine(mapF.getMap().addPolyline(lineOptions));
+        	try
+        	{
+              this.mapF.setWalkingToStartBusStopLine(mapF.getMap().addPolyline(lineOptions));
+        	}
+        	catch(NullPointerException ne)
+        	{
+        		// In case this is not initialized yet
+        		return;
+        	}
             
             //draw distance text
             LatLng disPoint = new LatLng(this.mapF.getStartPoint().latitude, this.mapF.getStartPoint().longitude);
@@ -140,9 +150,18 @@ public ParserTask( MapFragm mapF_){
         else if(!this.mapF.isDrawStartWalking()){
         	if(this.mapF.getWalkingToFinishBusStopLine() != null)
         		this.mapF.getWalkingToFinishBusStopLine().remove();
+        	if(mapF.getMap()==null)
+        		return;
         	// Drawing polyline in the Google Map for the i-th route
-            this.mapF.setWalkingToFinishBusStopLine(mapF.getMap().addPolyline(lineOptions));
-            
+        	try
+        	{
+              this.mapF.setWalkingToFinishBusStopLine(mapF.getMap().addPolyline(lineOptions));
+        	}
+        	catch(NullPointerException ne)
+        	{
+        		//When refreshing the MainActivity and there is no map
+        		return;
+        	}
             //draw distance text
             LatLng disPoint = new LatLng(this.mapF.getEndPoint().latitude, this.mapF.getEndPoint().longitude);
             markerOptions_dis.position(disPoint);

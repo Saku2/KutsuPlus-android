@@ -92,11 +92,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	MenuItem show_busstops_button;
 	private BroadcastReceiver sms_receiver;
 
-	
+	static boolean done_set_locale=false;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		// The preferences menu
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferences.registerOnSharedPreferenceChangeListener(this);
+		String used_language=preferences.getString("prefLanguage", "");
+		if(!used_language.equals(""))
+		{
+			if(!done_set_locale)
+	           setLocale_noreset(used_language);
+			done_set_locale=true;
+	    }
+		
 
 		supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
 
@@ -113,10 +124,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
-
-		// The preferences menu
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
@@ -299,11 +306,27 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		String used_language=sharedPreferences.getString("prefLanguage", "");
+		if(!used_language.equals(""))
+		{
+	           setLocale(used_language);
+	    }
 
 	}
 
 	private Locale myLocale;
 
+	private void setLocale_noreset(String lang) {
+		myLocale = new Locale(lang);
+		Resources res = getResources();
+		DisplayMetrics dm = res.getDisplayMetrics();
+		Configuration conf = res.getConfiguration();
+		conf.locale = myLocale;
+		res.updateConfiguration(conf, dm);
+	}
+	
+	
+	// This is originally from: http://stackoverflow.com/questions/12908289/how-change-language-of-app-on-user-select-language
 	private void setLocale(String lang) {
 		myLocale = new Locale(lang);
 		Resources res = getResources();
@@ -311,6 +334,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		Configuration conf = res.getConfiguration();
 		conf.locale = myLocale;
 		res.updateConfiguration(conf, dm);
+		//TODO changes the language on the fly, but creates new instances
+		
 		Intent refresh = new Intent(this, MainActivity.class);
 		startActivity(refresh);
 	}

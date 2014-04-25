@@ -3,26 +3,26 @@
     <color name="light_gray">#DDDDDD</color>
     
     <!-- Order Tabs -->
-    <string name="TAB_form">Form</string>
+    <string name="TAB_form">Tilauslomake</string>
     <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
-    <string name="TAB_ticket">Ticket</string>
+    <string name="TAB_ticket">Lipu</string>
     <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>
     
-    <string name="TAB_map">Map</string>
+    <string name="TAB_map">Kartta</string>
     <string name="TAB_map_description">This tab contains a map to select the from and destionation points.</string>
     <!-- Order Form -->
     <string name="OF_current_location">Current location</string>
-    <string name="OF_from">From</string>
+    <string name="OF_from">Mistä</string>
     <string name="OF_from_extra_options_desciption">By selecting this you can see more options for the from field.</string>
     <string name="OF_from_field_description">Type here the starting address of the ride.</string>
     
-    <string name="OF_to">To</string>
+    <string name="OF_to">Mihin</string>
     <string name="OF_to_extra_options_description">By selecting this you can see more options for the destination field.</string>
     <string name="OF_to_field_description">Type here the destination address of the ride.</string>
     
     <string name="OF_number_of_passengers">Number of passengers</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Max price</string>
+    <string name="OF_max_price">Maksimihinta</string>
     <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
     
     <string name="OF_estimated_price">Estimated price</string>    

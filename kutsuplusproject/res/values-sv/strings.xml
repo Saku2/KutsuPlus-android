@@ -3,21 +3,21 @@
     <color name="light_gray">#DDDDDD</color>
     
     <!-- Tabs at the phone screen-->
-    <string name="TAB_form">Form</string>
+    <string name="TAB_form">Beställning</string>
     <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
     <string name="TAB_ticket">Ticket</string>
     <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>  
-    <string name="TAB_map">Map</string>
+    <string name="TAB_map">Karta</string>
     <string name="TAB_map_description">This tab contains a map to select the from and destionation points.</string>
     
     
     <!-- Order Form -->
     <string name="OF_current_location">Current location</string>
-    <string name="OF_from">From</string>
+    <string name="OF_from">Från</string>
     <string name="OF_from_extra_options_desciption">By selecting this you can see more options for the from field.</string>
     <string name="OF_from_field_description">Type here the starting address of the ride.</string>
     
-    <string name="OF_to">To</string>
+    <string name="OF_to">Till</string>
     <string name="OF_to_extra_options_description">By selecting this you can see more options for the destination field.</string>
     <string name="OF_to_field_description">Type here the destination address of the ride.</string>
     

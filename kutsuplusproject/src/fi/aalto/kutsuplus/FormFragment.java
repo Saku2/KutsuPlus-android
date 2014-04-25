@@ -544,6 +544,7 @@ public class FormFragment extends Fragment {
 		}
 	}
 	
+	
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
     		StopObject bus_stop=event.getBus_stop();
@@ -560,5 +561,6 @@ public class FormFragment extends Fragment {
     		dropoffStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
 	}
 	
-
+	
+   
 }
