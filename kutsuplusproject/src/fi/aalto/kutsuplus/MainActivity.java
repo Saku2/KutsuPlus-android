@@ -12,12 +12,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -155,6 +154,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
+		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LOCKED); 
 
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
