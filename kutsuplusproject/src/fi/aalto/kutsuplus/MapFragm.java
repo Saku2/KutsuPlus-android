@@ -29,10 +29,10 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -41,12 +41,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.events.OTTOCommunication;
+import fi.aalto.kutsuplus.events.CurrentLocationChangeEvent;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
 import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
@@ -74,8 +74,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private boolean markerWasDragged = false;
 	private boolean draggedStartMarker=false;
 	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
+	
 	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
+	
 	//min zoom level, for showing busstop markers
 	//final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
@@ -549,6 +551,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 
+	@Subscribe
+    public void onCurrentLocationChangeEvent(CurrentLocationChangeEvent event){
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
+    	{
+    		// The code to show the user location here
+    	}
+    }
+	
     @Subscribe
     public void onStartLocationChangeEvent(StartLocationChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)

@@ -24,7 +24,9 @@ import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -38,6 +40,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.savarese.spatial.NearestNeighbors;
 import com.squareup.otto.Subscribe;
 
 import fi.aalto.kutsuplus.database.Ride;
@@ -51,6 +54,7 @@ import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
+import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.HttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
@@ -312,7 +316,7 @@ public class FormFragment extends Fragment {
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras.setOnItemClickListener(new ExtrasDropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(new Form_DropdownOnItemClickListener());
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -369,11 +373,27 @@ public class FormFragment extends Fragment {
 	public void updateToFromText(String street_address, boolean markerWasDragged, boolean draggedStartMarker) {
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
+				fromView.setThreshold(1000);
 				fromView.setText(street_address);
+				fromView.setOnTouchListener(new OnTouchListener() {
+	                @Override
+	                public boolean onTouch(View v, MotionEvent event) {
+	                	fromView.setThreshold(3);
+	                    return false;
+	                }
+	            });
 				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				fromView.requestFocus();
 			} else {
+				toView.setThreshold(1000);
 				toView.setText(street_address);
+				toView.setOnTouchListener(new OnTouchListener() {
+	                @Override
+	                public boolean onTouch(View v, MotionEvent event) {
+	                	toView.setThreshold(3);
+	                    return false;
+	                }
+	            });
 				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
 				toView.requestFocus();
 			}
@@ -462,6 +482,7 @@ public class FormFragment extends Fragment {
 		if(last_From_query.equals(queryText))
 			return;
 		last_From_query=queryText;
+		
 		// To avoid the android.os.NetworkOnMainThreadException
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
@@ -513,6 +534,7 @@ public class FormFragment extends Fragment {
 		if(last_To_query.equals(queryText))
 			return;
 		last_To_query=queryText;
+		
 		// To avoid the android.os.NetworkOnMainThreadException
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);

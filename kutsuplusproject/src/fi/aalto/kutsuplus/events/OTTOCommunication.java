@@ -15,6 +15,7 @@ public class OTTOCommunication {
 	public static final int MAP_FRAGMENT = 2;
 	private final Bus commucication_bus = new Bus();
 	
+	private LatLng current_location=null;
 	private LatLng start_location=null;
 	private LatLng end_location=null;
 	private StopObject pick_up_stop=null;
@@ -40,6 +41,12 @@ public class OTTOCommunication {
 		return instance;
 	}
 
+	@Subscribe
+	public void onCurrentLocationChangeEvent(CurrentLocationChangeEvent event) {
+		Log.d(LOG_TAG, "current location event");
+		current_location=event.getLocation();
+	}
+	
 	@Subscribe
 	public void onStartLocationChangeEvent(StartLocationChangeEvent event) {
 		Log.d(LOG_TAG, "start location event");
@@ -76,6 +83,11 @@ public class OTTOCommunication {
 		to_address=event.getStreet_address();
 	}
 	
+	
+	public LatLng getCurrent_location() {
+		return current_location;
+	}
+
 	public LatLng getStart_location() {
 		return start_location;
 	}
@@ -101,6 +113,10 @@ public class OTTOCommunication {
 		return to_address;
 	}
 
+	public void setCurrent_location(int sender,LatLng start_location) {
+		commucication_bus.post(new CurrentLocationChangeEvent(sender,start_location));
+	}
+	
 	public void setStart_location(int sender,LatLng start_location) {
 		commucication_bus.post(new StartLocationChangeEvent(sender,start_location));
 	}
@@ -123,6 +139,14 @@ public class OTTOCommunication {
 
 	public void setTo_address(int sender, String to_address) {
 		commucication_bus.post(new ToAddressChangeEvent(sender,to_address));
+	}
+	
+	public void setFrom_address(String from_address) {
+		this.from_address = from_address;
+	}
+
+	public void setTo_address(String to_address) {
+		this.to_address = to_address;
 	}
 
 	public void register(Object subscriber)
