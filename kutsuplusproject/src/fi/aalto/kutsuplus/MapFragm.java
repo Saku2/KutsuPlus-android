@@ -104,6 +104,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
+		// get map object
+		SupportMapFragment mySupportMapFragment = (SupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
+		GoogleMap google_map = mySupportMapFragment.getMap();
+		setMap(google_map);
+		google_map.setMyLocationEnabled(true);
         showHelsinkiArea(initialZoomLevel); 
         communication.register(this);
         restoretoMemory();
@@ -401,7 +406,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	public void setMap(GoogleMap map) {
 		this.map = map;
-	}//
+	}
 
 
 	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
@@ -706,11 +711,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 
 	public void showHelsinkiArea(float zoomLevel) {
-			// get map object
-			SupportMapFragment mySupportMapFragment = (SupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
-			
-			GoogleMap google_map = mySupportMapFragment.getMap();
-			setMap(google_map);
 			
 			// center point on map
 			GoogleMapPoint centerPoint = new GoogleMapPoint(24.939029, 60.170187);
