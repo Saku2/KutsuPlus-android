@@ -4,43 +4,42 @@
     
     <!-- Order Tabs -->
     <string name="TAB_form">Tilauslomake</string>
-    <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
-    <string name="TAB_ticket">Lipu</string>
-    <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>
+    <string name="TAB_form_description">Tämän välilehden lomakkeella voit  tilata Kustsuplus kyydin.</string>
+    <string name="TAB_ticket">Lippu</string>
+    <string name="TAB_ticket_description">Tämä välilehti sisältää vastaanotetun lipun.</string>
     
     <string name="TAB_map">Kartta</string>
-    <string name="TAB_map_description">This tab contains a map to select the from and destionation points.</string>
+    <string name="TAB_map_description">Tällä välilehdellä voit valita lähtö- ja kohdepaikan kartalta.</string>
     <!-- Order Form -->
-    <string name="OF_current_location">Current location</string>
+    <string name="OF_current_location">Nykyinen sijainti</string>
     <string name="OF_from">Mistä</string>
-    <string name="OF_from_extra_options_desciption">By selecting this you can see more options for the from field.</string>
-    <string name="OF_from_field_description">Type here the starting address of the ride.</string>
+    <string name="OF_from_extra_options_desciption">Valitsemalla tämän saat lisä vaihtoehtoja.</string>
+    <string name="OF_from_field_description">Kirjoita tähän lähtöpaikan osoite</string>
     
     <string name="OF_to">Mihin</string>
-    <string name="OF_to_extra_options_description">By selecting this you can see more options for the destination field.</string>
-    <string name="OF_to_field_description">Type here the destination address of the ride.</string>
+    <string name="OF_to_extra_options_description">Valitsemalla tämän saat lisä vaihtoehtoja.</string>
+    <string name="OF_to_field_description">Kirjoita tähän kohdepaikan osoitee.</string>
     
-    <string name="OF_number_of_passengers">Number of passengers</string>
+    <string name="OF_number_of_passengers">Matkustajien määrä</string>
     <string name="OF_number_of_passengers_hint">1</string>
     <string name="OF_max_price">Maksimihinta</string>
-    <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
+    <string name="OF_max_price_description">Kirjoita tähän paljonko matka saa enimmillään maksaa.</string>
     
-    <string name="OF_estimated_price">Estimated price</string>    
+    <string name="OF_estimated_price">Arvioitu hinta</string>    
     
-    <string name="OF_pickup_stop">Pickup stop</string>
-    <string name="OF_dropoff_stop">Dropoff stop</string>
+    <string name="OF_pickup_stop">Noutopysäkki</string>
+    <string name="OF_dropoff_stop">Jättöpysäkki</string>
     
     
-    <string name="OF_button_order">Order</string>
-    <string name="OF_button_order_description">A button to order the ride.</string>
+    <string name="OF_button_order">Tilaa</string>
+    <string name="OF_button_order_description">Nappi, jolla voit tilata kyydin.</string>
     
     
     <!-- SMS Handling -->
-    <string name="title_sms_notification">Receive ticket</string>
-    <string name="sms_waiting">Seconds </string>
-    <string name="sms_timeout">Still waiting</string>
-    <string name="sms_ticket_ok">Ticket received</string>
-    <string name="sms_hsl_number">5556</string>    
+    <string name="title_sms_notification">Vastetaan lippu</string>
+    <string name="sms_waiting">Sekunteja </string>
+    <string name="sms_timeout">Odotetaan yhä</string>
+    <string name="sms_ticket_ok">Lippu vastaanotettu</string>
     
     <string name="kutsuplus_url_short">http://kutsuplus.fi</string>
     <string name="kutsuplus_url">http://kutsuplus.fi/m/sign-in</string>

@@ -4,44 +4,43 @@
     
     <!-- Tabs at the phone screen-->
     <string name="TAB_form">Beställning</string>
-    <string name="TAB_form_description">This tab contains a form to order a Kutsuplus ride.</string>
-    <string name="TAB_ticket">Ticket</string>
-    <string name="TAB_ticket_description">This tab contains a ticket for a Kutsuplus ride.</string>  
+    <string name="TAB_form_description">Den här fliken innehåller en blankett at beställa en Kutsuplus resa.</string>
+    <string name="TAB_ticket">Biljett</string>
+    <string name="TAB_ticket_description">Den här fliken innehåller en biljett för en Kutsuplus resa.</string>  
     <string name="TAB_map">Karta</string>
-    <string name="TAB_map_description">This tab contains a map to select the from and destionation points.</string>
+    <string name="TAB_map_description">Den här fliken innehåller en karta för att välja från och destionation punkter.</string>
     
     
     <!-- Order Form -->
-    <string name="OF_current_location">Current location</string>
+    <string name="OF_current_location">Nuvarande läge</string>
     <string name="OF_from">Från</string>
-    <string name="OF_from_extra_options_desciption">By selecting this you can see more options for the from field.</string>
-    <string name="OF_from_field_description">Type here the starting address of the ride.</string>
+    <string name="OF_from_extra_options_desciption">Genom att välja det här kan du se fler alternativ</string>
+    <string name="OF_from_field_description">Skriv här startadressen för resan.</string>
     
     <string name="OF_to">Till</string>
-    <string name="OF_to_extra_options_description">By selecting this you can see more options for the destination field.</string>
-    <string name="OF_to_field_description">Type here the destination address of the ride.</string>
+    <string name="OF_to_extra_options_description">Genom att välja det här kan du se fler alternativ.</string>
+    <string name="OF_to_field_description">Skriv här destinationsadress av resan.</string>
     
-    <string name="OF_number_of_passengers">Number of passengers</string>
+    <string name="OF_number_of_passengers">Antalet passagerare</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Max price</string>
-    <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
+    <string name="OF_max_price">Högsta priset</string>
+    <string name="OF_max_price_description">Skriv här det högsta priset som resan kan kosta.</string>
     
-    <string name="OF_estimated_price">Estimated price</string>    
+    <string name="OF_estimated_price">Beräknad pris</string>    
     
-    <string name="OF_pickup_stop">Pickup stop</string>
-    <string name="OF_dropoff_stop">Dropoff stop</string>
+    <string name="OF_pickup_stop">Hämtningshållplats</string>
+    <string name="OF_dropoff_stop">Destinationshållplats</string>
     
     
-    <string name="OF_button_order">Order</string>
-    <string name="OF_button_order_description">A button to order the ride.</string>
+    <string name="OF_button_order">Beställa</string>
+    <string name="OF_button_order_description">En knapp för att beställa resan.</string>
     
     
     <!-- SMS Handling -->
-    <string name="title_sms_notification">Receive ticket</string>
-    <string name="sms_waiting">Seconds </string>
-    <string name="sms_timeout">Still waiting</string>
-    <string name="sms_ticket_ok">Ticket received</string>
-    <string name="sms_hsl_number">5556</string>    
+    <string name="title_sms_notification">Mottaga biljett</string>
+    <string name="sms_waiting">Sekunder </string>
+    <string name="sms_timeout">Väntar fortfarande</string>
+    <string name="sms_ticket_ok">Biljett fått</string>
     
     <string name="kutsuplus_url_short">http://kutsuplus.fi</string>
     <string name="kutsuplus_url">http://kutsuplus.fi/m/sign-in</string>

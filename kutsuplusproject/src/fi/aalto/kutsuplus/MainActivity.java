@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.savarese.spatial.NearestNeighbors;
@@ -92,7 +93,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	MenuItem show_busstops_button;
 	private BroadcastReceiver sms_receiver;
 
-	static boolean done_set_locale=false;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -103,9 +103,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		String used_language=preferences.getString("prefLanguage", "");
 		if(!used_language.equals(""))
 		{
-			if(!done_set_locale)
-	           setLocale_noreset(used_language);
-			done_set_locale=true;
+	           setLocale(used_language);
 	    }
 		
 
@@ -310,21 +308,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		if(!used_language.equals(""))
 		{
 	           setLocale(used_language);
+	   		   Toast.makeText(this, "Restart the application to see the language change in effect.", Toast.LENGTH_LONG).show();
+	   		   //TODO changes the language on the fly, but creates new instances
+	   		   //Intent refresh = new Intent(this, MainActivity.class);
+	   		   //startActivity(refresh);
 	    }
 
 	}
 
 	private Locale myLocale;
-
-	private void setLocale_noreset(String lang) {
-		myLocale = new Locale(lang);
-		Resources res = getResources();
-		DisplayMetrics dm = res.getDisplayMetrics();
-		Configuration conf = res.getConfiguration();
-		conf.locale = myLocale;
-		res.updateConfiguration(conf, dm);
-	}
-	
 	
 	// This is originally from: http://stackoverflow.com/questions/12908289/how-change-language-of-app-on-user-select-language
 	private void setLocale(String lang) {
@@ -334,10 +326,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		Configuration conf = res.getConfiguration();
 		conf.locale = myLocale;
 		res.updateConfiguration(conf, dm);
-		//TODO changes the language on the fly, but creates new instances
-		
-		Intent refresh = new Intent(this, MainActivity.class);
-		startActivity(refresh);
 	}
 
 	@Override
