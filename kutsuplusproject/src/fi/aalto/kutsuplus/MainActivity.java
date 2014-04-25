@@ -88,8 +88,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 	boolean isTwoPaneLayout;
 	
-	Menu menu_this;
-	MenuItem kp_button;
+	Menu menu;
+	MenuItem show_busstops_button;
 	private BroadcastReceiver sms_receiver;
 
 	
@@ -113,6 +113,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
+
+		// The preferences menu
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
@@ -177,9 +181,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			maptab.setTabListener(this);
 			actionBar.addTab(maptab);
 
-			// The preferences menu
-			preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			preferences.registerOnSharedPreferenceChangeListener(this);
 
 		}
 
@@ -196,8 +197,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			getSupportFragmentManager().beginTransaction().add(R.id.map_fragment,mapFragment,"Map").commit();
 			
 			mapFragment.setStopTreeHandler(stopTreeHandler);
-			if(kp_button != null)
-				kp_button.setVisible(true);
+			if(show_busstops_button != null)
+				show_busstops_button.setVisible(true);
 		}		
 	}
 	
@@ -225,13 +226,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 		if (tab.getPosition() == MAPFRAG){
 			mPager.setPagingEnabled(false);
-			if(kp_button != null)
-				kp_button.setVisible(true);
+			if(show_busstops_button != null)
+				show_busstops_button.setVisible(true);
 		}
 		else{
 			mPager.setPagingEnabled(true);
-			if(kp_button != null)
-				kp_button.setVisible(false);
+			if(show_busstops_button != null)
+				show_busstops_button.setVisible(false);
 		}
 	}
 
@@ -248,11 +249,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu_this = menu;
-		if(menu_this != null){
-			kp_button = menu_this.findItem(R.id.kutsu_pysakkit);
+		menu = menu;
+		if(menu != null){
+			show_busstops_button = menu.findItem(R.id.kp_busstops);
 			if(isTwoPaneLayout)
-				kp_button.setVisible(true);//
+				show_busstops_button.setVisible(true);//
 		}
 	    return true;
 	}
@@ -270,14 +271,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {// decide which MenuItem was pressed based on
-									// its id
+		switch (item.getItemId()) {
 		case R.id.item_prefs:
-			startActivity(new Intent(this, SettingsActivity.class));// start the // PrefsActivity.java
+			startActivity(new Intent(this, SettingsActivity.class)); // Starts the Settings Activity
 			break;
 		}
 		
-		if(item.getItemId() == R.id.kutsu_pysakkit){
+		if(item.getItemId() == R.id.kp_busstops){
 			MapFragm mapFragment = getMapFragment();
 			//add KP bus stops
 			if(mapFragment != null){
@@ -294,7 +294,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				}
 			}
 		}
-		return true; // to execute the event here
+		return true; 
 	}
 
 	@Override
