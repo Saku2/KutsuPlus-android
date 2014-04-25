@@ -455,7 +455,13 @@ public class FormFragment extends Fragment {
 		});
 	}
 
+	private String last_From_query="";
+	
 	private void handleFromFieldActivation(String queryText) {
+		// Do not make duplicate queries
+		if(last_From_query.equals(queryText))
+			return;
+		last_From_query=queryText;
 		// To avoid the android.os.NetworkOnMainThreadException
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
@@ -500,7 +506,13 @@ public class FormFragment extends Fragment {
 		}
 	}
 
+	private String last_To_query="";
+	
 	private void handleToFieldActivation(String queryText) {
+		// Do not make duplicate queries
+		if(last_To_query.equals(queryText))
+			return;
+		last_To_query=queryText;
 		// To avoid the android.os.NetworkOnMainThreadException
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
