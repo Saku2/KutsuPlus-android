@@ -595,6 +595,14 @@ public class FormFragment extends Fragment {
     		dropoffStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
 	}
 	
+	public AutoCompleteTextView getFromView() {
+		return fromView;
+	}
+	
+	public AutoCompleteTextView getToView() {
+		return toView;
+	}
+	
 	
    
 }

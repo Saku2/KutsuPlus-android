@@ -38,6 +38,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -64,6 +65,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	SharedPreferences preferences;
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
 	final static public String CURRENT_LOCATIION = "Current location";
+	final static int FORMFRAG = 0;
 	final static int MAPFRAG = 1;
 	final static int EXTRAS_FROM = 0;
 	final static int EXTRAS_TO = 1;
@@ -273,7 +275,18 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 	}
 
-	public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+		if (tab.getPosition() == FORMFRAG) {
+			AutoCompleteTextView toView = formFragment.getToView();
+			AutoCompleteTextView fromView = formFragment.getFromView();
+			if (toView != null) {
+				toView.dismissDropDown();
+			}
+			if (fromView != null) {
+				fromView.dismissDropDown();
+			}
+
+		}
 	}
 
 	// Open the web browser for the www-users
