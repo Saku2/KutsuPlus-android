@@ -42,7 +42,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.KutsuplusSupportMapFragment.OnMapReadyListener;
 import fi.aalto.kutsuplus.events.CurrentLocationChangeEvent;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
@@ -54,7 +53,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.routes.DownloadTask;
 
-public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener, OnMapReadyListener{
+public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
 	private ISendMapSelection iSendMapSelection;
 	private OTTOCommunication communication=OTTOCommunication.getInstance();
 
@@ -76,7 +75,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	
 	//default initial zoom level, when app is opened//
-	final public float initialZoomLevel = 11.5F;
+	final static public float initialZoomLevel = 11.5F;
 	
 	//min zoom level, for showing busstop markers
 	//final public float minZoomLevel = 13.2F;
@@ -107,7 +106,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		// get map object
         KutsuplusSupportMapFragment mySupportMapFragment = (KutsuplusSupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
 		GoogleMap google_map = mySupportMapFragment.getMap();
+        google_map.setOnMapClickListener(this);  
+        google_map.setOnMarkerDragListener(this);
+		google_map.setOnMarkerClickListener((OnMarkerClickListener) this);
+
 		setMap(google_map);
+
         communication.register(this);
         restoretoMemory();
 		return rootView;
@@ -153,22 +157,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		map.animateCamera(center);//moveCamera
 	}
 
-	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {
-		// The constructor takes (lat,long), lat=y, long=x
-        LatLng ll = new LatLng(centerPoint.getY(),centerPoint.getX());
-		//addAllKutsuPlusStopMarkers();
-		CameraPosition INIT =
-                new CameraPosition.Builder()
-                .target(ll)
-                .zoom(zoomLevel)
-                .bearing(0F) // orientation
-                .tilt( 50F) // viewing angle
-                .build();
-		map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
-		map.setOnMarkerClickListener((OnMarkerClickListener) this);
-        map.setOnMapClickListener(this);  
-        map.setOnMarkerDragListener(this);
-	}
 
 	public void hideKutsuPlusStopMarkers(){
 		for (Marker m : markers.keySet()) {
@@ -705,28 +693,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	public ArrayList<Marker> getFinishDurationMarkersWatcher() {
 		return finishDurationMarkersWatcher;
-	}
-
-
-	public void showHelsinkiArea(float zoomLevel) {
-			
-			// center point on map
-			GoogleMapPoint centerPoint = new GoogleMapPoint(24.939029, 60.170187);
-			// view-changing method in map-fragmet:
-			try {
-				updateMapView(centerPoint, zoomLevel);
-			} catch (Exception e) {
-				System.out.println("Probably no map initialized: " + e.getMessage());
-			}
-
-	}
-
-	@Override
-	public void onMapReady() {
-		Toast.makeText(rootView.getContext().getApplicationContext(), "MAP ready!!!", Toast.LENGTH_LONG).show();
-		map.setMyLocationEnabled(true);
-        showHelsinkiArea(initialZoomLevel); 
-
 	}
 
     

@@ -87,7 +87,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	public PopupWindow popupWindow_ExtrasList;
 
-	private boolean isFirstVisitToMap = true;
 
 	boolean isTwoPaneLayout;
 
@@ -262,12 +261,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
 
-		if (isFirstVisitToMap) {
-			if (tab.getPosition() == MAPFRAG) {//
-				mapFragment.showHelsinkiArea(mapFragment.initialZoomLevel);
-				isFirstVisitToMap = false;
-			}
-		}
 		if (tab.getPosition() == MAPFRAG) {
 			mPager.setPagingEnabled(false);
 			if (show_busstops_button != null)
