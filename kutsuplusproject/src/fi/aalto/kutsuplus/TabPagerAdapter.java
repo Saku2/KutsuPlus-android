@@ -27,7 +27,6 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		//TODO should this do something?
 		return "null";
 	}
 

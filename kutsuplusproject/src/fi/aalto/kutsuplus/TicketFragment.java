@@ -40,7 +40,10 @@ public class TicketFragment extends Fragment {
 		super.onStart();
 	}
 
-
+/* 
+ * start_animation() the animation show the maximum expected 30 second of time to wait the 
+ * receiving ticket. The action is stopped as soon as a ticket is get.
+ */
 	public void start_animation()
 	{		
 		timerText = (TextView) rootView.findViewById(R.id.SW_TimeRemainig);
@@ -81,6 +84,9 @@ public class TicketFragment extends Fragment {
 		super.onResume();
 	}
 	
+	/*
+	 * showTicket(String body)  shows the received ticket message on the screen
+	 */
 	public void showTicket(String body)
 	{
 		String template = "<body><img src=\"ticket.jpg\"><BR>(1)</body>";
@@ -97,6 +103,10 @@ public class TicketFragment extends Fragment {
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);	
 	}
 
+	/*
+	 * In case there is an error message in stead of the ticket at the SMS message
+	 * showErrorMessage(String body) format that to be shown on the web view.
+	 */
 	public void showErrorMessage(String body)
 	{
 		String template = "<body>(1)</body>";
@@ -113,6 +123,9 @@ public class TicketFragment extends Fragment {
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);
 	}
 
+	/*
+	 * When the ticket is got the animation is stopped
+	 */
 	public void stopAnimation()
 	{
 		counter.cancel();

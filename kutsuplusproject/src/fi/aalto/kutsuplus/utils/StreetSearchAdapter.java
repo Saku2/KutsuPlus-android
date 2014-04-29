@@ -13,6 +13,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import blogspot.software_and_algorithms.stern_library.string.DamerauLevenshteinAlgorithm;
 
+/*
+ * StreetSearchAdapter implements the smart street search filter 
+ * for the auto complete fields. The Damerau-Levenshtein algorithm
+ * is used here, 
+ */
 public class StreetSearchAdapter extends ArrayAdapter<String> implements Filterable {
 
 	final static int MAX_LIST_COUNT = 5;

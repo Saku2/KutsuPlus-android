@@ -10,7 +10,13 @@ import android.location.Geocoder;
 
 import com.google.android.gms.maps.model.LatLng;
 
+
+/*
+ * AddressHandler fetches street addresses for GPS locations. This is usually very fast
+ * and does have timeout.
+ */
 public class AddressHandler {
+	
  static public String getAdresss(Context context,LatLng location)
  {
 					Locale aLocale = new Locale("fi", "FI");

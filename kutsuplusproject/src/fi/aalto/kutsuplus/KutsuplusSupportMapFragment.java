@@ -15,6 +15,14 @@ import com.google.android.gms.maps.model.LatLng;
 
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 
+/*
+ * KutsuplusSupportMapFragment was created to get a reliable 
+ * timing when the map is ready. This is needed, since the
+ * map fragment is kept on the screen and only form fragment 
+ * is changed on the fly at the tabled device. Thus the fragments
+ * are created programmatically and the timing is needed.
+ */
+
 public class KutsuplusSupportMapFragment extends SupportMapFragment {
 	GoogleMap google_map;
 
@@ -29,6 +37,10 @@ public class KutsuplusSupportMapFragment extends SupportMapFragment {
     }
 
     
+    /* onActivityCreated (Bundle savedInstanceState) is called when the map is ready
+     * (non-Javadoc)
+     * @see com.google.android.gms.maps.SupportMapFragment#onActivityCreated(android.os.Bundle)
+     */
 
     @Override
     public void onActivityCreated (Bundle savedInstanceState)
@@ -52,6 +64,10 @@ public class KutsuplusSupportMapFragment extends SupportMapFragment {
 		google_map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
 	}
 
+	/*
+	 * showHelsinkiArea() centers the map so that it shows the Helsinki
+	 * area.
+	 */
 	public void showHelsinkiArea() {
 			
 			// center point on map

@@ -3,6 +3,13 @@ package fi.aalto.kutsuplus.utils;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 
+/*
+ * CoordinateConverter converts the addresses of KKJ channel 2 (the Helsinki area channel) to the common  wGS84l that 
+ * Google is using and back. This is needed, since
+ * - The nearest bus stop can be fetched only using KKJ2 to get the actual distance to the nearest stop
+ * - Google map uses only wGS84. To be able to show the found stop on the map, a conversion is needed
+ */
+
 public class CoordinateConverter {
 	
 	// Adapted from http://aapo.rista.net/tmp/coordinates.py

@@ -19,6 +19,10 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
  * http://www.codeofaninja.com/2013/04/show-listview-as-drop-down-android.html
  */
 
+/*
+ * Form_DropdownOnItemClickListener handles the selections made at the 
+ * extra options drop down menu at the form fragment.
+ */
 public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
 	@Override
