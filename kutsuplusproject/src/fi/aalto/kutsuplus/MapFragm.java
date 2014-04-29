@@ -152,8 +152,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 //        map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
     }
 
-	private void moveCamera(LatLng ll, float zoomLevel){
-		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, zoomLevel);
+	private void moveCamera(LatLng ll){
+		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, map.getCameraPosition().zoom);
 		map.animateCamera(center);//moveCamera
 	}
 
@@ -294,8 +294,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			}
 		}
 		
-		if(marker != null){
-			moveCamera(marker.getPosition(), this.initialZoomLevel);
+		if(marker != null){//
+			moveCamera(marker.getPosition());
 		}
 	}
 	
@@ -328,7 +328,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 		
 		if(marker != null){
-			moveCamera(marker.getPosition(), this.initialZoomLevel);
+			moveCamera(marker.getPosition());
 		}
 	}
 	
