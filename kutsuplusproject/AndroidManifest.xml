@@ -27,6 +27,7 @@
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+	
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 	
@@ -53,15 +54,7 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         
-        <!-- SMS handling -->
-        <activity
-          android:name="fi.aalto.kutsuplus.SMSNotificationActivity"
-          android:label="@string/title_sms_notification"
-          android:parentActivityName="fi.aalto.kutsuplus.MainActivity" >
-          <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="fi.aalto.kutsuplus.MainActivity" />
-        </activity>
+        <!-- SMS handling -->       
         <activity android:name="fi.aalto.kutsuplus.SettingsActivity" android:label="@string/title_settings" />
                 
           <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >

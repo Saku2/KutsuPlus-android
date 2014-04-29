@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -40,12 +41,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.events.OTTOCommunication;
+import fi.aalto.kutsuplus.events.CurrentLocationChangeEvent;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
+import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
 import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
 import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
@@ -73,8 +74,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private boolean markerWasDragged = false;
 	private boolean draggedStartMarker=false;
 	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
+	
 	//default initial zoom level, when app is opened//
 	final public float initialZoomLevel = 11.5F;
+	
 	//min zoom level, for showing busstop markers
 	//final public float minZoomLevel = 13.2F;
 	private StopTreeHandler stopTreeHandler;
@@ -101,6 +104,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
             setMapTransparent((ViewGroup) rootView);
         }
+		// get map object
+		SupportMapFragment mySupportMapFragment = (SupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
+		GoogleMap google_map = mySupportMapFragment.getMap();
+		setMap(google_map);
+		google_map.setMyLocationEnabled(true);
+        showHelsinkiArea(initialZoomLevel); 
         communication.register(this);
         restoretoMemory();
 		return rootView;
@@ -183,7 +192,16 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 	
 	private BitmapDescriptor setKPicon(){
-		return BitmapDescriptorFactory.fromResource(R.drawable.kp_marker);
+		try
+		{
+		   return BitmapDescriptorFactory.fromResource(R.drawable.kp_marker);
+		}
+		catch(Exception e)
+		{
+			// If not initialized, the application will continue
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public void makeKPmarkers(){
@@ -388,7 +406,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	public void setMap(GoogleMap map) {
 		this.map = map;
-	}//
+	}
 
 
 	public void drawStraightLineOnMap(LatLng startPoint, LatLng endPoint) {
@@ -405,7 +423,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		if(straightLine != null)
 			straightLine.remove();
 		
-		straightLine = map.addPolyline(polyLineOptions);
+		if(map != null)
+		  straightLine = map.addPolyline(polyLineOptions);
 		
 		
 	}
@@ -525,18 +544,40 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		drawWalkingRoute(isStartMarker);
 		
 		if(startPoint != null && endPoint != null){
-			drawStraightLineOnMap(startPoint, endPoint);
+			try
+			{
+			 drawStraightLineOnMap(startPoint, endPoint);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 	}
 
+	@Subscribe
+    public void onCurrentLocationChangeEvent(CurrentLocationChangeEvent event){
+    	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
+    	{
+    		// The code to show the user location here
+    	}
+    }
+	
     @Subscribe
     public void onStartLocationChangeEvent(StartLocationChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
     		startPoint = event.getLocation();	
     		if(startPoint != null && endPoint != null){
-    			drawStraightLineOnMap(startPoint, endPoint);
+    			try
+    			{
+    			  drawStraightLineOnMap(startPoint, endPoint);
+    			}
+    			catch(Exception e)
+    			{
+    				e.printStackTrace();
+    			}
     		}
     	}
     }
@@ -556,6 +597,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onPickUpChangeEvent(PickUpChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
+    		try
+    		{
     		if(markers.size() == 0){
     			makeKPmarkers();
     		}
@@ -565,7 +608,16 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     		   updatePinkMarker(busstop_marker, true);
             }
     		updateActualPointMarker(true);
-    		drawWalkingRoute(true);    		
+    		drawWalkingRoute(true);
+    		}
+    		catch(IllegalStateException is)
+    		{
+    			//This can be hapend at the beginning, when the map is not ready and the first messages are sent
+    		}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     	}
     }
 
@@ -573,16 +625,27 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     public void onDropOffChangeEvent(DropOffChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
     	{
-    		if(markers.size() == 0){
+    		try
+    		{
+    		 if(markers.size() == 0){
     			makeKPmarkers();
-    		}
-    		Marker busstop_marker = markers_so.get(event.getBus_stop());
-            if(busstop_marker!=null)
-            {
+    		 }
+    		 Marker busstop_marker = markers_so.get(event.getBus_stop());
+             if(busstop_marker!=null)
+             {
     		   updatePinkMarker(busstop_marker, false);
-            }
-    		updateActualPointMarker(false);
-    		drawWalkingRoute(false);    		
+             }
+    		 updateActualPointMarker(false);
+    		 drawWalkingRoute(false);
+    		}
+    		catch(IllegalStateException is)
+    		{
+    			// Can be caused then events are send when map is not yet ready
+    		}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     	}
     }
 
@@ -646,6 +709,19 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		return finishDurationMarkersWatcher;
 	}
 
-	
+
+	public void showHelsinkiArea(float zoomLevel) {
+			
+			// center point on map
+			GoogleMapPoint centerPoint = new GoogleMapPoint(24.939029, 60.170187);
+			// view-changing method in map-fragmet:
+			try {
+				updateMapView(centerPoint, zoomLevel);
+			} catch (Exception e) {
+				System.out.println("Probably no map initialized: " + e.getMessage());
+			}
+
+	}
+
     
 }
