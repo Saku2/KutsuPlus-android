@@ -113,7 +113,6 @@ public class FormFragment extends Fragment {
 				public void run() {
 					try {
 						String queryText = adapter_from.getItem(0);
-						Log.e("string run querytext", queryText);
 						if (queryText != null)
 							handleFromFieldActivation(queryText);
 					} catch (IndexOutOfBoundsException e) {
@@ -126,7 +125,6 @@ public class FormFragment extends Fragment {
 
 			@Override
 			public void onChanged() {
-				Log.d(LOG_TAG, "onChanged called");
 				super.onChanged();
 				handler.removeCallbacks(getCoordinatesTask);
 				try {
@@ -166,7 +164,6 @@ public class FormFragment extends Fragment {
 
 			@Override
 			public void onChanged() {
-				Log.d(LOG_TAG, "onChanged called");
 				super.onChanged();
 				handler.removeCallbacks(getCoordinatesTask);
 				try {
@@ -526,7 +523,6 @@ public class FormFragment extends Fragment {
 		if (last_From_query.equals(queryText))
 			return;
 		last_From_query = queryText;
-		Log.e("from-querytext", queryText);
 
 		ReittiopasHttpHandler http = new ReittiopasHttpHandler();
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
@@ -596,14 +592,12 @@ public class FormFragment extends Fragment {
 			Log.d("estimate", "going to estimate next");
 			// the price is 0,45 euros / km + base fee of 3,5 euros.
 			if (communication.getPick_up_stop() == null || communication.getDrop_off_stop() == null) {
-				Log.e("estimate", "getPick_up_stop was null");
+				Log.e("estimate", "getPick_up_stop was null when estimating price");
 				return "";
 			}
-			Log.e("estimate",
-					"getPick_up_stop was " + communication.getPick_up_stop());
 			int distance = calculateDistance(communication.getPick_up_stop()
 					.getFinnishAddress(), "simonkatu 1, Helsinki");
-			Log.e("estimate", "Stop adresses: From: "
+			Log.e("estimate", "Estimate busstop adresses: From: "
 					+ communication.getPick_up_stop().getFinnishAddress()
 					+ " to: "
 					+ communication.getDrop_off_stop().getFinnishAddress());
@@ -613,7 +607,6 @@ public class FormFragment extends Fragment {
 			float distance_price = 0.45f * distance / 1000;
 			float base_price = 3.5f;
 			float estimated_price = distance_price + base_price;
-			Log.e("estimate", "rounded distance: " + String.valueOf(distance));
 			Log.e("estimate",
 					"estimated value: " + String.valueOf(estimated_price));
 
@@ -642,7 +635,7 @@ public class FormFragment extends Fragment {
 						+ str_destination
 						+ "&language=FI&sensor=false";
 
-				Log.e("distance", "here's the search search string: "
+				Log.e("distance", "here's the search string: "
 						+ search_string);
 				String distance = parse_distance(httpGET(search_string));
 				Log.e("distance", "here's the distance string: " + distance);
@@ -652,7 +645,7 @@ public class FormFragment extends Fragment {
 								+ String.valueOf(distance_int));
 			} catch (Exception e) {
 				e.printStackTrace();
-				Log.e("distance", "here's the distance int: failed");
+				Log.e("distance", "exception: distance int failed");
 			}
 
 			return distance_int;
@@ -660,12 +653,6 @@ public class FormFragment extends Fragment {
 		}
 
 		private String httpGET(String urlString) {
-			/*
-			 * StrictMode.ThreadPolicy policy = new
-			 * StrictMode.ThreadPolicy.Builder().permitAll().build();
-			 * StrictMode.setThreadPolicy(policy);
-			 */
-			Log.e("exception", "reader getting ready, no errors so far 1");
 			StringBuffer result = new StringBuffer();
 			BufferedReader reader = null;
 			URL url;
@@ -711,19 +698,16 @@ public class FormFragment extends Fragment {
 						.compile("/DirectionsResponse/route/leg/step/distance/value");
 				NodeList list = (NodeList) expr.evaluate(document,
 						XPathConstants.NODESET);
-				Log.e("exception", "xpath failed");
 
 				for (int i = 0; i < list.getLength(); i++) {
 					Node node = list.item(i);
-					Log.e("nodes", node.getTextContent());
 					distance = distance
 							+ Integer.parseInt(node.getTextContent());
 				}
 			} catch (Exception e) {
-				Log.e("exception", "xpath failed");
+				Log.e("exception", "parsing failed");
 				e.printStackTrace();
 			}
-			Log.e("distance", "here's the distance: " + distance);
 			return String.valueOf(distance);
 		}
 		protected void onPostExecute(String result) {
