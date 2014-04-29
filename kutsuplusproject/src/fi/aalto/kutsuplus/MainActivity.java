@@ -261,6 +261,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
 	}
 
+	/*
+	 * This is called, when the user selects a tab on a mobile phone screen
+	 * 
+	 * @see android.support.v7.app.ActionBar.TabListener#onTabSelected(android.support.v7.app.ActionBar.Tab, android.support.v4.app.FragmentTransaction)
+	 */
 	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mPager.setCurrentItem(tab.getPosition());
 
@@ -289,8 +294,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 	}
 
-	// Open the web browser for the www-users
-	public void doOpenBrowser(View v) {
+	/*
+	 *  doOpenKutsuplusPage is called when user clicks the Kutsuplus web link on the main screen
+	 */
+	public void doOpenKutsuplusPage(View v) {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.kutsuplus_url)));
 		startActivity(browserIntent);
 	}
@@ -306,7 +313,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return true;
 	}
 
-	// creating action-bar menu
+	// Creates the menu at the actionbar
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();// create a MenuInflater to
@@ -317,6 +324,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return true;// to allow method to be displayed
 	}
 
+	/*
+	 * When a menu item is selectes at the actionbar menu, the handling is 
+	 * made here
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -361,6 +374,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	private Locale myLocale;
 
+    // setLocale sets the language that is used at the program.
+	// To make the operation smooth, the activity is not restatrted
 	// This is originally from:
 	// http://stackoverflow.com/questions/12908289/how-change-language-of-app-on-user-select-language
 	private void setLocale(String lang) {
@@ -372,6 +387,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		res.updateConfiguration(conf, dm);
 	}
 
+	/*
+	 * setMapLocationSelection is called from the map fragment to send notification of a 
+	 * map point selection. 
+	 * 
+	 * (non-Javadoc)
+	 * @see fi.aalto.kutsuplus.ISendMapSelection#setMapLocationSelection(java.lang.String, com.google.android.gms.maps.model.LatLng)
+	 */
 	@Override
 	public void setMapLocationSelection(String street_address, LatLng address_gps) {
 		Log.d("street adress", street_address);
@@ -407,6 +429,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	}
 
+	/*
+	 *  setStopMarkerSelection is called from the map fragment to notify that an bus stop marker
+	 *  was selected.
+	 * (non-Javadoc)
+	 * @see fi.aalto.kutsuplus.ISendMapSelection#setStopMarkerSelection(fi.aalto.kutsuplus.kdtree.StopObject, com.google.android.gms.maps.model.LatLng)
+	 */
 	@Override
 	public void setStopMarkerSelection(StopObject bus_stop, LatLng address_gps) {
 		Log.d("stop name", bus_stop.getFinnishName());
@@ -436,6 +464,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
 
+	/*
+	 *   checkOldSMSs() can be used to read old SMS messages from the phone so that, 
+	 *   if the phone has been shut down or the program was shut, the ticket can still
+	 *   be handled
+	 */
 	private void checkOldSMSs() {
 		final long one_day = 1000 * 60 * 60 * 24;
 		Uri uriSMSURI = Uri.parse("content://sms/inbox");
@@ -457,12 +490,21 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
 	protected void onPause() {
 
 		super.onPause();
 		this.unregisterReceiver(sms_receiver);
 	}
 
+	/*
+	 * This creates the SMS notifications receiver.
+	 * (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
 	public void onResume() {
 		super.onResume();
 
@@ -502,6 +544,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	}
 
+	/*
+	 * doOrder(View v) reads the current selections from the communicaton singleton and
+	 * sends a SMS to get the ticket. Ticket fragment is activated to be ready to show the
+	 * receiving ticket. At the end the ride is saved at the local store so that the selections
+	 * can be shown when the user opens the program later.
+	 */
 	public void doOrder(View v) {
 
 		if (ticketFragment == null)
@@ -547,12 +595,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		rides.addRide(from, to);
 
 	}
-
 	
 	public int getActiveExtraslist() {
 		return this.extras_list;
 	}
-		public void setActiveExtraslist(int extras_list) {
+	
+	public void setActiveExtraslist(int extras_list) {
 		this.extras_list = extras_list;
 	}
 

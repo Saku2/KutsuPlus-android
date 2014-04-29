@@ -12,7 +12,7 @@
         android:text="@string/kutsuplus_url_short"
         android:clickable="true" 
         android:layout_marginLeft="20dp"
-        android:onClick="doOpenBrowser"/>
+        android:onClick="doOpenKutsuplusPage"/>
 
     <LinearLayout
         android:layout_width="match_parent"

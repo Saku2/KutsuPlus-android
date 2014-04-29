@@ -117,6 +117,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		return rootView;
 	}
 
+    /*
+     * restoretoMemory() is called to restore the values of the fragment in 
+     * case Android has cleaned it from the memory.  
+     */
+
 	private void restoretoMemory()
 	{
 		OTTOCommunication cb=OTTOCommunication.getInstance();

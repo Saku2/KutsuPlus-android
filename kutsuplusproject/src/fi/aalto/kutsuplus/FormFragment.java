@@ -186,10 +186,13 @@ public class FormFragment extends Fragment {
 				}
 			}
 		communication.register(this);
-		initView();
+		setAddressFieldListeners();
 		return rootView;
 	}
-
+    /*
+     * restoretoMemory() is called to restore the values of the fragment in 
+     * case Android has cleaned it from the memory.  
+     */
 	private void restoretoMemory() {
 		OTTOCommunication cb = OTTOCommunication.getInstance();
 		if (cb.getFrom_address() != null) {
@@ -209,6 +212,10 @@ public class FormFragment extends Fragment {
 		}
 	}
 
+	/*
+	 * readStreets(int resource_id) is a method that reads in the street
+	 * description file of the Kutsuplus area 
+	 */
 	private String[] readStreets(int resource_id) {
 		List<String> streets = new ArrayList<String>();
 
@@ -251,6 +258,12 @@ public class FormFragment extends Fragment {
 		}
 	}
 
+	/*
+	 * The createDropDown(View rootView) creates the dropdown list that offers 
+	 * some extra options beside the address fields. The extra options are
+	 * - The current location
+	 * - List of used addresses (currently only the last ones)
+	 */
 	private void createDropDown(View rootView) {
 		List<String> optionsList = new ArrayList<String>();
 		optionsList.add("Current location");
@@ -261,7 +274,7 @@ public class FormFragment extends Fragment {
 			for (StreetAddress address : own_addresses)
 				optionsList.add(address.get_StreetAddress());
 		} catch (Exception e) {
-			e.printStackTrace(); // Possiblt legal
+			e.printStackTrace(); 
 		}
 		popUpContents = new String[optionsList.size()];
 		optionsList.toArray(popUpContents);
@@ -304,11 +317,12 @@ public class FormFragment extends Fragment {
 		buttonShowDropDown_toExtras.setOnClickListener(extras_handler);
 
 	}
-
 	/*
-     * 
-     */
+	 * This implements the actual extra options list
+	 */
 	// deprecation caused by new BitmapDrawable()
+	// - The deprecation was not removed since this solution is more
+	//   readable.
 	// new style is here
 	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
@@ -376,6 +390,8 @@ public class FormFragment extends Fragment {
 	}
 
 	// After clicking on a map, update From text
+	// The focus is disabled to avoid the autocomplete field to
+	// open its list
 	public void updateFromText(String street_address) {
 		fromView.setFocusable(false); // DO NOT REMOVE THIS
 		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
@@ -393,8 +409,10 @@ public class FormFragment extends Fragment {
 		toView.setFocusable(true); // DO NOT REMOVE THIS
 	}
 
-
-	private void initView() {
+/*
+ * setAddressFieldListeners() sets the OnSelected and on Clicted listeners for the From and To Fields
+ */
+	private void setAddressFieldListeners() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -436,6 +454,11 @@ public class FormFragment extends Fragment {
 
 	private String last_From_query = "";
 
+	/*
+	 * handleFromFieldActivation(String queryText) is called when 
+	 * there is a chance at the From field 
+	 * The nearest bus stop is calculated 
+	 */
 	private void handleFromFieldActivation(String queryText) {
 		// Do not make duplicate queries
 		if (last_From_query.equals(queryText))
@@ -455,7 +478,12 @@ public class FormFragment extends Fragment {
 	}
 
 	private String last_To_query = "";
-
+	
+	/*
+	 * handleToFieldActivation(String queryText) is called when 
+	 * there is a chance at the To field 
+	 * The nearest bus stop is calculated 
+	 */
 	private void handleToFieldActivation(String queryText) {
 		// Do not make duplicate queries
 		if (last_To_query.equals(queryText))
@@ -474,6 +502,11 @@ public class FormFragment extends Fragment {
 		http.makeGetEndAddress("http://api.reittiopas.fi/hsl/prod/", args);
 	}
 
+	/*
+	 * onPickUpChangeEvent(PickUpChangeEvent event)  notified any change of the
+	 * pick up bus stop. Here the text field is updated and the estimated price is
+	 * recalculated.  
+	 */
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
 		StopObject bus_stop = event.getBus_stop();
@@ -482,6 +515,12 @@ public class FormFragment extends Fragment {
 		AsyncEstimate estimate = new AsyncEstimate();
 		estimate.execute();
 	}
+
+	/*
+	 * onDropOffChangeEvent(DropOffChangeEvent event)  notified any change of the
+	 * drop off bus stop. Here the text field is updated and the estimated price is
+	 * recalculated.  
+	 */
 
 	@Subscribe
 	public void onDropOffChangeEvent(DropOffChangeEvent event) {
@@ -492,6 +531,9 @@ public class FormFragment extends Fragment {
 		estimate.execute();
 	}
 
+	/*
+	 * The AsyncEstimate task handled the cost estimate calculation on the background
+	 */
 	private class AsyncEstimate extends AsyncTask<Object, Integer, String> {
 		protected String doInBackground(Object... args) {
 			return estimatePrice();
@@ -514,6 +556,11 @@ public class FormFragment extends Fragment {
 			DecimalFormat moneyFormatter = new DecimalFormat("##.##");
 			return moneyFormatter.format(estimated_price) + " €";
 		}
+
+		/*
+		 * calculateDistance(String location1, String location2) calculates distance between two 
+		 * locations. This is used at the cost estimate calculation.
+		 */
 
 		private int calculateDistance(String location1, String location2) {
 			int distance_int = 0;
@@ -541,6 +588,10 @@ public class FormFragment extends Fragment {
 
 		}
 
+		/*
+		 * The distance of the ride is fetched here. This is part of the async task and
+		 * so it is run at the background.
+		 */
 		private String httpGET(String urlString) {
 			StringBuffer result = new StringBuffer();
 			BufferedReader reader = null;
