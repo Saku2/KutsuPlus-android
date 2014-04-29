@@ -94,7 +94,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	Menu menu;
 	MenuItem show_busstops_button;
 	private BroadcastReceiver sms_receiver;
-
+    /*
+     * The location listener here feeds the location information into OttoCommunication
+     * for the generic use.
+     */
 	private final LocationListener mLocationListener = new LocationListener() {
 		@Override
 		public void onLocationChanged(final Location location) {
