@@ -1,16 +1,35 @@
 package fi.aalto.kutsuplus;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -76,6 +95,7 @@ public class FormFragment extends Fragment {
 	AutoCompleteTextView toView;
 	TextView pickupStop;
 	TextView dropoffStop;
+	TextView estimatedPrice;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,6 +114,7 @@ public class FormFragment extends Fragment {
 
 		pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
 		dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
+		estimatedPrice = (TextView) rootView.findViewById(R.id.estimated_price);
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -109,6 +130,7 @@ public class FormFragment extends Fragment {
 						Log.d(LOG_TAG, "Adapter didn't have any items");
 					}
 				}
+			
 
 			};
 
@@ -122,11 +144,13 @@ public class FormFragment extends Fragment {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				//estimatedPrice.setText(estimatePrice());
 			}
+			
 		});
 
 		fromView.setAdapter(adapter_from);
-
+		estimatedPrice.setText(estimatePrice());
 		// Get the string array
 		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 		adapter_to.registerDataSetObserver(new DataSetObserver() {
@@ -405,6 +429,7 @@ public class FormFragment extends Fragment {
 		if (markerWasDragged) {
 			if (draggedStartMarker) {
 				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
+				estimatedPrice.setText(estimatePrice());
 				fromView.requestFocus();
 			} else {
 				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
@@ -413,6 +438,7 @@ public class FormFragment extends Fragment {
 		} else {
 			if (fromView.hasFocus()) {
 				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
+				estimatedPrice.setText(estimatePrice());
 
 			} else {
 				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,bus_stop);
@@ -496,6 +522,7 @@ public class FormFragment extends Fragment {
 				communication.setStart_location(OTTOCommunication.FORM_FRAGMENT, ll);
 				communication.setPick_up_stop(OTTOCommunication.FORM_FRAGMENT, pickupStop_so);
 				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
+				estimatedPrice.setText(estimatePrice());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -565,5 +592,113 @@ public class FormFragment extends Fragment {
     		dropoffStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());    		
 	}
 	
+	public String estimatePrice() {
+		Log.d("estimate", "going to estimate next");
+		// the price is 0,45 euros / km + base fee of 3,5 euros.
+		//float distance = calculateDistance("lehtisaarentie 1, Espoo", "simonkatu 1, Helsinki");
+		if(communication.getPick_up_stop() == null) {
+			Log.e("estimate", "getPick_up_stop was null");
+			return "";
+		}
+		Log.e("estimate", "getPick_up_stop was " + communication.getPick_up_stop());
+		float distance = calculateDistance(communication.getPick_up_stop().getFinnishAddress(), "simonkatu 1, Helsinki");
+		Log.e("estimate", "From: " + communication.getFrom_address() + " to: " + communication.getTo_address());
+		distance = Math.round(distance/100)*100;
+		float distance_price = 0.45f*distance/1000;
+		float base_price = 3.5f;
+		float estimated_price = distance_price + base_price;
+		Log.e("estimate", "rounded distance: " + String.valueOf(distance));
+		Log.e("estimate", "estimated value: " + String.valueOf(estimated_price));
+		return String.valueOf(estimated_price);
+	}
 
+private float calculateDistance(String location1, String location2) {
+	float distanceInKm = 0;
+	try {
+		String encoded_loc1 = java.net.URLEncoder.encode(location1,
+				"ISO-8859-1");
+		String encoded_loc2 = java.net.URLEncoder.encode(location2,
+				"ISO-8859-1");
+
+		String search_string = "http://maps.googleapis.com/maps/api/directions/xml?origin="
+				+ encoded_loc1
+				+ "&destination="
+				+ encoded_loc2
+				+ "&language=FI&sensor=false";
+
+		String distance = parse_distance(httpGET(search_string));
+		Log.e("distance", "here's the distance string: " + distance);
+		//distanceInKm = Float.parseFloat(distance.split(" ")[0].replace(",", "."));
+		distanceInKm = Float.parseFloat(distance);
+		Log.e("distance", "here's the distance float in m: " + String.valueOf(distanceInKm));
+	} catch (UnsupportedEncodingException e) {
+		e.printStackTrace();
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		Log.e("distance", "here's the distance float: failed");
+	
+	}
+	
+	return distanceInKm;
+
+}
+
+private String httpGET(String urlString) {
+	StringBuffer result = new StringBuffer();
+	BufferedReader reader = null;
+	URL url;
+	try {
+		url = new URL(urlString);
+		URLConnection connection = url.openConnection();
+		reader = new BufferedReader(new InputStreamReader(
+				connection.getInputStream()));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			result.append(line);
+		}
+	}
+
+	catch (Exception e) {
+		e.printStackTrace();
+		Log.e("exception", "Exception: was unable to get HTTP response");
+	} finally {
+		try {
+			if(reader != null) {
+				reader.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	return result.toString();
+}
+
+private String parse_distance(String google_result) {
+	XPathFactory xpathFactory = XPathFactory.newInstance();
+    XPath xpath = xpathFactory.newXPath();
+    
+	InputSource source = new InputSource(new StringReader(google_result));
+	float distance = 0.0f;
+	try {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document document = db.parse(source);
+		Log.e("distance", "here's the xml: " + google_result);
+		XPathExpression expr = xpath.compile("/DirectionsResponse/route/leg/step/distance/value");
+		NodeList list= (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			Log.e("nodes", node.getTextContent());
+			distance = distance + Float.parseFloat(node.getTextContent());
+		}
+		
+	} catch (Exception e) {
+		Log.e("exception", "xpath failed");
+		e.printStackTrace();
+	}
+	Log.e("distance", "here's the distance: " + distance);
+	return String.valueOf(distance);
+}
 }
