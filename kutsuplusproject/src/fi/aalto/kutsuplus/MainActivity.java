@@ -67,9 +67,12 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	final static public String CURRENT_LOCATIION = "Current location";
 	final static int FORMFRAG = 0;
 	final static int MAPFRAG = 1;
+	final static int FROM = 0;
+	final static int TO = 1;
 	final static int EXTRAS_FROM = 0;
 	final static int EXTRAS_TO = 1;
-	public int extras_list = EXTRAS_FROM;
+	private int extras_list = EXTRAS_FROM;
+	private int mapturn= FROM;
 
 	private final String LOG_TAG = "kutsuplus";
 
@@ -382,17 +385,25 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops = stopTreeHandler.getClosestStops(mp, 1);
 			if (stops != null) {
 				if (stops.length > 0) {
-					StopObject so = stops[0].getNeighbor().getValue();
-					formFragment.updatePickupDropOffText(so, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
-					boolean focusAtFrom = findViewById(R.id.from).hasFocus();
-					mapFragment.updateMarkersAndRoute(address_gps, so, focusAtFrom);
+					StopObject bus_stop = stops[0].getNeighbor().getValue();
+					mapFragment.updateMarkersAndRoute(address_gps, bus_stop, mapturn==MainActivity.FROM);
 				}
 			}
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();
 		}
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(street_address, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
+		if(mapturn==MainActivity.FROM)
+		{
+			formFragment.updateFromText(street_address);
+			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
+			mapturn=MainActivity.TO;
+		}
+		else
+		{
+			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
+			formFragment.updateToText(street_address);
+		}
 
 	}
 
@@ -402,9 +413,25 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
 		MapFragm mapFragment = getMapFragment();
 
-		formFragment.updatePickupDropOffText(bus_stop, mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
+		if(mapturn==MainActivity.FROM)
+			communication.setPick_up_stop(OTTOCommunication.MAIN_ACTIVITY, bus_stop);
+		else
+			communication.setDrop_off_stop(OTTOCommunication.MAIN_ACTIVITY, bus_stop);
+		
 		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		formFragment.updateToFromText(bus_stop.getFinnishName() + " " + bus_stop.getShortId(), mapFragment.isMarkerWasDragged(), mapFragment.isDraggedStartMarker());
+		String street_address=bus_stop.getFinnishName() + " " + bus_stop.getShortId();
+		if(mapturn==MainActivity.FROM)
+		{
+			formFragment.updateFromText(street_address);
+			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
+			mapturn=MainActivity.TO;
+		}
+		else
+		{
+			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
+			formFragment.updateToText(street_address);
+		}
+
 		boolean focusAtFrom = findViewById(R.id.from).hasFocus();
 		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
 	}
@@ -519,6 +546,24 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		rides.clearContent();
 		rides.addRide(from, to);
 
+	}
+
+	
+	public int getActiveExtraslist() {
+		return this.extras_list;
+	}
+		public void setActiveExtraslist(int extras_list) {
+		this.extras_list = extras_list;
+	}
+
+	@Override
+	public void setFromActivated() {
+			mapturn=MainActivity.FROM;
+	}
+
+	@Override
+	public void setToActivated() {
+			mapturn=MainActivity.TO;
 	}
 
 }

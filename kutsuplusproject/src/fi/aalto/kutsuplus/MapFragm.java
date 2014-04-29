@@ -235,11 +235,22 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		StopObject so = markers.get(marker);
-	    if(so!=null)
-	    {
+		if(marker.getTitle().equals("start"))
+		{
+			iSendMapSelection.setFromActivated();
+		}
+		else if(marker.getTitle().equals("finish"))
+		{
+			iSendMapSelection.setToActivated();
+		}
+		else
+		{
+		 StopObject so = markers.get(marker);
+	     if(so!=null)
+	     {
 	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition());
-	    }
+	     }
+		}
 		return false;
 	} 
 

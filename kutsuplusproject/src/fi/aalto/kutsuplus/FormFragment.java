@@ -85,8 +85,7 @@ public class FormFragment extends Fragment {
 	TextView estimatedPrice;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.formfragment, container, false);
 
 		// Get the streets string array
@@ -98,14 +97,12 @@ public class FormFragment extends Fragment {
 		restoretoMemory();
 
 		// Create the adapter and set it to the AutoCompleteTextView
-		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(
-				getActivity(), android.R.layout.simple_list_item_1, streets);
+		final StreetSearchAdapter adapter_from = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 
 		pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
 		dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		estimatedPrice = (TextView) rootView.findViewById(R.id.estimated_price);
-		passengers = (EditText) rootView
-				.findViewById(R.id.number_of_passengers);
+		passengers = (EditText) rootView.findViewById(R.id.number_of_passengers);
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -139,8 +136,7 @@ public class FormFragment extends Fragment {
 
 		fromView.setAdapter(adapter_from);
 		// Get the string array
-		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(
-				getActivity(), android.R.layout.simple_list_item_1, streets);
+		final StreetSearchAdapter adapter_to = new StreetSearchAdapter(getActivity(), android.R.layout.simple_list_item_1, streets);
 		adapter_to.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -178,8 +174,7 @@ public class FormFragment extends Fragment {
 		createDropDown(rootView);
 
 		// Remember the last ride
-		RideDatabaseHandler rides = new RideDatabaseHandler(
-				rootView.getContext());
+		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
 		List<Ride> ride_list = rides.getAllStreetAddresses();
 		if (ride_list != null)
 			if (ride_list.size() > 0) {
@@ -247,22 +242,19 @@ public class FormFragment extends Fragment {
 		Time now = new Time("UCT");
 		now.setToNow();
 		now.switchTimezone("Europe/Helsinki");
-		if ((now.weekDay == 0) || (now.weekDay == 6) || (now.hour > 23)
-				|| (now.hour < 6)) {
+		if ((now.weekDay == 0) || (now.weekDay == 6) || (now.hour > 23) || (now.hour < 6)) {
 			DialogFragment operatingHoursFragment = new OperatingHoursDialogFragment();
 			// A click outside of the dialog box will not dismiss the box
 			// Back button will not dismiss the box
 			operatingHoursFragment.setCancelable(false);
-			operatingHoursFragment
-					.show(getFragmentManager(), "operating_hours");
+			operatingHoursFragment.show(getFragmentManager(), "operating_hours");
 		}
 	}
 
 	private void createDropDown(View rootView) {
 		List<String> optionsList = new ArrayList<String>();
 		optionsList.add("Current location");
-		StreetDatabaseHandler stha = new StreetDatabaseHandler(
-				rootView.getContext());
+		StreetDatabaseHandler stha = new StreetDatabaseHandler(rootView.getContext());
 		try {
 			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
 
@@ -290,13 +282,13 @@ public class FormFragment extends Fragment {
 				switch (v.getId()) {
 				case R.id.from_extras:
 					// show the list view as dropdown
-					mainActivity.extras_list = MainActivity.EXTRAS_FROM;
+					mainActivity.setActiveExtraslist(MainActivity.EXTRAS_FROM);
 					popupWindow_ExtrasList.showAsDropDown(v, 0, 0);
 					break;
 
 				case R.id.to_extras:
 					// show the list view as dropdown
-					mainActivity.extras_list = MainActivity.EXTRAS_TO;
+					mainActivity.setActiveExtraslist(MainActivity.EXTRAS_TO);
 					popupWindow_ExtrasList.showAsDropDown(v, 0, 0);
 					break;
 				}
@@ -304,13 +296,11 @@ public class FormFragment extends Fragment {
 		};
 
 		// toExreas button
-		buttonShowDropDown_fromExtras = (ImageButton) rootView
-				.findViewById(R.id.from_extras);
+		buttonShowDropDown_fromExtras = (ImageButton) rootView.findViewById(R.id.from_extras);
 		buttonShowDropDown_fromExtras.setOnClickListener(extras_handler);
 
 		// fromExreas button
-		buttonShowDropDown_toExtras = (ImageButton) rootView
-				.findViewById(R.id.to_extras);
+		buttonShowDropDown_toExtras = (ImageButton) rootView.findViewById(R.id.to_extras);
 		buttonShowDropDown_toExtras.setOnClickListener(extras_handler);
 
 	}
@@ -323,8 +313,7 @@ public class FormFragment extends Fragment {
 	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
 	public PopupWindow getPopupWindow() {
-		PopupWindow popupWindow = new PopupWindow(rootView,
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		PopupWindow popupWindow = new PopupWindow(rootView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		// the drop down list is a list view
 		ListView listViewExtras = new ListView(getActivity());
@@ -333,8 +322,7 @@ public class FormFragment extends Fragment {
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras
-				.setOnItemClickListener(new Form_DropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(new Form_DropdownOnItemClickListener());
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -346,9 +334,7 @@ public class FormFragment extends Fragment {
 		LinearLayout layout = new LinearLayout(rootView.getContext());
 		layout.setOrientation(LinearLayout.VERTICAL);
 
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 		layoutParams.setMargins(5, 5, 5, 5);
 		layout.setBackgroundColor(getResources().getColor(R.color.light_gray));
@@ -364,8 +350,7 @@ public class FormFragment extends Fragment {
 	 */
 	private ArrayAdapter<String> extrasAdapter(String dogsArray[]) {
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_1, dogsArray) {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dogsArray) {
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
@@ -390,131 +375,63 @@ public class FormFragment extends Fragment {
 		return adapter;
 	}
 
-	// After clicking on a map, update from/to text
-	public void updateToFromText(String street_address,
-			boolean markerWasDragged, boolean draggedStartMarker) {
-		if (markerWasDragged) {
-			if (draggedStartMarker) {
-				fromView.setThreshold(1000);
-				fromView.setText(street_address);
-				fromView.setOnTouchListener(new OnTouchListener() {
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						fromView.setThreshold(3);
-						return false;
-					}
-				});
-				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT,
-						street_address);
-				fromView.requestFocus();
-			} else {
-				toView.setThreshold(1000);
-				toView.setText(street_address);
-				toView.setOnTouchListener(new OnTouchListener() {
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						toView.setThreshold(3);
-						return false;
-					}
-				});
-				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT,
-						street_address);
-				toView.requestFocus();
-			}
-		} else {
-			if (fromView.hasFocus()) {
-				fromView.setFocusable(false); // DO NOT REMOVE THIS
-				fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-				fromView.setText(street_address);
-				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT,
-						street_address);
-				fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-				fromView.setFocusable(true); // DO NOT REMOVE THIS
-			} else {
-				toView.setFocusable(false); // DO NOT REMOVE THIS
-				toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-				toView.setText(street_address);
-				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT,
-						street_address);
-				toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-				toView.setFocusable(true); // DO NOT REMOVE THIS
-			}
-		}
+	// After clicking on a map, update From text
+	public void updateFromText(String street_address) {
+		fromView.setFocusable(false); // DO NOT REMOVE THIS
+		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		fromView.setText(street_address);
+		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		fromView.setFocusable(true); // DO NOT REMOVE THIS
 	}
 
-	public void updatePickupDropOffText(StopObject bus_stop,
-			boolean markerWasDragged, boolean draggedStartMarker) {
-		if (markerWasDragged) {
-			if (draggedStartMarker) {
-				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,
-						bus_stop);
-				fromView.requestFocus();
-			} else {
-				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,
-						bus_stop);
-				toView.requestFocus();
-			}
-		} else {
-			if (fromView.hasFocus()) {
-				communication.setPick_up_stop(OTTOCommunication.MAP_FRAGMENT,
-						bus_stop);
-			} else {
-				communication.setDrop_off_stop(OTTOCommunication.MAP_FRAGMENT,
-						bus_stop);
-			}
-		}
+	// After clicking on a map, update To text
+	public void updateToText(String street_address) {
+		toView.setFocusable(false); // DO NOT REMOVE THIS
+		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		toView.setText(street_address);
+		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		toView.setFocusable(true); // DO NOT REMOVE THIS
 	}
+
 
 	private void initView() {
-		this.fromView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View v,
-							int position, long id) {
-						String queryText = parent.getItemAtPosition(position)
-								.toString();
-						handleFromFieldActivation(queryText);
-					}
-				});
-		this.fromView
-				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-					@Override
-					public void onItemSelected(AdapterView<?> parent,
-							View view, int position, long id) {
-						String queryText = parent.getItemAtPosition(position)
-								.toString();
-						handleFromFieldActivation(queryText);
-					}
+		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				String queryText = parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
+			}
+		});
+		this.fromView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String queryText = parent.getItemAtPosition(position).toString();
+				handleFromFieldActivation(queryText);
+			}
 
-					@Override
-					public void onNothingSelected(AdapterView<?> arg0) {
-					}
-				});
-		this.toView
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View v,
-							int position, long id) {
-						String queryText = parent.getItemAtPosition(position)
-								.toString();
-						handleToFieldActivation(queryText);
-					}
-				});
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				String queryText = parent.getItemAtPosition(position).toString();
+				handleToFieldActivation(queryText);
+			}
+		});
 
-		this.toView
-				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-					@Override
-					public void onItemSelected(AdapterView<?> parent,
-							View view, int position, long id) {
-						String queryText = parent.getItemAtPosition(position)
-								.toString();
-						handleToFieldActivation(queryText);
-					}
+		this.toView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String queryText = parent.getItemAtPosition(position).toString();
+				handleToFieldActivation(queryText);
+			}
 
-					@Override
-					public void onNothingSelected(AdapterView<?> arg0) {
-					}
-				});
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 	}
 
 	private String last_From_query = "";
@@ -528,14 +445,11 @@ public class FormFragment extends Fragment {
 		ReittiopasHttpHandler http = new ReittiopasHttpHandler();
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
 		args.add(new BasicNameValuePair("key", queryText));
-		args.add(new BasicNameValuePair("user",
-				getString(R.string.reittiopas_api_user)));
-		args.add(new BasicNameValuePair("pass",
-				getString(R.string.reittiopas_api_pass)));
+		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
 		args.add(new BasicNameValuePair("request", "geocode"));
 
-		communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT,
-				queryText);
+		communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 		Log.d(LOG_TAG, "timer called");
 		http.makeGetStartAddress("http://api.reittiopas.fi/hsl/prod/", args);
 	}
@@ -551,10 +465,8 @@ public class FormFragment extends Fragment {
 		ReittiopasHttpHandler http = new ReittiopasHttpHandler();
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
 		args.add(new BasicNameValuePair("key", queryText));
-		args.add(new BasicNameValuePair("user",
-				getString(R.string.reittiopas_api_user)));
-		args.add(new BasicNameValuePair("pass",
-				getString(R.string.reittiopas_api_pass)));
+		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
+		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
 		args.add(new BasicNameValuePair("request", "geocode"));
 
 		communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, queryText);
@@ -565,10 +477,8 @@ public class FormFragment extends Fragment {
 	@Subscribe
 	public void onPickUpChangeEvent(PickUpChangeEvent event) {
 		StopObject bus_stop = event.getBus_stop();
-		Log.d(LOG_TAG, "Pickup stop: " + bus_stop.getFinnishName() + " "
-				+ bus_stop.getShortId());
-		pickupStop.setText(bus_stop.getFinnishName() + " "
-				+ bus_stop.getShortId());
+		Log.d(LOG_TAG, "Pickup stop: " + bus_stop.getFinnishName() + " " + bus_stop.getShortId());
+		pickupStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());
 		AsyncEstimate estimate = new AsyncEstimate();
 		estimate.execute();
 	}
@@ -576,10 +486,8 @@ public class FormFragment extends Fragment {
 	@Subscribe
 	public void onDropOffChangeEvent(DropOffChangeEvent event) {
 		StopObject bus_stop = event.getBus_stop();
-		Log.d(LOG_TAG, "Dropoff stop: " + bus_stop.getFinnishName() + " "
-				+ bus_stop.getShortId());
-		dropoffStop.setText(bus_stop.getFinnishName() + " "
-				+ bus_stop.getShortId());
+		Log.d(LOG_TAG, "Dropoff stop: " + bus_stop.getFinnishName() + " " + bus_stop.getShortId());
+		dropoffStop.setText(bus_stop.getFinnishName() + " " + bus_stop.getShortId());
 		AsyncEstimate estimate = new AsyncEstimate();
 		estimate.execute();
 	}
@@ -596,22 +504,15 @@ public class FormFragment extends Fragment {
 				Log.e("estimate", "getPick_up_stop was null when estimating price");
 				return "";
 			}
-			int distance = calculateDistance(communication.getPick_up_stop()
-					.getFinnishAddress(), "simonkatu 1, Helsinki");
-			Log.e("estimate", "Estimate busstop adresses: From: "
-					+ communication.getPick_up_stop().getFinnishAddress()
-					+ " to: "
-					+ communication.getDrop_off_stop().getFinnishAddress());
-			Log.e("estimate",
-					"Street adresses: From: " + communication.getFrom_address()
-							+ " to: " + communication.getTo_address());
+			int distance = calculateDistance(communication.getPick_up_stop().getFinnishAddress(), "simonkatu 1, Helsinki");
+			Log.e("estimate", "Estimate busstop adresses: From: " + communication.getPick_up_stop().getFinnishAddress() + " to: " + communication.getDrop_off_stop().getFinnishAddress());
+			Log.e("estimate", "Street adresses: From: " + communication.getFrom_address() + " to: " + communication.getTo_address());
 			float distance_price = 0.45f * distance / 1000;
 			float base_price = 3.5f;
 			float estimated_price = distance_price + base_price;
-			Log.e("estimate",
-					"estimated value: " + String.valueOf(estimated_price));
+			Log.e("estimate", "estimated value: " + String.valueOf(estimated_price));
 			DecimalFormat moneyFormatter = new DecimalFormat("##.##");
-			return moneyFormatter.format(estimated_price)+" €";
+			return moneyFormatter.format(estimated_price) + " €";
 		}
 
 		private int calculateDistance(String location1, String location2) {
@@ -619,31 +520,18 @@ public class FormFragment extends Fragment {
 			try {
 
 				// Origin of the route
-				String str_origin = communication.getPick_up_stop()
-						.getGmpoint().getY()
-						+ ","
-						+ communication.getPick_up_stop().getGmpoint().getX();
+				String str_origin = communication.getPick_up_stop().getGmpoint().getY() + "," + communication.getPick_up_stop().getGmpoint().getX();
 
 				// Destination of the route
-				String str_destination = communication.getDrop_off_stop()
-						.getGmpoint().getY()
-						+ ","
-						+ communication.getDrop_off_stop().getGmpoint().getX();
+				String str_destination = communication.getDrop_off_stop().getGmpoint().getY() + "," + communication.getDrop_off_stop().getGmpoint().getX();
 
-				String search_string = "http://maps.googleapis.com/maps/api/directions/xml?origin="
-						+ str_origin
-						+ "&destination="
-						+ str_destination
-						+ "&language=FI&sensor=false";
+				String search_string = "http://maps.googleapis.com/maps/api/directions/xml?origin=" + str_origin + "&destination=" + str_destination + "&language=FI&sensor=false";
 
-				Log.e("distance", "here's the search string: "
-						+ search_string);
+				Log.e("distance", "here's the search string: " + search_string);
 				String distance = parse_distance(httpGET(search_string));
 				Log.e("distance", "here's the distance string: " + distance);
 				distance_int = Integer.parseInt(distance);
-				Log.e("distance",
-						"here's the distance int in m: "
-								+ String.valueOf(distance_int));
+				Log.e("distance", "here's the distance int in m: " + String.valueOf(distance_int));
 			} catch (Exception e) {
 				e.printStackTrace();
 				Log.e("distance", "exception: distance int failed");
@@ -660,8 +548,7 @@ public class FormFragment extends Fragment {
 			try {
 				url = new URL(urlString);
 				URLConnection connection = url.openConnection();
-				reader = new BufferedReader(new InputStreamReader(
-						connection.getInputStream()));
+				reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String line;
 				while ((line = reader.readLine()) != null) {
 					result.append(line);
@@ -687,23 +574,18 @@ public class FormFragment extends Fragment {
 			XPathFactory xpathFactory = XPathFactory.newInstance();
 			XPath xpath = xpathFactory.newXPath();
 
-			InputSource source = new InputSource(
-					new StringReader(google_result));
+			InputSource source = new InputSource(new StringReader(google_result));
 			int distance = 0;
 			try {
-				DocumentBuilderFactory dbf = DocumentBuilderFactory
-						.newInstance();
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				Document document = db.parse(source);
-				XPathExpression expr = xpath
-						.compile("/DirectionsResponse/route/leg/step/distance/value");
-				NodeList list = (NodeList) expr.evaluate(document,
-						XPathConstants.NODESET);
+				XPathExpression expr = xpath.compile("/DirectionsResponse/route/leg/step/distance/value");
+				NodeList list = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
 
 				for (int i = 0; i < list.getLength(); i++) {
 					Node node = list.item(i);
-					distance = distance
-							+ Integer.parseInt(node.getTextContent());
+					distance = distance + Integer.parseInt(node.getTextContent());
 				}
 			} catch (Exception e) {
 				Log.e("exception", "parsing failed");
@@ -711,6 +593,7 @@ public class FormFragment extends Fragment {
 			}
 			return String.valueOf(distance);
 		}
+
 		protected void onPostExecute(String result) {
 			estimatedPrice.setText(result);
 		}

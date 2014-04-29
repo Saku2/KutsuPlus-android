@@ -38,7 +38,7 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 
 		// get the text and set it as the button text
 		String selectedItemText = ((TextView) v).getText().toString();
-		if (mainActivity.extras_list == MainActivity.EXTRAS_FROM) {
+		if (mainActivity.getActiveExtraslist() == MainActivity.EXTRAS_FROM) {
 			final AutoCompleteTextView fromView = (AutoCompleteTextView) mainActivity.findViewById(R.id.from);
 			fromView.setFocusable(false);
 			fromView.setFocusableInTouchMode(false);
