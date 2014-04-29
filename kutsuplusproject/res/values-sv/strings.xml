@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_gray">#DDDDDD</color>
+    <string name="app_name">ÄlyBussi</string>
     
     <!-- Tabs at the phone screen-->
     <string name="TAB_form">Beställning</string>

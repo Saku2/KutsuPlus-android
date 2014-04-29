@@ -21,6 +21,7 @@
         <!-- Order Form -->
 
         <TextView
+            android:id="@+id/txtbx_from_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="5"
@@ -55,6 +56,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_to_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="5"
@@ -87,6 +89,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_nr_passinger_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -110,6 +113,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_max_price_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -133,6 +137,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_estimated_price_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -154,6 +159,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_pickup_stop_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -178,6 +184,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/txtbx_dropoff_stop_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"

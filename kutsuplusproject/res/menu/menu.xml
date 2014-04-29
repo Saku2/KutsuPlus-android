@@ -2,9 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">     
     <item
-        android:id="@+id/item_prefs"
+        android:id="@+id/lang_fi"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/title_settings" />
+        android:title="FI" />
+    <item
+        android:id="@+id/lang_sv"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="SV" />
+    <item
+        android:id="@+id/lang_en"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="EN" />
 
     <item
         android:id="@+id/kp_busstops"

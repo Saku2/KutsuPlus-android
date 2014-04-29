@@ -44,7 +44,8 @@
         android:theme="@style/Theme.AppCompat.Light">
         <uses-library android:name="com.google.android.maps" />
         <activity android:name=".MainActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+                  android:configChanges="locale|orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -55,7 +56,9 @@
         </activity>
         
         <!-- SMS handling -->       
-        <activity android:name="fi.aalto.kutsuplus.SettingsActivity" android:label="@string/title_settings" />
+        <activity android:name="fi.aalto.kutsuplus.SettingsActivity" 
+                  android:label="@string/title_settings"
+                  android:configChanges="locale|orientation|keyboardHidden" />
                 
           <receiver android:name="fi.aalto.kutsuplus.sms.SMSReceiver" >
             <intent-filter>
@@ -72,6 +75,6 @@
         <!-- https://developers.google.com/maps/documentation/android/start -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"        
-            android:value="AIzaSyC0e8bMDR8b6oWmmyJDTVDuU_4y4wBDQxM"/>
+            android:value="AIzaSyB3gGnK-db4DMY2jfZ_jnxXJSm3WKaZtok"/>
     </application>
 </manifest>
