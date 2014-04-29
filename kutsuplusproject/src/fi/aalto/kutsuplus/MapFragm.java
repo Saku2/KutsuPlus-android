@@ -20,6 +20,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -207,6 +208,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public void makeKPmarkers(){
 		MarkerOptions markerOptions = new MarkerOptions();
 		markerOptions.icon(setKPicon());
+		Log.e("maperror", "stopTreehandler is " + this.stopTreeHandler);
+		Log.e("maperror", "stopTreehandler is values are " + this.stopTreeHandler.getStopTree());
 		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
 		for(StopObject so : pysakit){
 			// Constructor uses (lat,long)  remember: latitude=y, longituden=x
