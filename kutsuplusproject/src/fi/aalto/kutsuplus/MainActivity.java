@@ -240,10 +240,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			fm.beginTransaction().add(R.id.large_form_fragment, formFragment, "Form").commit();
 			getSupportFragmentManager().beginTransaction().add(R.id.map_fragment, mapFragment, "Map").commit();
 
-			mapFragment.setStopTreeHandler(stopTreeHandler);
 			if (show_busstops_button != null)
 				show_busstops_button.setVisible(true);
 		}
+		mapFragment.setStopTreeHandler(stopTreeHandler);
+
 	}
 
 	public MapFragm getMapFragment() {

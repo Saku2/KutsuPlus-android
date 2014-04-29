@@ -32,7 +32,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -43,6 +42,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.squareup.otto.Subscribe;
 
+import fi.aalto.kutsuplus.KutsuplusSupportMapFragment.OnMapReadyListener;
 import fi.aalto.kutsuplus.events.CurrentLocationChangeEvent;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
 import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
@@ -54,7 +54,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.routes.DownloadTask;
 
-public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener{
+public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapClickListener, OnMarkerDragListener, OnMapReadyListener{
 	private ISendMapSelection iSendMapSelection;
 	private OTTOCommunication communication=OTTOCommunication.getInstance();
 
@@ -105,11 +105,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
             setMapTransparent((ViewGroup) rootView);
         }
 		// get map object
-		SupportMapFragment mySupportMapFragment = (SupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
+        KutsuplusSupportMapFragment mySupportMapFragment = (KutsuplusSupportMapFragment) this.getFragmentManager().findFragmentByTag("google_map");
 		GoogleMap google_map = mySupportMapFragment.getMap();
 		setMap(google_map);
-		google_map.setMyLocationEnabled(true);
-        showHelsinkiArea(initialZoomLevel); 
         communication.register(this);
         restoretoMemory();
 		return rootView;
@@ -720,6 +718,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			} catch (Exception e) {
 				System.out.println("Probably no map initialized: " + e.getMessage());
 			}
+
+	}
+
+	@Override
+	public void onMapReady() {
+		Toast.makeText(rootView.getContext().getApplicationContext(), "MAP ready!!!", Toast.LENGTH_LONG).show();
+		map.setMyLocationEnabled(true);
+        showHelsinkiArea(initialZoomLevel); 
 
 	}
 
