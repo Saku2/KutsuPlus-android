@@ -72,7 +72,7 @@ import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
-import fi.aalto.kutsuplus.utils.HttpHandler;
+import fi.aalto.kutsuplus.utils.ReittiopasHttpHandler;
 import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
  
 public class FormFragment extends Fragment {
@@ -504,48 +504,16 @@ public class FormFragment extends Fragment {
 			return;
 		last_From_query=queryText;
 		
-		// To avoid the android.os.NetworkOnMainThreadException
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-		StrictMode.setThreadPolicy(policy);
-
-		HttpHandler http = new HttpHandler();
+		ReittiopasHttpHandler http = new ReittiopasHttpHandler();
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
 		args.add(new BasicNameValuePair("key", queryText));
 		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
 		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
 		args.add(new BasicNameValuePair("request", "geocode"));
 
-		JSONArray jsonArray = null;
-		JSONObject json = null;
+		communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 		Log.d(LOG_TAG, "timer called");
-		try {
-			String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
-			Log.d(LOG_TAG, tmp);
-			jsonArray = new JSONArray(tmp);
-			json = jsonArray.getJSONObject(0);
-
-			String[] coords = json.getString("coords").split(",");
-			// latitude is a geographic coordinate that
-			// specifies the north-south position of a point
-			String longtitude = coords[0];
-			String latitude = coords[1];
-
-			try {
-				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-                StopObject pickupStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
-				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
-
-				communication.setStart_location(OTTOCommunication.FORM_FRAGMENT, ll);
-				communication.setPick_up_stop(OTTOCommunication.FORM_FRAGMENT, pickupStop_so);
-				communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		http.makeGetStartAddress("http://api.reittiopas.fi/hsl/prod/", args);
 	}
 
 	private String last_To_query="";
@@ -556,47 +524,16 @@ public class FormFragment extends Fragment {
 			return;
 		last_To_query=queryText;
 		
-		// To avoid the android.os.NetworkOnMainThreadException
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-		StrictMode.setThreadPolicy(policy);
-		HttpHandler http = new HttpHandler();
+		ReittiopasHttpHandler http = new ReittiopasHttpHandler();
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
 		args.add(new BasicNameValuePair("key", queryText));
 		args.add(new BasicNameValuePair("user", getString(R.string.reittiopas_api_user)));
 		args.add(new BasicNameValuePair("pass", getString(R.string.reittiopas_api_pass)));
 		args.add(new BasicNameValuePair("request", "geocode"));
 
-		JSONArray jsonArray = null;
-		JSONObject json = null;
+		communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 		Log.d(LOG_TAG, "timer called");
-		try {
-			String tmp = http.makeHttpGet("http://api.reittiopas.fi/hsl/prod/", args);
-			Log.d(LOG_TAG, tmp);
-			jsonArray = new JSONArray(tmp);
-			json = jsonArray.getJSONObject(0);
-
-			String[] coords = json.getString("coords").split(",");
-			// latitude is a geographic coordinate that
-			// specifies the north-south position of a point
-			String longtitude = coords[0];
-			String latitude = coords[1];
-			try {
-				MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
-				StopObject dropoffStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
-				GoogleMapPoint gmp=CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
-				LatLng ll = new LatLng(gmp.getX(), gmp.getY());
-
-				communication.setEnd_location(OTTOCommunication.FORM_FRAGMENT, ll);
-				communication.setDrop_off_stop(OTTOCommunication.FORM_FRAGMENT, dropoffStop_so);
-				communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, queryText);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		http.makeGetEndAddress("http://api.reittiopas.fi/hsl/prod/", args);
 	}
 	
 	
