@@ -62,7 +62,7 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, OnSharedPreferenceChangeListener, ISendMapSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection {
 
 
 	private Locale myLocale;
@@ -147,9 +147,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		super.onCreate(savedInstanceState);
 		supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
 		
-		setLocale("fi");
 		LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 20, mLocationListener);
+		
+		// The preferences menu
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		String used_language = preferences.getString("prefLanguage", "");
+		if (!used_language.equals("")) {
+			setLocale(used_language);
+		}
 
 
 		final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -378,18 +384,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return true;
 	}
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		String used_language = sharedPreferences.getString("prefLanguage", "");
-		if (!used_language.equals("")) {
-			setLocale(used_language);
-			Toast.makeText(this, "Restart the application to see the language change in effect.", Toast.LENGTH_LONG).show();
-			// TODO changes the language on the fly, but creates new instances
-			// Intent refresh = new Intent(this, MainActivity.class);
-			// startActivity(refresh);
-		}
-
-	}
+	
 
 
     // setLocale sets the language that is used at the program.
@@ -404,7 +399,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		conf.locale = myLocale;
 		res.updateConfiguration(conf, dm);
 		reloadRecources();
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("prefLanguage", lang); // value to store
+		editor.commit();//This is needed or the edits will not be put into the prefs file
 	}
+	
+	/*
+	 *  reloadRecources() updates the language related resources on the fragments
+	 *  after a new language is selected.
+	 */
+
 	private void reloadRecources(){
 		if(formtab != null){
 			formtab.setContentDescription(getString(R.string.TAB_form_description));
@@ -415,38 +419,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			maptab.setText(R.string.TAB_map);
 		}
 		//FORMFRAG
-		TextView fromView = (TextView) this.findViewById(R.id.txtbx_from_guide);
-		if(fromView != null){
-			fromView.setText(R.string.OF_from);
-		}
-		TextView toView = (TextView) this.findViewById(R.id.txtbx_to_guide);
-		if(toView != null){
-			toView.setText(R.string.OF_to);
-		}
-		TextView nr_passingers = (TextView) this.findViewById(R.id.txtbx_nr_passinger_guide);
-		if(nr_passingers != null){
-			nr_passingers.setText(R.string.OF_number_of_passengers);
-		}
-		TextView price_guide = (TextView) this.findViewById(R.id.txtbx_max_price_guide);
-		if(price_guide != null){
-			price_guide.setText(R.string.OF_max_price);
-		}
-		TextView estimated_price = (TextView) this.findViewById(R.id.txtbx_estimated_price_guide);
-		if(estimated_price != null){
-			estimated_price.setText(R.string.OF_estimated_price);
-		}
-		TextView pickup_stop = (TextView) this.findViewById(R.id.txtbx_pickup_stop_guide);
-		if(pickup_stop != null){
-			pickup_stop.setText(R.string.OF_pickup_stop);
-		}
-		TextView dropoff_stop = (TextView) this.findViewById(R.id.txtbx_dropoff_stop_guide);
-		if(dropoff_stop != null){
-			dropoff_stop.setText(R.string.OF_dropoff_stop);
-		}
-		Button order = (Button) this.findViewById(R.id.bn_order);
-		if(order != null){
-			order.setText(R.string.OF_button_order);
-		}
+		if(formFragment!=null)
+			formFragment.reloadRecources();
 	}
 
 	/*

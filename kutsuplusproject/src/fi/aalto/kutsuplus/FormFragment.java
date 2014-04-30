@@ -46,6 +46,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -657,4 +658,44 @@ public class FormFragment extends Fragment {
 	public AutoCompleteTextView getToView() {
 		return toView;
 	}
+	
+	/*
+	 *  reloadRecources() updates the language related resources on the Form fragment
+	 *  after a new language is selected.
+	 */
+	public void reloadRecources(){
+		TextView fromView = (TextView) rootView.findViewById(R.id.txtbx_from_guide);
+		if(fromView != null){
+			fromView.setText(R.string.OF_from);
+		}
+		TextView toView = (TextView) rootView.findViewById(R.id.txtbx_to_guide);
+		if(toView != null){
+			toView.setText(R.string.OF_to);
+		}
+		TextView nr_passingers = (TextView) rootView.findViewById(R.id.txtbx_nr_passinger_guide);
+		if(nr_passingers != null){
+			nr_passingers.setText(R.string.OF_number_of_passengers);
+		}
+		TextView price_guide = (TextView) rootView.findViewById(R.id.txtbx_max_price_guide);
+		if(price_guide != null){
+			price_guide.setText(R.string.OF_max_price);
+		}
+		TextView estimated_price = (TextView) rootView.findViewById(R.id.txtbx_estimated_price_guide);
+		if(estimated_price != null){
+			estimated_price.setText(R.string.OF_estimated_price);
+		}
+		TextView pickup_stop = (TextView) rootView.findViewById(R.id.txtbx_pickup_stop_guide);
+		if(pickup_stop != null){
+			pickup_stop.setText(R.string.OF_pickup_stop);
+		}
+		TextView dropoff_stop = (TextView) rootView.findViewById(R.id.txtbx_dropoff_stop_guide);
+		if(dropoff_stop != null){
+			dropoff_stop.setText(R.string.OF_dropoff_stop);
+		}
+		Button order = (Button) rootView.findViewById(R.id.bn_order);
+		if(order != null){
+			order.setText(R.string.OF_button_order);
+		}
+	}
+
 }
