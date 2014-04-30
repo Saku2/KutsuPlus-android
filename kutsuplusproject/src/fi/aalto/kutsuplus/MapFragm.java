@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -74,6 +75,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private boolean draggedStartMarker=false;
 	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	
+	//rider scrumb
+	private ArrayList<LatLng> ridingScrumbs = new ArrayList<LatLng>();
+	private Polyline ridingScrumbPolyline = null;
+	PolylineOptions ridingScrumbPolyLineOptions;
+	
 	//default initial zoom level, when app is opened//
 	final static public float initialZoomLevel = 11.5F;
 	
@@ -109,6 +115,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
         google_map.setOnMapClickListener(this);  
         google_map.setOnMarkerDragListener(this);
 		google_map.setOnMarkerClickListener((OnMarkerClickListener) this);
+		
+		//rider scrumb polylineoptions
+		ridingScrumbPolyLineOptions = new PolylineOptions();
 
 		setMap(google_map);
 
@@ -549,6 +558,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			try
 			{
 			 drawStraightLineOnMap(startPoint, endPoint);
+			 //this supposed to be easy before otto-crap:
+			 // drawStraightLineOnMap(startEndMarkers.get("start").getPosition(), startEndMarkers.get("end").getPosition());
 			}
 			catch(Exception e)
 			{
@@ -557,6 +568,48 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 
 	}
+	
+	
+	
+	public void updateRidingScrumbPolyline(Location location){
+		LatLng lat  = new LatLng(location.getLatitude(), location.getLongitude());
+		//int ridingColor = this.getActivity().getApplicationContext().getResources().getColor(R.id.ride_crumb);//(R.color.riding_scrumb);
+		ridingScrumbPolyLineOptions.color(Color.RED);
+		ridingScrumbPolyLineOptions.width(6);
+		ridingScrumbPolyLineOptions.add(lat);
+	
+		if(map != null){
+			ridingScrumbPolyline = map.addPolyline(ridingScrumbPolyLineOptions);
+			moveCamera(lat);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//ootto pask
 
 	@Subscribe
     public void onCurrentLocationChangeEvent(CurrentLocationChangeEvent event){
@@ -711,5 +764,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		return finishDurationMarkersWatcher;
 	}
 
+	
     
 }

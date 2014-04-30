@@ -75,7 +75,7 @@
   </class>  
   <class id="9" language="java" name="fi.aalto.kutsuplus.SettingsActivity" project="KutsuPlus" 
     file="/KutsuPlus/src/fi/aalto/kutsuplus/SettingsActivity.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="120" y="102"/>    
+    <position height="-1" width="-1" x="112" y="2"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -165,7 +165,7 @@
   </class>  
   <class id="19" language="java" name="fi.aalto.kutsuplus.database.StreetAddress" project="KutsuPlus" 
     file="/KutsuPlus/src/fi/aalto/kutsuplus/database/StreetAddress.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="331" y="173"/>    
+    <position height="-1" width="-1" x="307" y="7"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -255,7 +255,7 @@
   </class>  
   <class id="29" language="java" name="fi.aalto.kutsuplus.sms.SMSParsingException" project="KutsuPlus" 
     file="/KutsuPlus/src/fi/aalto/kutsuplus/sms/SMSParsingException.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="287" y="510"/>    
+    <position height="-1" width="-1" x="71" y="344"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -264,7 +264,7 @@
   </class>  
   <class id="30" language="java" name="fi.aalto.kutsuplus.sms.SMSParser" project="KutsuPlus" 
     file="/KutsuPlus/src/fi/aalto/kutsuplus/sms/SMSParser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="789" y="618"/>    
+    <position height="-1" width="-1" x="281" y="608"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -273,83 +273,83 @@
   </class>  
   <class id="31" language="java" name="fi.aalto.kutsuplus.sms.SMSMessage" project="KutsuPlus" 
     file="/KutsuPlus/src/fi/aalto/kutsuplus/sms/SMSMessage.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="548" y="546"/>    
+    <position height="-1" width="-1" x="72" y="655"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <association id="32">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="33" name="bus_stop"/>      
-      <multiplicity id="34" minimum="0" maximum="1"/>    
+  <nesting id="32">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="10"/>  
+  </nesting>  
+  <association id="33">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="34" name="communication"/>      
+      <multiplicity id="35" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="36">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="37" name="pick_up_stop"/>      
+      <multiplicity id="38" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="35">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="36" name="instance"/>      
-      <multiplicity id="37" minimum="0" maximum="1"/>    
+  <association id="39">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="40" name="gmpoint"/>      
+      <multiplicity id="41" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
+    <end type="TARGET" refId="25" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="38">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="39" name="communication"/>      
-      <multiplicity id="40" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="41">    
+  <association id="42">    
     <end type="SOURCE" refId="15" navigable="false">      
-      <attribute id="42" name="stopTreeHandler"/>      
-      <multiplicity id="43" minimum="0" maximum="1"/>    
+      <attribute id="43" name="iSendMapSelection"/>      
+      <multiplicity id="44" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="45">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="46" name="stopTreeHandler"/>      
+      <multiplicity id="47" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="27" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <nesting id="44">    
-    <end type="SOURCE" refId="17"/>    
-    <end type="TARGET" refId="10"/>  
-  </nesting>  
-  <association id="45">    
-    <end type="SOURCE" refId="14" navigable="false">      
-      <attribute id="46" name="communication"/>      
-      <multiplicity id="47" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
   <association id="48">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="49" name="mapFragment"/>      
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="49" name="communication"/>      
       <multiplicity id="50" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
+    <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="51">    
-    <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="52" name="communication"/>      
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="52" name="bus_stop"/>      
       <multiplicity id="53" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="54">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="55" name="drop_off_stop"/>      
-      <multiplicity id="56" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="57">    
+  <association id="54">    
     <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="55" name="mapFragment"/>      
+      <multiplicity id="56" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <end type="SOURCE" refId="17" navigable="false">      
       <attribute id="58" name="communication"/>      
       <multiplicity id="59" minimum="0" maximum="1"/>    
     </end>    
@@ -365,35 +365,35 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="63">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="64" name="ticketFragment"/>      
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="64" name="bus_stop"/>      
       <multiplicity id="65" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="16" navigable="true"/>    
+    <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="66">    
-    <end type="SOURCE" refId="15" navigable="false">      
-      <attribute id="67" name="markers"/>      
-      <multiplicity id="68" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="67" name="stopTreeHandler"/>      
+      <multiplicity id="68" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
+    <end type="TARGET" refId="27" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="69">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="70" name="pick_up_stop"/>      
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="70" name="formFragment"/>      
       <multiplicity id="71" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="23" navigable="true"/>    
+    <end type="TARGET" refId="17" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="72">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="73" name="tabPagerAdapter"/>      
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="73" name="instance"/>      
       <multiplicity id="74" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
+    <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="75">    
@@ -406,55 +406,55 @@
   </association>  
   <association id="78">    
     <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="79" name="formFragment"/>      
+      <attribute id="79" name="ticketFragment"/>      
       <multiplicity id="80" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="17" navigable="true"/>    
+    <end type="TARGET" refId="16" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="81">    
-    <bendpoint x="777" y="840"/>    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="11"/>  
-  </realization>  
-  <association id="82">    
-    <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="83" name="gmpoint"/>      
-      <multiplicity id="84" minimum="0" maximum="1"/>    
+  <association id="81">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="82" name="tabPagerAdapter"/>      
+      <multiplicity id="83" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="25" navigable="true"/>    
+    <end type="TARGET" refId="8" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="85">    
-    <end type="SOURCE" refId="27" navigable="false">      
-      <attribute id="86" name="stopTree"/>      
-      <multiplicity id="87" minimum="0" maximum="2147483647"/>    
+  <association id="84">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="85" name="markers"/>      
+      <multiplicity id="86" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <realization id="87">    
+    <bendpoint x="777" y="840"/>    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="11"/>  
+  </realization>  
   <association id="88">    
-    <end type="SOURCE" refId="15" navigable="false">      
-      <attribute id="89" name="iSendMapSelection"/>      
-      <multiplicity id="90" minimum="0" maximum="1"/>    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="89" name="stopTree"/>      
+      <multiplicity id="90" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
+    <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="91">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="92" name="bus_stop"/>      
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="92" name="drop_off_stop"/>      
       <multiplicity id="93" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="23" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="94">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="95" name="stopTreeHandler"/>      
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="95" name="communication"/>      
       <multiplicity id="96" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="27" navigable="true"/>    
+    <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 

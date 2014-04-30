@@ -17,6 +17,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -62,13 +63,17 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, LocationListener {
 
 
 	private Locale myLocale;
 	//view elements
 	Tab formtab;
 	Tab maptab;
+	
+	//riding crumb
+	LocationManager locationManager ;
+    String provider;
 	
 	
 	SharedPreferences preferences;
@@ -104,6 +109,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	Menu menu;
 	MenuItem show_busstops_button;
+	MenuItem ride_crumb_button;
 	private BroadcastReceiver sms_receiver;
     /*
      * The location listener here feeds the location information into OttoCommunication
@@ -254,6 +260,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 			if (show_busstops_button != null)
 				show_busstops_button.setVisible(true);
+			if (ride_crumb_button != null)
+				ride_crumb_button.setVisible(true);
 		}
 		mapFragment.setStopTreeHandler(stopTreeHandler);
 
@@ -295,10 +303,14 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			mPager.setPagingEnabled(false);
 			if (show_busstops_button != null)
 				show_busstops_button.setVisible(true);
+			if (ride_crumb_button != null)
+				ride_crumb_button.setVisible(true);
 		} else {
 			mPager.setPagingEnabled(true);
 			if (show_busstops_button != null)
 				show_busstops_button.setVisible(false);
+			if (ride_crumb_button != null)
+				ride_crumb_button.setVisible(false);
 		}
 	}
 
@@ -329,8 +341,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		menu = menu;
 		if (menu != null) {
 			show_busstops_button = menu.findItem(R.id.kp_busstops);
-			if (isTwoPaneLayout)
+			ride_crumb_button = menu.findItem(R.id.ride_crumb);
+			if (isTwoPaneLayout){
 				show_busstops_button.setVisible(true);//
+				ride_crumb_button.setVisible(true);//
+			}
 		}
 		return true;
 	}
@@ -364,6 +379,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		case R.id.lang_sv:
 			setLocale("sv");
 			break;
+		case R.id.ride_crumb:
+			stratTrackingRide(item);
+			break;
 		}
 
 		if (item.getItemId() == R.id.kp_busstops) {
@@ -387,7 +405,39 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 
 
-    // setLocale sets the language that is used at the program.
+    private void stratTrackingRide(MenuItem item) {
+    	// Getting LocationManager object
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
+    	if(item.getTitle().toString().equals("off")){
+    		item.setTitle("on");
+    		item.setIcon(R.drawable.ride_crumb);// Creating an empty criteria object
+            // Creating an empty criteria object
+            Criteria criteria = new Criteria();     
+            // Getting the name of the provider that meets the criteria
+            provider = locationManager.getBestProvider(criteria, false);     
+            if(provider!=null && !provider.equals("")){     
+                // Get the location from the given provider
+                Location location = locationManager.getLastKnownLocation(provider);     
+                locationManager.requestLocationUpdates(provider, 20000, 1, this);     
+                if(location!=null)
+                    onLocationChanged(location);
+                else
+                    Toast.makeText(getBaseContext(), "Location can't be retrieved", Toast.LENGTH_SHORT).show();     
+            }else{
+                Toast.makeText(getBaseContext(), "No Provider Found", Toast.LENGTH_SHORT).show();
+            }
+    	}
+    	else{
+    		item.setTitle("off");
+    		item.setIcon(R.drawable.ride_crumb_off);
+    		// stop rider scrumbs
+    		if(locationManager != null)
+    			locationManager.removeUpdates(this);
+    	}
+	}
+
+
+	// setLocale sets the language that is used at the program.
 	// To make the operation smooth, the activity is not restatrted
 	// This is originally from:
 	// http://stackoverflow.com/questions/12908289/how-change-language-of-app-on-user-select-language
@@ -648,6 +698,51 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void setToActivated() {
 			mapturn=MainActivity.TO;
+	}
+
+
+	
+	
+	
+	
+	
+	//LOCATION SCRUMBS
+	@Override
+	public void onLocationChanged(Location location) {
+		// Getting reference to TextView tv_longitude
+        //TextView tvLongitude = (TextView)findViewById(R.id.tv_longitude);
+ 
+        // Getting reference to TextView tv_latitude
+        //TextView tvLatitude = (TextView)findViewById(R.id.tv_latitude);
+ 
+        // Setting Current Longitude
+        //tvLongitude.setText("Longitude:" + location.getLongitude());
+		Toast.makeText(getBaseContext(), "Longitude:" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        // Setting Current Latitude
+        //tvLatitude.setText("Latitude:" + location.getLatitude() );
+		Toast.makeText(getBaseContext(), "Latitude:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
+		this.getMapFragment().updateRidingScrumbPolyline(location);
+	}
+
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

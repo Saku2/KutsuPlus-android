@@ -20,4 +20,10 @@
         android:title="@string/show_kplus_stops"
         app:showAsAction="always"
         android:visible="false" />
+    <item
+        android:id="@+id/ride_crumb"
+        android:icon="@drawable/ride_crumb_off"
+        android:title="off"
+        app:showAsAction="always"
+        android:visible="false" />
 </menu>
