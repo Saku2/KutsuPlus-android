@@ -575,7 +575,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		LatLng lat  = new LatLng(location.getLatitude(), location.getLongitude());
 		//int ridingColor = this.getActivity().getApplicationContext().getResources().getColor(R.id.ride_crumb);//(R.color.riding_scrumb);
 		ridingScrumbPolyLineOptions.color(Color.RED);
-		ridingScrumbPolyLineOptions.width(6);
+		ridingScrumbPolyLineOptions.width(6);//
 		ridingScrumbPolyLineOptions.add(lat);
 	
 		if(map != null){
