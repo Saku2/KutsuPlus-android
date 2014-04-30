@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_gray">#DDDDDD</color>
-    <string name="app_name">ÄlyBussi</string>
+    <!-- The product name is not translated! -->
+    <!-- Reason: I we do marketing, we don't want to waste money -->
+    <!-- string name="app_name">ÄlyBussi</string  -->
     
     <!-- Tabs at the phone screen-->
     <string name="TAB_form">Beställning</string>

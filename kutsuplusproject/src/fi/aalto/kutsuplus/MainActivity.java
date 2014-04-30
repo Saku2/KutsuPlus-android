@@ -69,8 +69,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	//view elements
 	Tab formtab;
 	Tab maptab;
-	;
-	AutoCompleteTextView fromView;
+	
 	
 	SharedPreferences preferences;
 	private OTTOCommunication communication = OTTOCommunication.getInstance();

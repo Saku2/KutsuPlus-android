@@ -4,7 +4,9 @@
     <color name="light_gray">#DDDDDD</color>
     <color name="light_background">#DDDDFF</color>
     <color name="kutsuplus_light_blue"> #B9D6F0</color>
+    
     <string name="app_name">ÄlyBussi</string>
+    
     
     <!-- Order Tabs -->
     <string name="TAB_form">Order</string>

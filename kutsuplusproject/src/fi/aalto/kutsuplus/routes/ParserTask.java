@@ -92,7 +92,14 @@ public ParserTask( MapFragm mapF_){
             lineOptions.color(Color.GREEN);
         }
 
-        drawDistancesAndLines(distance, duration, lineOptions);
+        try
+        {
+         drawDistancesAndLines(distance, duration, lineOptions);
+        }
+        catch(IllegalStateException is)
+        {
+        	// Can be happeded, when closing the application
+        }
 		 
     }        
 
