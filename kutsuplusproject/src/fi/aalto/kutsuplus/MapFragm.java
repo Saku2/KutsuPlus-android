@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
@@ -83,8 +84,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	//default initial zoom level, when app is opened//
 	final static public float initialZoomLevel = 11.5F;
 	
-	//min zoom level, for showing busstop markers
-	//final public float minZoomLevel = 13.2F;
+	//min zoom level, for showing distance and duration markers
+	final public float distanceDurationZoomLevel = 12F;
+	public Marker marker_duration_start = null;
+	public Marker marker_distance_start = null;
+	public Marker marker_duration_end = null;
+	public Marker marker_distance_end = null;
+	
 	private StopTreeHandler stopTreeHandler;
 	
 	private boolean KPstopsAreVisible = false;
@@ -231,18 +237,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		showKutsuPlusStopMarkers();
 		KPstopsAreVisible = true;
 		KPstopsAreCreated = true;
-            //show markers only on large zoom level
-//            map.setOnCameraChangeListener(new OnCameraChangeListener(){
-//				@Override
-//				public void onCameraChange(CameraPosition cameraPosition) {
-//					for(Marker m : markers){
-//						m.setVisible(cameraPosition.zoom >= initialZoomLevel);////minZoomLevel
-//						
-//					}
-//				}
-//            	
-//            });
-          
 	}
 	
 
@@ -409,14 +403,46 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	public void setStopTreeHandler(StopTreeHandler stopTreeHandler) {
 		this.stopTreeHandler = stopTreeHandler;
-	}
+	}//
 
 	public GoogleMap getMap() {
 		return map;
 	}
 
 	public void setMap(GoogleMap map) {
-		this.map = map;
+		map.setOnCameraChangeListener(new OnCameraChangeListener(){
+				@Override
+				public void onCameraChange(CameraPosition cameraPosition) {
+					showHideDDmarkers(cameraPosition.zoom);
+				}
+	      	
+	      });
+		
+	      this.map = map;
+	}
+	
+	public void showHideDDmarkers(float zoom){
+		if(zoom  < distanceDurationZoomLevel){
+			if(marker_distance_start != null)
+    			marker_distance_start.setVisible(false);
+    		if(marker_duration_start != null)
+    			marker_duration_start.setVisible(false);
+    		if(marker_distance_end != null)
+    			marker_distance_end.setVisible(false);
+    		if(marker_duration_end != null)
+    			marker_duration_end.setVisible(false);
+			
+		}
+		else{
+			if(marker_distance_start != null)
+    			marker_distance_start.setVisible(true);
+    		if(marker_duration_start != null)
+    			marker_duration_start.setVisible(true);
+    		if(marker_distance_end != null)
+    			marker_distance_end.setVisible(true);
+    		if(marker_duration_end != null)
+    			marker_duration_end.setVisible(true);
+		}
 	}
 
 
@@ -583,6 +609,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			moveCamera(lat);
 		}
 	}
+	
+
+	
+
 	
 	
 	

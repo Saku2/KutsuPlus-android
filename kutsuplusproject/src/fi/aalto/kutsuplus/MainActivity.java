@@ -337,8 +337,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu = menu;
+	public boolean onPrepareOptionsMenu(Menu menu) {//
+		//menu = menu;
 		if (menu != null) {
 			show_busstops_button = menu.findItem(R.id.kp_busstops);
 			ride_crumb_button = menu.findItem(R.id.ride_crumb);
@@ -410,7 +410,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
     	if(item.getTitle().toString().equals("off")){
     		item.setTitle("on");
-    		item.setIcon(R.drawable.ride_crumb);// Creating an empty criteria object
+    		item.setIcon(R.drawable.ride_crumb);
             // Creating an empty criteria object
             Criteria criteria = new Criteria();     
             // Getting the name of the provider that meets the criteria

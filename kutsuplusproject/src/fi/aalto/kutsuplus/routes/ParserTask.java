@@ -139,19 +139,8 @@ public ParserTask( MapFragm mapF_){
         		// In case this is not initialized yet
         		return;
         	}
-            
-            //draw distance text
-            LatLng disPoint = new LatLng(this.mapF.getStartPoint().latitude, this.mapF.getStartPoint().longitude);
-            markerOptions_dis.position(disPoint);
-			removePreviousNumbers( mapF.getStartDistanceMarkersWatcher());
-			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
-			mapF.getStartDistanceMarkersWatcher().add(marker);
-			
-			//draw duration text
-            markerOptions_dur.position(this.mapF.getStartPoint());
-			removePreviousNumbers( mapF.getStartDurationMarkersWatcher());
-			marker = mapF.getMap().addMarker(markerOptions_dur);
-			mapF.getStartDurationMarkersWatcher().add(marker);
+			addDurationDistanceMarkers(markerOptions_dis, this.mapF.getStartPoint(), true, true);// mapF.getStartDistanceMarkersWatcher(), mapF.marker_distance_start);
+			addDurationDistanceMarkers(markerOptions_dur, this.mapF.getStartPoint(), false, true);// mapF.getStartDurationMarkersWatcher(), mapF.marker_duration_start);
 			
         }
         else if(!this.mapF.isDrawStartWalking()){
@@ -169,21 +158,41 @@ public ParserTask( MapFragm mapF_){
         		//When refreshing the MainActivity and there is no map
         		return;
         	}
-            //draw distance text
-            LatLng disPoint = new LatLng(this.mapF.getEndPoint().latitude, this.mapF.getEndPoint().longitude);
-            markerOptions_dis.position(disPoint);
-			removePreviousNumbers( mapF.getFinishDistanceMarkersWatcher());
-			Marker marker = mapF.getMap().addMarker(markerOptions_dis);
-			mapF.getFinishDistanceMarkersWatcher().add(marker);
-			
-			//draw duration text
-            markerOptions_dur.position(this.mapF.getEndPoint());
-			removePreviousNumbers( mapF.getFinishDurationMarkersWatcher());
-			marker = mapF.getMap().addMarker(markerOptions_dur);
-			mapF.getFinishDurationMarkersWatcher().add(marker);
+			addDurationDistanceMarkers(markerOptions_dis, this.mapF.getEndPoint(), true, false);//mapF.getFinishDistanceMarkersWatcher(), mapF.marker_distance_end);
+			addDurationDistanceMarkers(markerOptions_dur, this.mapF.getEndPoint(), false, false);// mapF.getFinishDurationMarkersWatcher(), mapF.marker_duration_end);
         }
     }
     
+    private void addDurationDistanceMarkers(MarkerOptions mOptions, LatLng latlng, boolean isDistance, boolean isStart){
+        mOptions.position(latlng);
+        if(isStart){
+        	if(isDistance){
+				removePreviousNumbers(mapF.getStartDistanceMarkersWatcher());
+				mapF.marker_distance_start = mapF.getMap().addMarker(mOptions);
+				mapF.getStartDistanceMarkersWatcher().add(mapF.marker_distance_start);
+        	}
+        	else{
+				removePreviousNumbers(mapF.getStartDurationMarkersWatcher());
+				mapF.marker_duration_start = mapF.getMap().addMarker(mOptions);
+				mapF.getStartDurationMarkersWatcher().add(mapF.marker_duration_start);
+        	}
+	    }
+        else{
+        	if(isDistance){
+				removePreviousNumbers(mapF.getFinishDistanceMarkersWatcher());
+				mapF.marker_distance_end = mapF.getMap().addMarker(mOptions);
+				mapF.getFinishDistanceMarkersWatcher().add(mapF.marker_distance_end);
+        	}
+        	else{
+				removePreviousNumbers(mapF.getFinishDurationMarkersWatcher());
+				mapF.marker_duration_end = mapF.getMap().addMarker(mOptions);
+				mapF.getFinishDurationMarkersWatcher().add(mapF.marker_duration_end);
+        	}
+        }
+		mapF.showHideDDmarkers(mapF.getMap().getCameraPosition().zoom);
+    }
+    
+   
     private void removePreviousNumbers(ArrayList<Marker> alist){
     	for(Marker m_old : alist){
 			m_old.remove();
