@@ -223,11 +223,14 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			             .snippet(so.getSwedishName())
 			             .flat(false)
 			             .draggable(false);
-            Marker marker = map.addMarker(markerOptions);
-            markers.put(marker, so);
-            markers_so.put(so, marker);
-            marker.setVisible(false);
-            marker.setAlpha(markerAlpha);
+			Marker marker = null;
+			if(map != null){
+	            marker = map.addMarker(markerOptions);
+	            markers.put(marker, so);
+	            markers_so.put(so, marker);
+	            marker.setVisible(false);
+	            marker.setAlpha(markerAlpha);
+			}
             
 		}
 	}
@@ -244,6 +247,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
+		if(marker != null)
 		if(marker.getTitle().equals("start"))
 		{
 			iSendMapSelection.setFromActivated();
@@ -336,10 +340,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.position(startPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(satrt_loc);
-			marker = map.addMarker(markerOptions);
-			startEndMarkers_onMapClick.put("start", marker);
-			handlePreviousLocMarkers(marker);
-			
+			if(map != null){
+				marker = map.addMarker(markerOptions);
+				startEndMarkers_onMapClick.put("start", marker);
+				handlePreviousLocMarkers(marker);
+			}
 		}
 		else{
 			String finish_loc = getString(R.string.finish_click_on_map);
@@ -347,9 +352,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.position(endPoint);
 			markerOptions.icon(BitmapDescriptorFactory.fromBitmap(b));
 			markerOptions.title(finish_loc);
-			marker = map.addMarker(markerOptions);
-			startEndMarkers_onMapClick.put("end", marker);
-			handlePreviousLocMarkers(marker);
+			if(map != null){
+				marker = map.addMarker(markerOptions);
+				startEndMarkers_onMapClick.put("end", marker);
+				handlePreviousLocMarkers(marker);
+			}
 		}
 		
 		if(marker != null){
