@@ -110,6 +110,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	Menu menu;
 	MenuItem show_busstops_button;
 	MenuItem ride_crumb_button;
+	MenuItem clear_map_button;
 	private BroadcastReceiver sms_receiver;
     /*
      * The location listener here feeds the location information into OttoCommunication
@@ -262,6 +263,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				show_busstops_button.setVisible(true);
 			if (ride_crumb_button != null)
 				ride_crumb_button.setVisible(true);
+			if (clear_map_button != null)
+				clear_map_button.setVisible(true);
+			
 		}
 		mapFragment.setStopTreeHandler(stopTreeHandler);
 
@@ -305,12 +309,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				show_busstops_button.setVisible(true);
 			if (ride_crumb_button != null)
 				ride_crumb_button.setVisible(true);
+			if (clear_map_button != null)
+				clear_map_button.setVisible(true);
 		} else {
 			mPager.setPagingEnabled(true);
 			if (show_busstops_button != null)
 				show_busstops_button.setVisible(false);
 			if (ride_crumb_button != null)
 				ride_crumb_button.setVisible(false);
+			if (clear_map_button != null)
+				clear_map_button.setVisible(false);
 		}
 	}
 
@@ -342,9 +350,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		if (menu != null) {
 			show_busstops_button = menu.findItem(R.id.kp_busstops);
 			ride_crumb_button = menu.findItem(R.id.ride_crumb);
+			clear_map_button = menu.findItem(R.id.clear_map);
 			if (isTwoPaneLayout){
 				show_busstops_button.setVisible(true);//
 				ride_crumb_button.setVisible(true);//
+				clear_map_button.setVisible(true);
 			}
 		}
 		return true;
@@ -381,6 +391,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			break;
 		case R.id.ride_crumb:
 			stratTrackingRide(item);
+			break;
+		case R.id.clear_map:
+			getMapFragment().clearMap();
 			break;
 		}
 

@@ -44,6 +44,7 @@
     <string name="show_kplus_stops">Show KutsuPlus stops</string>
     <string name="turn_on_ride_crumb">ride crumb: ON</string>
     <string name="turn_off_ride_crumb">ride crumb: OFF</string>
+    <string name="clear_map">clear map</string>
     
     <!-- Operating hours dialog -->
     <string name="ok">OK</string>
@@ -87,7 +88,7 @@
     
     <!--  toast on map -->
     <string name="toast_address_on_map_click">address: </string>
-    <string name="toast_address_not_found">location not found</string>
+    <string name="toast_address_not_found">location was not found</string>
     
     
 </resources>

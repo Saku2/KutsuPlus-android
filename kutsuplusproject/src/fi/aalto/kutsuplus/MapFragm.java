@@ -51,7 +51,6 @@ import fi.aalto.kutsuplus.events.EndLocationChangeEvent;
 import fi.aalto.kutsuplus.events.OTTOCommunication;
 import fi.aalto.kutsuplus.events.PickUpChangeEvent;
 import fi.aalto.kutsuplus.events.StartLocationChangeEvent;
-import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.routes.DownloadTask;
@@ -67,20 +66,17 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private View rootView;//
 	private GoogleMap map;
 	private HashMap<String, Marker> startEndMarkers = new HashMap<String, Marker>(2);
-	ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
+	private ArrayList <Marker> startEndMarkersWatcher = new ArrayList<Marker>();
 	private HashMap<String, Marker> startEndMarkers_onMapClick = new HashMap<String, Marker>(2);
-	private ArrayList <Marker> startDistanceMarkersWatcher = new ArrayList<Marker>();
-	private ArrayList <Marker> finishDistanceMarkersWatcher = new ArrayList<Marker>();
-	private ArrayList <Marker> startDurationMarkersWatcher = new ArrayList<Marker>();
-	private ArrayList <Marker> finishDurationMarkersWatcher = new ArrayList<Marker>();
+	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	private boolean markerWasDragged = false;
 	private boolean draggedStartMarker=false;
-	private ArrayList <Marker> startEndMarkers_onMapClick_Watcher = new ArrayList<Marker>();
 	
 	//rider scrumb
-	private ArrayList<LatLng> ridingScrumbs = new ArrayList<LatLng>();
+	//list for scrumb polylines
+	private ArrayList<Polyline> riderPolyLines = new ArrayList<Polyline>();
 	private Polyline ridingScrumbPolyline = null;
-	PolylineOptions ridingScrumbPolyLineOptions;
+	PolylineOptions ridingScrumbPolyLineOptions = null;
 	Location scrumbRouteLastLocation = null;
 	float scrumbRouteLength = 0;
 	Marker ridingDistanceMarker = null;
@@ -177,6 +173,63 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		CameraUpdate center = CameraUpdateFactory.newLatLngZoom(ll, map.getCameraPosition().zoom);
 		map.animateCamera(center);//moveCamera
 	}
+	
+	public void clearMap(){
+		
+		markerWasDragged = false;
+		draggedStartMarker=false;
+		startPoint= null;
+		endPoint = null;
+		drawStartWalking = true;
+		
+		//created polylines
+		if(straightLine != null)
+			straightLine.remove();
+		if(walkingToStartBusStopLine != null)
+			walkingToStartBusStopLine.remove();
+		if(walkingToFinishBusStopLine != null)
+			walkingToFinishBusStopLine.remove();
+		//rider scrumb
+		for(Polyline pl : riderPolyLines){
+			pl.remove();
+		}
+		
+		//created markers
+		if(marker_duration_start != null)
+			marker_duration_start.remove();
+		if(marker_distance_start != null)
+			marker_distance_start.remove();
+		if(marker_duration_end != null)
+			marker_duration_end.remove();
+		if(marker_distance_end != null)
+			marker_distance_end.remove();
+		//rider scrumb
+		if(ridingDistanceMarker != null)
+			ridingDistanceMarker.remove();
+		//KP markers
+		this.hideKutsuPlusStopMarkers();
+		
+		//watchers and hashmaps
+		if(startEndMarkers.get("start") != null)
+			startEndMarkers.get("start").remove();
+		if(startEndMarkers.get("end") != null)
+			startEndMarkers.get("end").remove();
+		startEndMarkers.clear();
+		startEndMarkersWatcher.clear();
+
+		if(startEndMarkers_onMapClick.get("start") != null)
+			startEndMarkers_onMapClick.get("start").remove();
+		if(startEndMarkers_onMapClick.get("end") != null)
+			startEndMarkers_onMapClick.get("end").remove();
+		startEndMarkers_onMapClick.clear();
+		startEndMarkers_onMapClick_Watcher.clear();
+		
+		//rider scrumb
+		scrumbRouteLastLocation = null;
+		scrumbRouteLength = 0;
+		ridingScrumbPolyLineOptions = null;
+		ridingScrumbPolyLineOptions = new PolylineOptions();
+	}
 
 
 	public void hideKutsuPlusStopMarkers(){
@@ -233,14 +286,17 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			}
             
 		}
+		
+		if(markers.size() > 0)
+	        KPstopsAreCreated = true;
 	}
 	
-	public void addAllKutsuPlusStopMarkers(){//
-		if(markers.size() == 0)
+	public void addAllKutsuPlusStopMarkers(){
+		if(!KPstopsAreCreated)
 			makeKPmarkers();
+		
 		showKutsuPlusStopMarkers();
 		KPstopsAreVisible = true;
-		KPstopsAreCreated = true;
 	}
 	
 
@@ -248,21 +304,26 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		if(marker != null)
-		if(marker.getTitle().equals("start"))
+		if(marker.getTitle().toString().equals("start"))
 		{
+			marker.hideInfoWindow();
 			iSendMapSelection.setFromActivated();
 		}
-		else if(marker.getTitle().equals("finish"))
+		else if(marker.getTitle().toString().equals("finish"))
 		{
+			marker.hideInfoWindow();
 			iSendMapSelection.setToActivated();
 		}
 		else
 		{
-		 StopObject so = markers.get(marker);
-	     if(so!=null)
-	     {
-	    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition());
-	     }
+			if(marker != null){
+				marker.showInfoWindow();
+				 StopObject so = markers.get(marker);
+			     if(so!=null)
+			     {
+			    	iSendMapSelection.setStopMarkerSelection(so, marker.getPosition());
+			     }
+			}
 		}
 		return false;
 	} 
@@ -294,10 +355,15 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		//new pink marker
 		if(marker != null){
 			//marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-			if(isStartMarker)
-				marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_pink));
-			else
-				marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
+			 try{
+					if(isStartMarker)
+						marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_pink));
+					else
+						marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
+		     }
+		     catch(IllegalStateException is){
+		        	// Can be happeded, when closing the application
+		     }
 
 			marker.showInfoWindow();
 			marker.setAlpha(1);
@@ -342,8 +408,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.title(satrt_loc);
 			if(map != null){
 				marker = map.addMarker(markerOptions);
-				startEndMarkers_onMapClick.put("start", marker);
-				handlePreviousLocMarkers(marker);
+				if(marker != null){
+					startEndMarkers_onMapClick.put("start", marker);
+					handlePreviousLocMarkers(marker);
+				}
 			}
 		}
 		else{
@@ -354,13 +422,16 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			markerOptions.title(finish_loc);
 			if(map != null){
 				marker = map.addMarker(markerOptions);
-				startEndMarkers_onMapClick.put("end", marker);
-				handlePreviousLocMarkers(marker);
+				if(marker != null){
+					startEndMarkers_onMapClick.put("end", marker);
+					handlePreviousLocMarkers(marker);					
+				}
 			}
 		}
 		
 		if(marker != null){
 			moveCamera(marker.getPosition());
+			marker.hideInfoWindow();
 		}
 	}
 	
@@ -581,7 +652,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			endPoint = ll;
 		}
 		
-		if(markers.size() == 0){
+		if(!KPstopsAreCreated){
 			makeKPmarkers();
 		}
 	
@@ -634,12 +705,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	        	ridingDistanceMarker.remove();
 	        }
 	        ridingDistanceMarker = getMap().addMarker(markerOptions_dis);
-			//mapF.getStartDistanceMarkersWatcher().add(mapF.marker_distance_start);
 		}
 		
 		//add route
 		if(map != null){
-			ridingScrumbPolyline = map.addPolyline(ridingScrumbPolyLineOptions);
+			this.ridingScrumbPolyline = map.addPolyline(ridingScrumbPolyLineOptions);
+			riderPolyLines.add(ridingScrumbPolyline);
 			moveCamera(lat);
 		}
 	}
@@ -735,7 +806,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	{
     		try
     		{
-    		if(markers.size() == 0){
+    		if(!KPstopsAreCreated){
     			makeKPmarkers();
     		}
     		Marker busstop_marker = markers_so.get(event.getBus_stop());
@@ -763,7 +834,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
     	{
     		try
     		{
-    		 if(markers.size() == 0){
+    		 if(!KPstopsAreCreated){
     			makeKPmarkers();
     		 }
     		 Marker busstop_marker = markers_so.get(event.getBus_stop());
@@ -797,14 +868,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		return drawStartWalking;
 	}
 
-	public ArrayList<Marker> getStartDistanceMarkersWatcher() {
-		return startDistanceMarkersWatcher;
-	}
-
-	public ArrayList<Marker> getFinishDistanceMarkersWatcher() {
-		return finishDistanceMarkersWatcher;
-	}
-
 	public boolean isKPstopsAreVisible() {
 		return KPstopsAreVisible;
 	}
@@ -833,16 +896,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		this.walkingToStartBusStopLine = walkingToStartBusStopLine;
 	}
 
-	public ArrayList<Marker> getStartDurationMarkersWatcher() {
-		return startDurationMarkersWatcher;
-	}
 
 	public void setWalkingToFinishBusStopLine(Polyline walkingToFinishBusStopLine) {
 		this.walkingToFinishBusStopLine = walkingToFinishBusStopLine;
-	}
-
-	public ArrayList<Marker> getFinishDurationMarkersWatcher() {
-		return finishDurationMarkersWatcher;
 	}
 
 	

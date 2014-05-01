@@ -61,4 +61,9 @@
         <item>Best.nr</item>
         <item>https</item>
     </string-array>
+    
+    
+    <!--  toast on map -->
+    <string name="toast_address_on_map_click">adress: </string>
+    <string name="toast_address_not_found">platsen hittades inte</string>
 </resources>

@@ -26,4 +26,10 @@
         android:title="off"
         app:showAsAction="always"
         android:visible="false" />
+    <item
+        android:id="@+id/clear_map"
+        android:icon="@drawable/clear_map"
+        android:title="@string/clear_map"
+        app:showAsAction="always"
+        android:visible="false" />
 </menu>
