@@ -21,6 +21,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -80,6 +81,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	private ArrayList<LatLng> ridingScrumbs = new ArrayList<LatLng>();
 	private Polyline ridingScrumbPolyline = null;
 	PolylineOptions ridingScrumbPolyLineOptions;
+	Location scrumbRouteLastLocation = null;
+	float scrumbRouteLength = 0;
+	Marker ridingDistanceMarker = null;
 	
 	//default initial zoom level, when app is opened//
 	final static public float initialZoomLevel = 11.5F;
@@ -586,19 +590,70 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	
 	
 	
+	@SuppressWarnings("static-access")
 	public void updateRidingScrumbPolyline(Location location){
 		LatLng lat  = new LatLng(location.getLatitude(), location.getLongitude());
 		//int ridingColor = this.getActivity().getApplicationContext().getResources().getColor(R.id.ride_crumb);//(R.color.riding_scrumb);
 		ridingScrumbPolyLineOptions.color(Color.RED);
 		ridingScrumbPolyLineOptions.width(6);//
 		ridingScrumbPolyLineOptions.add(lat);
-	
+		
+		//track distance
+		float[] results = new float[1];
+		if(scrumbRouteLastLocation != null)
+			location.distanceBetween(scrumbRouteLastLocation.getLatitude(), scrumbRouteLastLocation.getLongitude(), location.getLatitude(), location.getLongitude(), results);
+		scrumbRouteLastLocation = location;
+		if(results[0] != 0){
+			scrumbRouteLength += (results[0]);
+			float kilometers = scrumbRouteLength/1000;
+			int integerPart=(int)kilometers; 
+			String decimalPart_tmp = ("" + scrumbRouteLength%1000);
+			int dotLoc = decimalPart_tmp.indexOf(".");
+			String decimalPart = decimalPart_tmp.substring(0, dotLoc+2);
+			String distanceStr = "";
+			if(kilometers >= 1)
+				distanceStr = integerPart + "km " + decimalPart + "m";
+			else
+				distanceStr = decimalPart + "m";
+				
+			Log.d("distance so far: ", scrumbRouteLength + "");
+			Bitmap dis_bmp = drawTextMarkerOnMap(Color.RED, 35, distanceStr);
+			MarkerOptions markerOptions_dis = new MarkerOptions();
+	        markerOptions_dis.icon(BitmapDescriptorFactory.fromBitmap(dis_bmp));
+	        markerOptions_dis.position(new LatLng(location.getLatitude(), location.getLongitude()));
+	        //markerOptions_dis.title("") .anchor(1, 1);
+	        
+	        if(ridingDistanceMarker != null){
+	        	ridingDistanceMarker.remove();
+	        }
+	        ridingDistanceMarker = getMap().addMarker(markerOptions_dis);
+			//mapF.getStartDistanceMarkersWatcher().add(mapF.marker_distance_start);
+		}
+		
+		//add route
 		if(map != null){
 			ridingScrumbPolyline = map.addPolyline(ridingScrumbPolyLineOptions);
 			moveCamera(lat);
 		}
 	}
 	
+	
+	public Bitmap drawTextMarkerOnMap(int textColor, int TextSize, String labelText){
+		Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+ 	    Bitmap bmpText = Bitmap.createBitmap(270,100, conf);
+ 	    
+ 	    Canvas canvas = new Canvas(bmpText);
+ 		Paint paint = new Paint();
+ 		paint.setColor(textColor);
+ 		paint.setTextSize(TextSize);
+ 		paint.setTextAlign(Align.CENTER);
+ 		paint.setShadowLayer(8, 0, 0, Color.GRAY);
+ 		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
+ 		canvas.drawText(labelText, bmpText.getWidth()/2, bmpText.getHeight()/4, paint); // paint defines the text color, stroke width, size
+ 		BitmapDrawable draw = new BitmapDrawable(getResources(), bmpText);
+ 		Bitmap drawBmp = draw.getBitmap();
+ 		return drawBmp;
+	}
 
 	
 

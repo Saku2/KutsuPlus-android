@@ -108,8 +108,8 @@ public ParserTask( MapFragm mapF_){
         String dis_str = this.mapF.getString(R.string.walking_distance);
         String dur_str = this.mapF.getString(R.string.walking_duration);
         
-        Bitmap dis_bmp = drawTextMarkerOnMap(Color.GREEN, 35, distance);
-        Bitmap dur_bmp = drawTextMarkerOnMap(Color.BLUE, 35, duration);
+        Bitmap dis_bmp = mapF.drawTextMarkerOnMap(Color.GREEN, 35, distance);
+        Bitmap dur_bmp = mapF.drawTextMarkerOnMap(Color.BLUE, 35, duration);
         
         //distance
         MarkerOptions markerOptions_dis = new MarkerOptions();
@@ -200,21 +200,5 @@ public ParserTask( MapFragm mapF_){
     }
     
     
-    private Bitmap drawTextMarkerOnMap(int textColor, int TextSize, String labelText){
-    	Bitmap.Config conf = Bitmap.Config.ARGB_8888;
- 	    Bitmap bmpText = Bitmap.createBitmap(270,100, conf);
- 	    
- 	    Canvas canvas = new Canvas(bmpText);
- 		Paint paint = new Paint();
- 		paint.setColor(textColor);
- 		paint.setTextSize(TextSize);
- 		paint.setTextAlign(Align.CENTER);
- 		paint.setShadowLayer(8, 0, 0, Color.GRAY);
- 		paint.setTypeface(Typeface.create("Arial Black", 0));//normal
- 		canvas.drawText(labelText, bmpText.getWidth()/2, bmpText.getHeight()/4, paint); // paint defines the text color, stroke width, size
- 		BitmapDrawable draw = new BitmapDrawable(this.mapF.getResources(), bmpText);
- 		Bitmap drawBmp = draw.getBitmap();
- 		return drawBmp;
-	}
 
 }
