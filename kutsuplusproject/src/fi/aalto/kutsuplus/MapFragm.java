@@ -167,9 +167,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
-        
-     // use map to move camera into position
-//        map.moveCamera( CameraUpdateFactory.newCameraPosition(INIT));
     }
 
 	private void moveCamera(LatLng ll){
@@ -294,6 +291,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			else
 				marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
 
+			marker.showInfoWindow();
 			marker.setAlpha(1);
 			marker.setVisible(true);
 			startEndMarkersWatcher.add(marker);
@@ -311,6 +309,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 						m.setVisible(false);
 				}
 			}
+		}
+		
+		if(startEndMarkers.get("start") != null && startEndMarkers.get("end") != null){
+			drawStraightLineOnMap(startEndMarkers.get("start").getPosition(), startEndMarkers.get("end").getPosition());
 		}
 		
 		if(marker != null){//
@@ -579,19 +581,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
         }
 		updateActualPointMarker(isStartMarker);
 		drawWalkingRoute(isStartMarker);
-		
-		if(startPoint != null && endPoint != null){
-			try
-			{
-			 drawStraightLineOnMap(startPoint, endPoint);
-			 //this supposed to be easy before otto-crap:
-			 // drawStraightLineOnMap(startEndMarkers.get("start").getPosition(), startEndMarkers.get("end").getPosition());
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
 
 	}
 	
