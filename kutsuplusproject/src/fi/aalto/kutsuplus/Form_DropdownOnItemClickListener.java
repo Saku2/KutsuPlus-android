@@ -10,8 +10,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fi.aalto.kutsuplus.events.OTTOCommunication;
-import fi.aalto.kutsuplus.events.FromAddressChangeEvent;
-import fi.aalto.kutsuplus.events.ToAddressChangeEvent;
 import fi.aalto.kutsuplus.utils.AddressHandler;
 
 /*

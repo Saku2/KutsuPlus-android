@@ -3,7 +3,6 @@ package fi.aalto.kutsuplus.utils;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,6 +17,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.AsyncTask;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import fi.aalto.kutsuplus.events.OTTOCommunication;
@@ -25,8 +26,6 @@ import fi.aalto.kutsuplus.kdtree.GoogleMapPoint;
 import fi.aalto.kutsuplus.kdtree.MapPoint;
 import fi.aalto.kutsuplus.kdtree.StopObject;
 import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
-
-import android.os.AsyncTask;
 
 public class ReittiopasHttpHandler {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
