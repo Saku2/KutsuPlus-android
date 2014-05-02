@@ -180,6 +180,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		Log.d(LOG_TAG, "after creating stopTree");
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LOCKED); 
 
+
 		// web from:
 		// http://stackoverflow.com/questions/15533343/android-fragment-basics-tutorial
 		// Check whether the activity is using the layout version with
@@ -248,6 +249,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		// TWO-PANE LAYOUT
 		else {// in two-pane layout set general as initial detail view
 				// Capture the detail fragment from the activity layout
+
 			isTwoPaneLayout = true;
 
 			formFragment = new FormFragment();// (FormFragment)
@@ -713,10 +715,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			mapturn=MainActivity.TO;
 	}
 
-
-	
-	
-	
 	
 	
 	//LOCATION SCRUMBS
@@ -730,21 +728,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
 		
 	}
 

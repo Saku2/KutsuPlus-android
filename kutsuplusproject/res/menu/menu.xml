@@ -4,15 +4,15 @@
     <item
         android:id="@+id/lang_fi"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="FI" />
+        android:title="Suomeksi" />
     <item
         android:id="@+id/lang_sv"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="SV" />
+        android:title="På svenska" />
     <item
         android:id="@+id/lang_en"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="EN" />
+        android:title="In English" />
 
     <item
         android:id="@+id/kp_busstops"
