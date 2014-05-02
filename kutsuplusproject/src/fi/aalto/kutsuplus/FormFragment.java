@@ -380,25 +380,6 @@ public class FormFragment extends Fragment {
 		return adapter;
 	}
 
-	// After clicking on a map, update From text
-	// The focus is disabled to avoid the autocomplete field to
-	// open its list
-	public void updateFromText(String street_address) {
-		fromView.setFocusable(false); // DO NOT REMOVE THIS
-		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		fromView.setText(street_address);
-		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		fromView.setFocusable(true); // DO NOT REMOVE THIS
-	}
-
-	// After clicking on a map, update To text
-	public void updateToText(String street_address) {
-		toView.setFocusable(false); // DO NOT REMOVE THIS
-		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		toView.setText(street_address);
-		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		toView.setFocusable(true); // DO NOT REMOVE THIS
-	}
 
 /*
  * setAddressFieldListeners() sets the OnSelected and onClickedlisteners for the From and To Fields
@@ -441,6 +422,30 @@ public class FormFragment extends Fragment {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
+	}
+
+	// After clicking on a map, update From text
+	// The focus is disabled to avoid the autocomplete field to
+	// open its list
+	public void updateFromText(String street_address) {
+		fromView.setFocusable(false); // DO NOT REMOVE THIS
+		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		fromView.setText(street_address);
+		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		fromView.setFocusable(true); // DO NOT REMOVE THIS
+		// To avoid extra search:
+		last_From_query=street_address;
+	}
+
+	// After clicking on a map, update To text
+	public void updateToText(String street_address) {
+		toView.setFocusable(false); // DO NOT REMOVE THIS
+		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		toView.setText(street_address);
+		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		toView.setFocusable(true); // DO NOT REMOVE THIS
+		// To avoid extra search:
+		last_To_query=street_address;
 	}
 
 	private String last_From_query = "";
