@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class RideDatabaseHandler2 extends SQLiteOpenHelper {
+public class RideDatabaseHandler extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version

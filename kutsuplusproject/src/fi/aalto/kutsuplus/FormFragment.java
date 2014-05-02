@@ -174,19 +174,7 @@ public class FormFragment extends Fragment {
 		toView.setAdapter(adapter_to);
 		createDropDown(rootView);
 
-		// Remember the last ride
-		/*
-		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
-		List<Ride> ride_list = rides.getAllStreetAddresses();
-		if (ride_list != null)
-			if (ride_list.size() > 0) {
-				String from = ride_list.get(0).get_StreetAddress_from();
-				String to = ride_list.get(0).get_StreetAddress_to();
-				if ((from != null) && (to != null)) {
-					fromView.setText(from);
-					toView.setText(to);
-				}
-			}*/
+
 		communication.register(this);
 		setAddressFieldListeners();
 		return rootView;
