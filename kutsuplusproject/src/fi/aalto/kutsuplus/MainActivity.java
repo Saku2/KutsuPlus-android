@@ -656,7 +656,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			ticketFragment = new TicketFragment();
 		if (isTwoPaneLayout) {
 			FragmentManager fm = getSupportFragmentManager();
-			fm.beginTransaction().add(R.id.large_form_fragment, ticketFragment, "Ticket").commit();
+			fm.beginTransaction().add(R.id.large_form_fragment, ticketFragment, "Ticket").addToBackStack("Ticket").commit();
 		} else {
 			final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 
@@ -739,6 +739,20 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void onProviderDisabled(String provider) {
 		
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (isTwoPaneLayout) {
+			FragmentManager fm = getSupportFragmentManager();
+			if (fm.getBackStackEntryCount() > 0) {
+				fm.popBackStack();
+			} else {
+				super.onBackPressed();
+			}
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 }
