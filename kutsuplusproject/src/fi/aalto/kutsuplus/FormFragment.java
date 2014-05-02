@@ -175,6 +175,7 @@ public class FormFragment extends Fragment {
 		createDropDown(rootView);
 
 		// Remember the last ride
+		/*
 		RideDatabaseHandler rides = new RideDatabaseHandler(rootView.getContext());
 		List<Ride> ride_list = rides.getAllStreetAddresses();
 		if (ride_list != null)
@@ -185,7 +186,7 @@ public class FormFragment extends Fragment {
 					fromView.setText(from);
 					toView.setText(to);
 				}
-			}
+			}*/
 		communication.register(this);
 		setAddressFieldListeners();
 		return rootView;
