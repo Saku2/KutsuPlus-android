@@ -98,7 +98,6 @@ public class TicketFragment extends Fragment {
 			String end = html.substring(uripos);
 			String end2 = end.replace("<BR>", "\"> link <A><BR>");
 			html = first + end2;
-			System.out.println("uhtml2!!" + html);
 		}
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);	
 	}
@@ -118,7 +117,6 @@ public class TicketFragment extends Fragment {
 			String end2 = end.replace("</body>", "\"> link <A></body>");
 			end = end2.replace("Kutsuplus.fi/sms", "");
 			html = first + end;
-			System.out.println("html2!!" + html);
 		}
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);
 	}

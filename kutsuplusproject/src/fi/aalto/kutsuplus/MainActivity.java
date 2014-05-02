@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -42,6 +43,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.google.android.gms.internal.fo;
 import com.google.android.gms.maps.model.LatLng;
 import com.savarese.spatial.NearestNeighbors;
 
@@ -379,7 +381,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			setLocale("sv");
 			break;
 		case R.id.ride_crumb:
-			stratTrackingRide(item);
+			startTrackingRide(item);
 			break;
 		case R.id.clear_map:
 			getMapFragment().clearMap();
@@ -407,7 +409,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 
 
-    private void stratTrackingRide(MenuItem item) {
+    private void startTrackingRide(MenuItem item) {
     	// Getting LocationManager object
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
     	if(item.getTitle().toString().equals("off")){
@@ -637,7 +639,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	 * can be shown when the user opens the program later.
 	 */
 	public void doOrder(View v) {
-
+		if (communication == null)
+			return;
+		if ((communication.getPick_up_stop() == null) || (communication.getDrop_off_stop() == null))
+			return;
 		if (ticketFragment == null)
 			ticketFragment = new TicketFragment();
 		if (isTwoPaneLayout) {
@@ -656,13 +661,29 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 
 		SmsManager smsManager = SmsManager.getDefault();
-		if (communication == null)
-			return;
-		if ((communication.getPick_up_stop() == null) || (communication.getDrop_off_stop() == null))
-			return;
-		// KPE: English message format
-		String sms_message = "KPE " + communication.getPick_up_stop().getShortId() + " " + communication.getDrop_off_stop().getShortId();
+
+		Locale current_locale = getResources().getConfiguration().locale;
+		
+		String sms_message=null;
+		if(current_locale.getLanguage().equals("fi"))
+			sms_message= "KP " + communication.getPick_up_stop().getShortId() + " " + communication.getDrop_off_stop().getShortId();
+		else if(current_locale.getLanguage().equals("sv"))
+			sms_message= "KPS " + communication.getPick_up_stop().getShortId() + " " + communication.getDrop_off_stop().getShortId();
+		else
+			sms_message= "KPE " + communication.getPick_up_stop().getShortId() + " " + communication.getDrop_off_stop().getShortId();
+		if(formFragment!=null)
+		{
+		 int max_price=formFragment.getMaximumPrice();
+		 int passengers=formFragment.getPassengerCount();
+		 if(passengers>0)
+			 sms_message+=" X"+passengers;
+		 if(max_price>0)
+			 sms_message+=" E"+max_price;
+		}
+		System.out.println("SMS: "+sms_message);
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
+		
+		
 
 		// Save the ride to the local database
 		String from = communication.getFrom_address();

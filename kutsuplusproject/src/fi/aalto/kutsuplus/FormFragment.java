@@ -82,6 +82,7 @@ public class FormFragment extends Fragment {
 	TextView pickupStop;
 	TextView dropoffStop;
 	TextView estimatedPrice;
+	EditText maxPrice;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,7 +102,9 @@ public class FormFragment extends Fragment {
 		pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
 		dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		estimatedPrice = (TextView) rootView.findViewById(R.id.estimated_price);
+		maxPrice = (EditText) rootView.findViewById(R.id.max_price);
 		passengers = (EditText) rootView.findViewById(R.id.number_of_passengers);
+		
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -398,7 +401,7 @@ public class FormFragment extends Fragment {
 	}
 
 /*
- * setAddressFieldListeners() sets the OnSelected and on Clicted listeners for the From and To Fields
+ * setAddressFieldListeners() sets the OnSelected and onClickedlisteners for the From and To Fields
  */
 	private void setAddressFieldListeners() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -697,4 +700,34 @@ public class FormFragment extends Fragment {
                     + " must implement interface");
         }
     }
+	
+	public int getMaximumPrice()
+	{
+		try
+		{
+			String mp=maxPrice.getText().toString().trim();
+			mp=mp.replace(',', '.');
+			float mpf=Float.parseFloat(mp)+0.5f;
+			return (int) mpf;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int getPassengerCount()
+	{
+		try
+		{
+			String pc=passengers.getText().toString().trim();
+			return Integer.parseInt(pc);
+		}
+		catch(Exception e)
+		{
+            e.printStackTrace();			
+		}
+		return -1;
+	}
 }
