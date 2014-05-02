@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -67,6 +68,7 @@ import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
 public class FormFragment extends Fragment {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
+	private ISendFormSelection iSendFormSelection;
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
@@ -474,6 +476,7 @@ public class FormFragment extends Fragment {
 		communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 		Log.d(LOG_TAG, "timer called");
 		http.makeGetStartAddress("http://api.reittiopas.fi/hsl/prod/", args);
+		iSendFormSelection.setToActivated();
 	}
 
 	private String last_To_query = "";
@@ -696,4 +699,15 @@ public class FormFragment extends Fragment {
 		}
 	}
 
+	
+	@Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+        	iSendFormSelection = (ISendFormSelection) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement interface");
+        }
+    }
 }

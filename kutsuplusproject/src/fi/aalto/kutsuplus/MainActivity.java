@@ -60,7 +60,7 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, LocationListener {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener {
 
 
 	private Locale myLocale;
