@@ -555,7 +555,7 @@ public class FormFragment extends Fragment {
 			float estimated_price = distance_price + base_price;
 			Log.e("estimate", "estimated value: " + String.valueOf(estimated_price));
 			DecimalFormat moneyFormatter = new DecimalFormat("##.##");
-			return moneyFormatter.format(estimated_price) + " €";
+			return moneyFormatter.format(estimated_price);
 		}
 
 		/*

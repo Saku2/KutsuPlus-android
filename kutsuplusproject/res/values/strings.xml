@@ -27,10 +27,10 @@
     
     <string name="OF_number_of_passengers">Number of passengers</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Max price</string>
+    <string name="OF_max_price">Max price (€)</string>
     <string name="OF_max_price_description">Type here the maximum price that the ride can cost.</string>
     
-    <string name="OF_estimated_price">Estimated price</string>
+    <string name="OF_estimated_price">Estimated price (€)</string>
     <string name="OF_estimated_price_number">0</string>
     
     <string name="OF_pickup_stop">Pickup stop</string>
