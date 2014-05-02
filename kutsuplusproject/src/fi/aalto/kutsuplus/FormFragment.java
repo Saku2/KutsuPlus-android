@@ -27,6 +27,7 @@ import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -272,7 +273,9 @@ public class FormFragment extends Fragment {
 	 */
 	private void createDropDown(View rootView) {
 		List<String> optionsList = new ArrayList<String>();
-		optionsList.add("Current location");
+		Resources res = getResources();
+		String current_location_string = res.getString(R.string.OF_current_location);
+		optionsList.add(current_location_string);
 		StreetDatabaseHandler stha = new StreetDatabaseHandler(rootView.getContext());
 		try {
 			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
@@ -290,7 +293,9 @@ public class FormFragment extends Fragment {
 		 */
 		Context mContext = rootView.getContext();
 		final MainActivity mainActivity = ((MainActivity) mContext);
-		mainActivity.popupWindow_ExtrasList = getPopupWindow();
+		Form_DropdownOnItemClickListener fdd_listenerner=new  Form_DropdownOnItemClickListener();
+		fdd_listenerner.setCurrent_location_string(current_location_string);
+		mainActivity.popupWindow_ExtrasList = getPopupWindow(fdd_listenerner);
 		popupWindow_ExtrasList = mainActivity.popupWindow_ExtrasList;
 		/*
 		 * fromExtras button on click listener
@@ -332,7 +337,7 @@ public class FormFragment extends Fragment {
 	// new style is here
 	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
-	public PopupWindow getPopupWindow() {
+	public PopupWindow getPopupWindow(Form_DropdownOnItemClickListener fdd_listener) {
 		PopupWindow popupWindow = new PopupWindow(rootView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		// the drop down list is a list view
@@ -342,7 +347,7 @@ public class FormFragment extends Fragment {
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras.setOnItemClickListener(new Form_DropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(fdd_listener);
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -713,6 +718,7 @@ public class FormFragment extends Fragment {
 		if(order != null){
 			order.setText(R.string.OF_button_order);
 		}
+		 createDropDown(rootView);
 	}
 
 	

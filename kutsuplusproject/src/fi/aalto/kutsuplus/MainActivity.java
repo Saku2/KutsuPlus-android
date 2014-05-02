@@ -77,7 +77,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 	SharedPreferences preferences;
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
-	final static public String CURRENT_LOCATIION = "Current location";
 	final static int FORMFRAG = 0;
 	final static int MAPFRAG = 1;
 	final static int FROM = 0;
@@ -259,7 +258,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			
 		}
 		mapFragment.setStopTreeHandler(stopTreeHandler);
-
+		checkOldSMSs();
 	}
 	
 
@@ -661,9 +660,25 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			// Only Inbox messages
 			if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
 
-				SMSMessage read_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
+				SMSMessage received_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
 						c.getString(c.getColumnIndexOrThrow("date")));
 				
+				System.out.println("ADDRESS:"+received_sms.getAddress());
+				if(true)
+				{
+					SMSParser smsparser = null;
+					try {
+						smsparser = new SMSParser(getResources().getStringArray(R.array.sms_keyword_array));
+					} catch (NotFoundException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					TicketInfo response = smsparser.parse(received_sms.getMessage());
+					if (smsparser.isTicket()) {
+						ticketFragment.showTicket(received_sms.getMessage());
+					}
+				}
 
 			}
 
@@ -813,8 +828,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			mapturn=MainActivity.TO;
 	}
 
-	
-	
 	//LOCATION SCRUMBS
 	@Override
 	public void onLocationChanged(Location location) {
