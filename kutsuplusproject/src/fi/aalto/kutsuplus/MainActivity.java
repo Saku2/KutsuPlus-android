@@ -411,6 +411,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 
     private void changeTxtViewFocus(MenuItem item) {
+    	try
+    	{
     	Log.d("TAG FOCUS", item.getTitle().toString());
 		this.getFormFragment().focusChangedFromActionBar = true;
     	clearAllTextViewsFocusesInFromFragment();
@@ -425,15 +427,29 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			item.setTitle("start_focus");//
 			this.getFormFragment().fromView.requestFocus();	
 			mapturn=MainActivity.FROM;
-		}		
+		}
+    	}
+    	catch(Exception e)
+    	{
+    		// In case the form fragment is not in the memory
+    		e.printStackTrace();
+    	}
 	}
 
 	private void clearAllTextViewsFocusesInFromFragment(){
-		FormFragment ff = getFormFragment();
-		ff.fromView.clearFocus();
-		ff.toView.clearFocus();
-		ff.passengers.clearFocus();
-		ff.maxPrice.clearFocus();
+		try
+		{
+		 FormFragment ff = getFormFragment();
+		 ff.fromView.clearFocus();
+		 ff.toView.clearFocus();
+		 ff.passengers.clearFocus();
+		 ff.maxPrice.clearFocus();
+		}
+		catch(Exception e)
+		{
+			// In case the form fragment is not in the memory
+			e.printStackTrace();
+		}
 	}
 
 
