@@ -83,6 +83,7 @@ public class FormFragment extends Fragment {
 	TextView dropoffStop;
 	TextView estimatedPrice;
 	EditText maxPrice;
+	Button   doOrderButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,6 +105,8 @@ public class FormFragment extends Fragment {
 		estimatedPrice = (TextView) rootView.findViewById(R.id.estimated_price);
 		maxPrice = (EditText) rootView.findViewById(R.id.max_price);
 		passengers = (EditText) rootView.findViewById(R.id.number_of_passengers);
+		
+		doOrderButton = (Button) rootView.findViewById(R.id.bn_order);
 		
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
@@ -643,6 +646,8 @@ public class FormFragment extends Fragment {
 		}
 
 		protected void onPostExecute(String result) {
+			if(result.length()>0)
+			  doOrderButton.setTextColor(Color.RED);
 			estimatedPrice.setText(result);
 		}
 	}

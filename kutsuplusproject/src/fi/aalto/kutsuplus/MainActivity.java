@@ -572,6 +572,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 				SMSMessage read_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
 						c.getString(c.getColumnIndexOrThrow("date")));
+				
 
 			}
 
@@ -680,8 +681,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		 if(max_price>0)
 			 sms_message+=" E"+max_price;
 		}
-		System.out.println("SMS: "+sms_message);
 		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
+		ticketFragment.start_animation();
 		
 		
 

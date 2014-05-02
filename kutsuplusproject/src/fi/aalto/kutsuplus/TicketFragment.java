@@ -21,11 +21,14 @@ public class TicketFragment extends Fragment {
 	private ProgressBar progressBar;
 	static Boolean timeOut = true;
 	CountDownTimer counter;
+	boolean delay_animation=false;
+	boolean animation_set=false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.ticketfragment, container, false);
-		start_animation();
+		if(delay_animation)
+			start_animation();
 		return rootView;
 	}
 
@@ -38,45 +41,6 @@ public class TicketFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-	}
-
-/* 
- * start_animation() the animation show the maximum expected 30 second of time to wait the 
- * receiving ticket. The action is stopped as soon as a ticket is get.
- */
-	public void start_animation()
-	{		
-		timerText = (TextView) rootView.findViewById(R.id.SW_TimeRemainig);
-		progressBar = (ProgressBar) rootView.findViewById(R.id.SW_progressBar);
-		progressBar.setVisibility(View.VISIBLE);
-		sms_message = (WebView) rootView.findViewById(R.id.sms_message);
-		// sms_message.setWebViewClient(new myWebClient());
-		// show 30 second time count down
-		counter = new CountDownTimer(30000, 1000) {
-
-			public void onTick(long millisUntilFinished) {
-				try
-				{
-				  timerText.setText(getString(R.string.sms_waiting) + " " + millisUntilFinished / 1000);
-				}
-				catch(Exception e)
-				{
-					// If activity has been stopped and this is still running
-					counter.cancel();
-				}
-			}
-
-			public void onFinish() {
-				try
-				{
-				 timerText.setText(getString(R.string.sms_timeout));
-				}
-				catch(Exception e)
-				{
-					
-				}
-			}
-		}.start();
 	}
 
 
@@ -121,14 +85,68 @@ public class TicketFragment extends Fragment {
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);
 	}
 
+	/* 
+	 * start_animation() the animation show the maximum expected 30 second of time to wait the 
+	 * receiving ticket. The action is stopped as soon as a ticket is get.
+	 */
+		public void start_animation()
+		{
+			if(rootView==null)
+			{
+				delay_animation=true;
+				return;
+			}
+			if(animation_set)
+				stopAnimation();
+			timerText = (TextView) rootView.findViewById(R.id.SW_TimeRemainig);
+			progressBar = (ProgressBar) rootView.findViewById(R.id.SW_progressBar);
+			progressBar.setVisibility(View.VISIBLE);
+			sms_message = (WebView) rootView.findViewById(R.id.sms_message);
+			// show 30 second time count down
+			counter = new CountDownTimer(30000, 1000) {
+
+				public void onTick(long millisUntilFinished) {
+					try
+					{
+					  timerText.setText(getString(R.string.sms_waiting) + " " + millisUntilFinished / 1000);
+					}
+					catch(Exception e)
+					{
+						// If activity has been stopped and this is still running
+						counter.cancel();
+					}
+				}
+
+				public void onFinish() {
+					try
+					{
+					 timerText.setText(getString(R.string.sms_timeout));
+					}
+					catch(Exception e)
+					{
+						
+					}
+				}
+			}.start();
+			animation_set=true;
+		}
+
+
 	/*
 	 * When the ticket is got the animation is stopped
 	 */
 	public void stopAnimation()
 	{
 		counter.cancel();
-		timerText.setText(getString(R.string.sms_ticket_ok));
-		progressBar.setVisibility(View.GONE);
-
+		try
+		{
+		 timerText.setText(getString(R.string.sms_ticket_ok));
+		 progressBar.setVisibility(View.GONE);
+		}
+		catch(IllegalStateException is)
+		{
+			//
+		}
+        animation_set=false;
 	}
 }
