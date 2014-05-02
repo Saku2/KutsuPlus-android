@@ -705,8 +705,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	//LOCATION SCRUMBS
 	@Override
 	public void onLocationChanged(Location location) {
-		Toast.makeText(getBaseContext(), "Latitude:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
-		Toast.makeText(getBaseContext(), "Longitude:" + location.getLongitude(), Toast.LENGTH_SHORT).show();
 		this.getMapFragment().updateRidingScrumbPolyline(location);
 	}
 
