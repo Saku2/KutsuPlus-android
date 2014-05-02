@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	Tab maptab;
 	
 	//riding crumb
-	LocationManager locationManager ;
+	LocationManager locationManager;
     String provider;
 	
 	
@@ -152,7 +152,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
 		
 		LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 20, mLocationListener);
+		Criteria criteria = new Criteria();     
+		String provider=mLocationManager.getBestProvider(criteria, false);     
+		mLocationManager.requestLocationUpdates(provider, 60000, 20, mLocationListener);
 		
 		// The preferences menu
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
