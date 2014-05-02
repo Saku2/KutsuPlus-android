@@ -36,7 +36,6 @@ public class DownloadTask extends AsyncTask<String, Void, String>{
     }
 
     // Executes in UI thread, after the execution of
-    // doInBackground()
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);

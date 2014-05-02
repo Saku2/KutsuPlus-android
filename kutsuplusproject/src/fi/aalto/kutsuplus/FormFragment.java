@@ -55,8 +55,6 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.database.Ride;
-import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;

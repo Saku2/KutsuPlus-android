@@ -117,18 +117,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		@Override
 		public void onLocationChanged(final Location location) {
 			LatLng pos = new LatLng(location.getLatitude(), location.getLongitude());
-			// default location here
-			/*if (communication.getFrom_address()==null || communication.getFrom_address().equals("")) {
-				String address=AddressHandler.getAdresss(getApplicationContext(), pos);
-				if(address!=null)	
-		        communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY,address);	            	
-		    }			
-			
-			if (communication.getTo_address()==null || communication.getTo_address().equals("")) {
-				String address=AddressHandler.getAdresss(getApplicationContext(), pos);
-				if(address!=null)	
-		        communication.setTo_address(OTTOCommunication.MAIN_ACTIVITY,address);	            	
-			}*/
 			communication.setCurrent_location(OTTOCommunication.MAIN_ACTIVITY, pos);
 		}
 
@@ -619,8 +607,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				// Process the sms format and extract body &amp; phoneNumber
 
 				String body = msg.substring(msg.indexOf(":") + 1);
-				// String pNumber = msg.substring(0, msg.lastIndexOf(":"));
-				// sms_message.setText(body);
 				SMSParser smsparser = null;
 				try {
 					smsparser = new SMSParser(getResources().getStringArray(R.array.sms_keyword_array));
