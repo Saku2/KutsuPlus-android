@@ -370,8 +370,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 						marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
 		     }
 		     catch(IllegalStateException is){
-		        	// Can be happeded, when closing the application
+		    	 // Can be happeded, when closing the application
 		     }
+			 catch (IllegalArgumentException e) {
+				 // Can happen if clear map is clicked when updating the markers has not finished
+			 }
 
 			marker.showInfoWindow();
 			marker.setAlpha(1);
