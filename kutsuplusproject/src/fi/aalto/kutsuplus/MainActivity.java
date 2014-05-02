@@ -118,7 +118,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		public void onLocationChanged(final Location location) {
 			LatLng pos = new LatLng(location.getLatitude(), location.getLongitude());
 			// default location here
-			if (communication.getFrom_address()==null || communication.getFrom_address().equals("")) {
+			/*if (communication.getFrom_address()==null || communication.getFrom_address().equals("")) {
 				String address=AddressHandler.getAdresss(getApplicationContext(), pos);
 				if(address!=null)	
 		        communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY,address);	            	
@@ -128,7 +128,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				String address=AddressHandler.getAdresss(getApplicationContext(), pos);
 				if(address!=null)	
 		        communication.setTo_address(OTTOCommunication.MAIN_ACTIVITY,address);	            	
-			}
+			}*/
 			communication.setCurrent_location(OTTOCommunication.MAIN_ACTIVITY, pos);
 		}
 
