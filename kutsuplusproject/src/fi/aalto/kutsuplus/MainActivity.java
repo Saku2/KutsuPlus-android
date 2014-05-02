@@ -62,7 +62,7 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener, ISendFocusChangeInfo {
 
 
 	private Locale myLocale;
@@ -106,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	boolean isTwoPaneLayout;
 
-	Menu menu;
+	Menu thisMenu; 
 	MenuItem show_busstops_button;
 	MenuItem ride_crumb_button;
 	MenuItem clear_map_button;
@@ -337,7 +337,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {//
-		//menu = menu;
+		this.thisMenu = menu;
 		if (menu != null) {
 			show_busstops_button = menu.findItem(R.id.kp_busstops);
 			ride_crumb_button = menu.findItem(R.id.ride_crumb);
@@ -386,6 +386,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		case R.id.clear_map:
 			getMapFragment().clearMap();
 			break;
+		case R.id.focus_txtview:
+	    	Log.d("TAG FOCUS", ""+item.getItemId());
+			changeTxtViewFocus(item);
+			break;
 		}
 
 		if (item.getItemId() == R.id.kp_busstops) {
@@ -406,7 +410,32 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		return true;
 	}
 
-	
+
+    private void changeTxtViewFocus(MenuItem item) {
+    	Log.d("TAG FOCUS", item.getTitle().toString());
+		this.getFormFragment().focusChangedFromActionBar = true;
+    	clearAllTextViewsFocusesInFromFragment();
+		if(item.getTitle().toString().equals("start_focus")){
+			item.setIcon(R.drawable.focus_finish);
+			item.setTitle("finish_focus");
+			this.getFormFragment().toView.requestFocus();
+			mapturn=MainActivity.TO;
+		}
+		else{
+			item.setIcon(R.drawable.focus_start);
+			item.setTitle("start_focus");//
+			this.getFormFragment().fromView.requestFocus();	
+			mapturn=MainActivity.FROM;
+		}		
+	}
+
+	private void clearAllTextViewsFocusesInFromFragment(){
+		FormFragment ff = getFormFragment();
+		ff.fromView.clearFocus();
+		ff.toView.clearFocus();
+		ff.passengers.clearFocus();
+		ff.maxPrice.clearFocus();
+	}
 
 
     private void startTrackingRide(MenuItem item) {
@@ -486,38 +515,100 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	 */
 	@Override
 	public void setMapLocationSelection(String street_address, LatLng address_gps) {
+
 		Log.d("street adress", street_address);
 		FormFragment formFragment = getFormFragment();
-		MapFragm mapFragment = getMapFragment();
-
-		Log.d(LOG_TAG, "setMapLocationSelected address:" + address_gps.longitude + " " + address_gps.latitude);
-		MapPoint mp = CoordinateConverter.wGS84lalo_to_kkj2(address_gps.longitude, address_gps.latitude);
-		Log.d(LOG_TAG, "setMapLocationSelected address map:" + mp);
+        MapFragm mapFragment = getMapFragment();
+		handleMarkerDragging();
+		boolean focusAtFrom = formFragment.fromView.hasFocus();
+		if(focusAtFrom){
+			formFragment.updateFromText(street_address);
+			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
+			mapturn=MainActivity.FROM;
+		}
+		else{
+			formFragment.updateToText(street_address);
+			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
+			mapturn=MainActivity.TO;
+		}
+				
+		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
+		MapPoint mp=CoordinateConverter.wGS84lalo_to_kkj2(address_gps.longitude,address_gps.latitude);
+		Log.d(LOG_TAG, "setMapLocationSelected address map:"+mp);
 		try {
-			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops = stopTreeHandler.getClosestStops(mp, 1);
-			if (stops != null) {
-				if (stops.length > 0) {
-					StopObject bus_stop = stops[0].getNeighbor().getValue();
-					mapFragment.updateMarkersAndRoute(address_gps, bus_stop, mapturn==MainActivity.FROM);
+			NearestNeighbors.Entry<Integer, MapPoint, StopObject>[] stops=stopTreeHandler.getClosestStops(mp, 1);
+			if(stops!=null)
+			{
+				if(stops.length>0)
+				{
+					StopObject stopObject=stops[0].getNeighbor().getValue();
+					mapFragment.makeKPmarkers();
+					mapFragment.updateMarkersAndRoute(address_gps, stopObject, focusAtFrom);
 				}
 			}
 		} catch (TreeNotReadyException e) {
 			e.printStackTrace();
 		}
-		// PAY ATTENTION TO THE LOCATION OF THE FOLLOWING LINE
-		if(mapturn==MainActivity.FROM)
-		{
-			formFragment.updateFromText(street_address);
-			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
-			mapturn=MainActivity.TO;
-		}
-		else
-		{
-			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
-			formFragment.updateToText(street_address);
-		}
 
+		
 	}
+	
+	
+	//change order-view focus based on which point was dragged on map
+	private void handleMarkerDragging(){
+        if(this.getMapFragment().isMarkerWasDragged()){  			
+			Log.d("TAG FOCUS", "Marker Was Dragged");
+        	MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
+        	
+			Log.d("TAG FOCUS", "Item title: " + item.getTitle().toString());
+        	if(this.getMapFragment().isDraggedStartMarker()){//    			
+    			Log.d("TAG FOCUS", "start dragged");
+    			clearAllTextViewsFocusesInFromFragment();
+        		if(!item.getTitle().toString().equals("start_focus")){
+    				item.setIcon(R.drawable.focus_start);
+    				item.setTitle("start_focus");
+    				this.getFormFragment().fromView.requestFocus();			
+    			}
+        	}
+        	else{   			
+    			Log.d("TAG FOCUS", "finish dragged");
+    			clearAllTextViewsFocusesInFromFragment();
+    			if(item.getTitle().toString().equals("start_focus")){
+    				item.setIcon(R.drawable.focus_finish);
+    				item.setTitle("finish_focus");
+    				this.getFormFragment().toView.requestFocus();
+    			}
+        	}
+        }
+	}
+	
+
+	//focus has changed from order-view (from-view)
+	@Override
+	public void onFocusChanged(boolean FromHasFocus) {
+		if(!this.getFormFragment().focusChangedFromActionBar){
+			Log.d("focus Change View", ""+FromHasFocus);
+	    	MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
+	    	if(FromHasFocus){  			
+	    		if(!item.getTitle().toString().equals("start_focus")){
+					item.setIcon(R.drawable.focus_start);
+					item.setTitle("start_focus");		
+				}
+	    		mapturn=MainActivity.FROM;
+	    	}
+	    	else{   			
+				if(item.getTitle().toString().equals("start_focus")){
+					item.setIcon(R.drawable.focus_finish);
+					item.setTitle("finish_focus");
+				}
+				mapturn=MainActivity.TO;
+	    	}
+		}
+		this.getFormFragment().focusChangedFromActionBar = false;
+	}
+
+
+
 
 	/*
 	 *  setStopMarkerSelection is called from the map fragment to notify that an bus stop marker
@@ -727,6 +818,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	//LOCATION SCRUMBS
 	@Override
 	public void onLocationChanged(Location location) {
+		Toast.makeText(getBaseContext(), "Latitude:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
+		Toast.makeText(getBaseContext(), "Longitude:" + location.getLongitude(), Toast.LENGTH_SHORT).show();
 		this.getMapFragment().updateRidingScrumbPolyline(location);
 	}
 

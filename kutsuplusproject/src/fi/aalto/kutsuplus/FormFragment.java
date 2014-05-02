@@ -84,6 +84,10 @@ public class FormFragment extends Fragment {
 	TextView estimatedPrice;
 	EditText maxPrice;
 	Button   doOrderButton;
+	
+	//send focus info to mainactivity
+	private ISendFocusChangeInfo iSendFocusChangeInfo;
+	public boolean focusChangedFromActionBar = true;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +99,12 @@ public class FormFragment extends Fragment {
 		// Get a reference to the AutoCompleteTextView in the layout
 		fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+		fromView.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+			@Override
+		    public void onFocusChange(View sender, boolean hasFocus) {
+				iSendFocusChangeInfo.onFocusChanged(sender.hasFocus());
+		    }
+		});
 		restoretoMemory();
 
 		// Create the adapter and set it to the AutoCompleteTextView
@@ -183,6 +193,8 @@ public class FormFragment extends Fragment {
 		setAddressFieldListeners();
 		return rootView;
 	}
+
+	
     /*
      * restoretoMemory() is called to restore the values of the fragment in 
      * case Android has cleaned it from the memory.  
@@ -459,6 +471,8 @@ public class FormFragment extends Fragment {
 	 * The nearest bus stop is calculated 
 	 */
 	private void handleFromFieldActivation(String queryText) {
+		//actionbar has to know whether the focus change from here
+		focusChangedFromActionBar = false;
 		// Do not make duplicate queries
 		if (last_From_query.equals(queryText))
 			return;
@@ -485,6 +499,8 @@ public class FormFragment extends Fragment {
 	 * The nearest bus stop is calculated 
 	 */
 	private void handleToFieldActivation(String queryText) {
+		//actionbar has to know whether the focus change from here
+		focusChangedFromActionBar = false;
 		// Do not make duplicate queries
 		if (last_To_query.equals(queryText))
 			return;
@@ -704,6 +720,8 @@ public class FormFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+
+        	iSendFocusChangeInfo = (ISendFocusChangeInfo ) activity;
         	iSendFormSelection = (ISendFormSelection) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()

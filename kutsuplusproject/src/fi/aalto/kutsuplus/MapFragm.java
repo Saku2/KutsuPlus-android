@@ -265,30 +265,32 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 	
 	public void makeKPmarkers(){
-		MarkerOptions markerOptions = new MarkerOptions();
-		markerOptions.icon(setKPicon());
-		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
-		for(StopObject so : pysakit){
-			// Constructor uses (lat,long)  remember: latitude=y, longituden=x
-			LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
-			markerOptions.position(ll)
- 			             .title(so.getFinnishName())
-			             .snippet(so.getSwedishName())
-			             .flat(false)
-			             .draggable(false);
-			Marker marker = null;
-			if(map != null){
-	            marker = map.addMarker(markerOptions);
-	            markers.put(marker, so);
-	            markers_so.put(so, marker);
-	            marker.setVisible(false);
-	            marker.setAlpha(markerAlpha);
+		if(!KPstopsAreCreated){
+			MarkerOptions markerOptions = new MarkerOptions();
+			markerOptions.icon(setKPicon());
+			Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
+			for(StopObject so : pysakit){
+				// Constructor uses (lat,long)  remember: latitude=y, longituden=x
+				LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
+				markerOptions.position(ll)
+	 			             .title(so.getFinnishName())
+				             .snippet(so.getSwedishName())
+				             .flat(false)
+				             .draggable(false);
+				Marker marker = null;
+				if(map != null){
+		            marker = map.addMarker(markerOptions);
+		            markers.put(marker, so);
+		            markers_so.put(so, marker);
+		            marker.setVisible(false);
+		            marker.setAlpha(markerAlpha);
+				}
+	            
 			}
-            
+			
+			if(markers.size() > 0)
+		        KPstopsAreCreated = true;
 		}
-		
-		if(markers.size() > 0)
-	        KPstopsAreCreated = true;
 	}
 	
 	public void addAllKutsuPlusStopMarkers(){
@@ -298,7 +300,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		showKutsuPlusStopMarkers();
 		KPstopsAreVisible = true;
 	}
-	
 
 
 	@Override

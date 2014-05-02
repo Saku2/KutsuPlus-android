@@ -13,6 +13,13 @@
         android:id="@+id/lang_en"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="In English" />
+    
+    
+    <item
+        android:id="@+id/focus_txtview"
+        android:icon="@drawable/focus_start"
+        android:title="start_focus"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/kp_busstops"
