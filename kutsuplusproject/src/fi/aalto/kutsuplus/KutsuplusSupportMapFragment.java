@@ -41,9 +41,17 @@ public class KutsuplusSupportMapFragment extends SupportMapFragment {
     public void onActivityCreated (Bundle savedInstanceState)
     {
     	super.onActivityCreated(savedInstanceState);
+    	try
+    	{
     	google_map = getMap();
     	google_map.setMyLocationEnabled(true);
     	showHelsinkiArea();
+    	}
+    	catch(Exception e)
+    	{
+    		// In case the map is not available
+    		e.printStackTrace();
+    	}
     }
 
 	public void updateMapView(GoogleMapPoint centerPoint, float zoomLevel) {

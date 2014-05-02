@@ -110,6 +110,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
 		rootView = inflater.inflate(R.layout.mapfragment, container, false);
+		try
+		{
         // Fix for black background on devices < 4.1
         if (android.os.Build.VERSION.SDK_INT < 
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
@@ -129,6 +131,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
         communication.register(this);
         restoretoMemory();
+		}
+		catch(Exception e)
+		{
+			// In case the map is not available at the device
+			e.printStackTrace();
+		}
 		return rootView;
 	}
 
