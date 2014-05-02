@@ -45,6 +45,8 @@
     <string name="turn_on_ride_crumb">ride crumb: ON</string>
     <string name="turn_off_ride_crumb">ride crumb: OFF</string>
     <string name="clear_map">clear map</string>
+    <string name="start_focus">selecting start</string>
+    <string name="finish_focus">selecting finish</string>
     
     <!-- Operating hours dialog -->
     <string name="ok">OK</string>
