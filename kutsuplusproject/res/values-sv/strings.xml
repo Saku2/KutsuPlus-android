@@ -17,7 +17,7 @@
     <!-- Order Form -->
     <string name="OF_current_location">Nuvarande läge</string>
     <string name="OF_from">Från</string>
-    <string name="OF_from_extra_options_desciption">Genom att välja det här kan du se fler alternativ</string>
+    <string name="OF_from_extra_options_desciption">Genom att välja det här kan du se fler alternativ.</string>
     <string name="OF_from_field_description">Skriv här startadressen för resan.</string>
     
     <string name="OF_to">Till</string>
