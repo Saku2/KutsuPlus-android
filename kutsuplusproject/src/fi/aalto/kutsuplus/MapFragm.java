@@ -110,6 +110,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
 		rootView = inflater.inflate(R.layout.mapfragment, container, false);
+		try
+		{
         // Fix for black background on devices < 4.1
         if (android.os.Build.VERSION.SDK_INT < 
             android.os.Build.VERSION_CODES.JELLY_BEAN) {
@@ -129,6 +131,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
         communication.register(this);
         restoretoMemory();
+		}
+		catch(Exception e)
+		{
+			// In case the map is not available at the device
+			e.printStackTrace();
+		}
 		return rootView;
 	}
 
@@ -265,30 +273,32 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	}
 	
 	public void makeKPmarkers(){
-		MarkerOptions markerOptions = new MarkerOptions();
-		markerOptions.icon(setKPicon());
-		Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
-		for(StopObject so : pysakit){
-			// Constructor uses (lat,long)  remember: latitude=y, longituden=x
-			LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
-			markerOptions.position(ll)
- 			             .title(so.getFinnishName())
-			             .snippet(so.getSwedishName())
-			             .flat(false)
-			             .draggable(false);
-			Marker marker = null;
-			if(map != null){
-	            marker = map.addMarker(markerOptions);
-	            markers.put(marker, so);
-	            markers_so.put(so, marker);
-	            marker.setVisible(false);
-	            marker.setAlpha(markerAlpha);
+		if(!KPstopsAreCreated){
+			MarkerOptions markerOptions = new MarkerOptions();
+			markerOptions.icon(setKPicon());
+			Collection<StopObject>pysakit = this.stopTreeHandler.getStopTree().values();
+			for(StopObject so : pysakit){
+				// Constructor uses (lat,long)  remember: latitude=y, longituden=x
+				LatLng ll = new LatLng(so.getGmpoint().getY(),so.getGmpoint().getX());
+				markerOptions.position(ll)
+	 			             .title(so.getFinnishName())
+				             .snippet(so.getSwedishName())
+				             .flat(false)
+				             .draggable(false);
+				Marker marker = null;
+				if(map != null){
+		            marker = map.addMarker(markerOptions);
+		            markers.put(marker, so);
+		            markers_so.put(so, marker);
+		            marker.setVisible(false);
+		            marker.setAlpha(markerAlpha);
+				}
+	            
 			}
-            
+			
+			if(markers.size() > 0)
+		        KPstopsAreCreated = true;
 		}
-		
-		if(markers.size() > 0)
-	        KPstopsAreCreated = true;
 	}
 	
 	public void addAllKutsuPlusStopMarkers(){
@@ -298,7 +308,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		showKutsuPlusStopMarkers();
 		KPstopsAreVisible = true;
 	}
-	
 
 
 	@Override
@@ -354,7 +363,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		}
 		//new pink marker
 		if(marker != null){
-			//marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 			 try{
 					if(isStartMarker)
 						marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_pink));
@@ -362,8 +370,11 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 						marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.kp_marker_green));
 		     }
 		     catch(IllegalStateException is){
-		        	// Can be happeded, when closing the application
+		    	 // Can be happeded, when closing the application
 		     }
+			 catch (IllegalArgumentException e) {
+				 // Can happen if clear map is clicked when updating the markers has not finished
+			 }
 
 			marker.showInfoWindow();
 			marker.setAlpha(1);
@@ -453,14 +464,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		try {
 			Locale aLocale = new Locale("fi", "FI");
 	        Geocoder geo = new Geocoder(rootView.getContext().getApplicationContext(), aLocale);
-	        //boolean isPresent = Geocoder.isPresent();
 	        List<Address> addresses = geo.getFromLocation(ll.latitude, ll.longitude, 1);
 	        
 	        if (addresses.isEmpty()) {
 	        	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_not_found), Toast.LENGTH_LONG).show();
 	        }
 	        else {
-	            if (addresses.size() > 0) {//Toast.makeText(rootView.getContext().getApplicationContext(), "Address:- " + addresses.get(0).getFeatureName() + addresses.get(0).getAdminArea() + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+	            if (addresses.size() > 0) {
 	            	Toast.makeText(rootView.getContext().getApplicationContext(), getString(R.string.toast_address_on_map_click) + " "+ addresses.get(0).getAddressLine(0), Toast.LENGTH_LONG).show();
 	            	iSendMapSelection.setMapLocationSelection( addresses.get(0).getAddressLine(0), ll);	            	
 	            }
@@ -597,14 +607,12 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	@Override
 	public void onMarkerDrag(Marker m) {
-		//m.setAnchor(0.5f, 0.5f);
 		map.animateCamera(CameraUpdateFactory.newLatLng(m.getPosition()));
 	}
 
 	@Override
 	public void onMarkerDragEnd(Marker m) {
 		String satrt_loc = getString(R.string.start_click_on_map);
-		//String markerTitle = m.getTitle();
 		if(m.getTitle().equals(satrt_loc))
 			draggedStartMarker = true;
 		else
@@ -612,7 +620,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		
 		markerWasDragged = true;
 		onMapClick(m.getPosition());
-		//draggedMarker = false;
 	}
 
 	@Override
@@ -671,7 +678,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@SuppressWarnings("static-access")
 	public void updateRidingScrumbPolyline(Location location){
 		LatLng lat  = new LatLng(location.getLatitude(), location.getLongitude());
-		//int ridingColor = this.getActivity().getApplicationContext().getResources().getColor(R.id.ride_crumb);//(R.color.riding_scrumb);
 		ridingScrumbPolyLineOptions.color(Color.RED);
 		ridingScrumbPolyLineOptions.width(6);//
 		ridingScrumbPolyLineOptions.add(lat);
@@ -699,7 +705,6 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			MarkerOptions markerOptions_dis = new MarkerOptions();
 	        markerOptions_dis.icon(BitmapDescriptorFactory.fromBitmap(dis_bmp));
 	        markerOptions_dis.position(new LatLng(location.getLatitude(), location.getLongitude()));
-	        //markerOptions_dis.title("") .anchor(1, 1);
 	        
 	        if(ridingDistanceMarker != null){
 	        	ridingDistanceMarker.remove();

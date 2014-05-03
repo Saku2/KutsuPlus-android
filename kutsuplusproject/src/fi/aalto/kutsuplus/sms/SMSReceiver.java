@@ -27,7 +27,6 @@ public class SMSReceiver extends BroadcastReceiver {
                  // sender)
                  // and then send another broadcast
                  
-                 //TODO:  Only if the sender is HSL
                  context.sendBroadcast(in);
           }
    }

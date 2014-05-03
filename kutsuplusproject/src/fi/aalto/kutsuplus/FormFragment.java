@@ -27,6 +27,7 @@ import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -55,8 +56,6 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
-import fi.aalto.kutsuplus.database.Ride;
-import fi.aalto.kutsuplus.database.RideDatabaseHandler;
 import fi.aalto.kutsuplus.database.StreetAddress;
 import fi.aalto.kutsuplus.database.StreetDatabaseHandler;
 import fi.aalto.kutsuplus.events.DropOffChangeEvent;
@@ -84,6 +83,12 @@ public class FormFragment extends Fragment {
 	TextView pickupStop;
 	TextView dropoffStop;
 	TextView estimatedPrice;
+	EditText maxPrice;
+	Button   doOrderButton;
+	
+	//send focus info to mainactivity
+	private ISendFocusChangeInfo iSendFocusChangeInfo;
+	public boolean focusChangedFromActionBar = true;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +100,12 @@ public class FormFragment extends Fragment {
 		// Get a reference to the AutoCompleteTextView in the layout
 		fromView = (AutoCompleteTextView) rootView.findViewById(R.id.from);
 		toView = (AutoCompleteTextView) rootView.findViewById(R.id.to);
+		fromView.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+			@Override
+		    public void onFocusChange(View sender, boolean hasFocus) {
+				iSendFocusChangeInfo.onFocusChanged(sender.hasFocus());
+		    }
+		});
 		restoretoMemory();
 
 		// Create the adapter and set it to the AutoCompleteTextView
@@ -103,7 +114,11 @@ public class FormFragment extends Fragment {
 		pickupStop = (TextView) rootView.findViewById(R.id.pickup_stop);
 		dropoffStop = (TextView) rootView.findViewById(R.id.dropoff_stop);
 		estimatedPrice = (TextView) rootView.findViewById(R.id.estimated_price);
+		maxPrice = (EditText) rootView.findViewById(R.id.max_price);
 		passengers = (EditText) rootView.findViewById(R.id.number_of_passengers);
+		
+		doOrderButton = (Button) rootView.findViewById(R.id.bn_order);
+		
 		adapter_from.registerDataSetObserver(new DataSetObserver() {
 
 			private Handler handler = new Handler();
@@ -179,6 +194,8 @@ public class FormFragment extends Fragment {
 		setAddressFieldListeners();
 		return rootView;
 	}
+
+	
     /*
      * restoretoMemory() is called to restore the values of the fragment in 
      * case Android has cleaned it from the memory.  
@@ -188,7 +205,10 @@ public class FormFragment extends Fragment {
 		if (cb.getFrom_address() != null) {
 			fromView.setFocusable(false); // DO NOT REMOVE THIS
 			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)fromView.getAdapter();
+			fromView.setAdapter(null);
 			fromView.setText(cb.getFrom_address());
+			fromView.setAdapter(tmpAdapter);
 			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			fromView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -196,7 +216,10 @@ public class FormFragment extends Fragment {
 		if (cb.getTo_address() != null) {
 			toView.setFocusable(false); // DO NOT REMOVE THIS
 			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)toView.getAdapter();
+			toView.setAdapter(null);
 			toView.setText(cb.getTo_address());
+			toView.setAdapter(tmpAdapter);
 			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			toView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -256,7 +279,9 @@ public class FormFragment extends Fragment {
 	 */
 	private void createDropDown(View rootView) {
 		List<String> optionsList = new ArrayList<String>();
-		optionsList.add("Current location");
+		Resources res = getResources();
+		String current_location_string = res.getString(R.string.OF_current_location);
+		optionsList.add(current_location_string);
 		StreetDatabaseHandler stha = new StreetDatabaseHandler(rootView.getContext());
 		try {
 			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
@@ -274,7 +299,9 @@ public class FormFragment extends Fragment {
 		 */
 		Context mContext = rootView.getContext();
 		final MainActivity mainActivity = ((MainActivity) mContext);
-		mainActivity.popupWindow_ExtrasList = getPopupWindow();
+		Form_DropdownOnItemClickListener fdd_listenerner=new  Form_DropdownOnItemClickListener();
+		fdd_listenerner.setCurrent_location_string(current_location_string);
+		mainActivity.popupWindow_ExtrasList = getPopupWindow(fdd_listenerner);
 		popupWindow_ExtrasList = mainActivity.popupWindow_ExtrasList;
 		/*
 		 * fromExtras button on click listener
@@ -316,7 +343,7 @@ public class FormFragment extends Fragment {
 	// new style is here
 	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
-	public PopupWindow getPopupWindow() {
+	public PopupWindow getPopupWindow(Form_DropdownOnItemClickListener fdd_listener) {
 		PopupWindow popupWindow = new PopupWindow(rootView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		// the drop down list is a list view
@@ -326,7 +353,7 @@ public class FormFragment extends Fragment {
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras.setOnItemClickListener(new Form_DropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(fdd_listener);
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -379,28 +406,9 @@ public class FormFragment extends Fragment {
 		return adapter;
 	}
 
-	// After clicking on a map, update From text
-	// The focus is disabled to avoid the autocomplete field to
-	// open its list
-	public void updateFromText(String street_address) {
-		fromView.setFocusable(false); // DO NOT REMOVE THIS
-		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		fromView.setText(street_address);
-		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		fromView.setFocusable(true); // DO NOT REMOVE THIS
-	}
-
-	// After clicking on a map, update To text
-	public void updateToText(String street_address) {
-		toView.setFocusable(false); // DO NOT REMOVE THIS
-		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		toView.setText(street_address);
-		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		toView.setFocusable(true); // DO NOT REMOVE THIS
-	}
 
 /*
- * setAddressFieldListeners() sets the OnSelected and on Clicted listeners for the From and To Fields
+ * setAddressFieldListeners() sets the OnSelected and onClickedlisteners for the From and To Fields
  */
 	private void setAddressFieldListeners() {
 		this.fromView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -442,6 +450,37 @@ public class FormFragment extends Fragment {
 		});
 	}
 
+	// After clicking on a map, update From text
+	// The focus is disabled to avoid the autocomplete field to
+	// open its list
+	public void updateFromText(String street_address) {
+		
+		fromView.setFocusable(false); // DO NOT REMOVE THIS
+		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) fromView.getAdapter();
+		fromView.setAdapter(null);
+		fromView.setText(street_address);
+		fromView.setAdapter(tmpAdapter);
+		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		fromView.setFocusable(true); // DO NOT REMOVE THIS
+		// To avoid extra search:
+		last_From_query=street_address;
+	}
+
+	// After clicking on a map, update To text
+	public void updateToText(String street_address) {
+		toView.setFocusable(false); // DO NOT REMOVE THIS
+		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) toView.getAdapter();
+		toView.setAdapter(null);
+		toView.setText(street_address);
+		toView.setAdapter(tmpAdapter);
+		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+		toView.setFocusable(true); // DO NOT REMOVE THIS
+		// To avoid extra search:
+		last_To_query=street_address;
+	}
+
 	private String last_From_query = "";
 
 	/*
@@ -450,6 +489,8 @@ public class FormFragment extends Fragment {
 	 * The nearest bus stop is calculated 
 	 */
 	private void handleFromFieldActivation(String queryText) {
+		//actionbar has to know whether the focus change from here
+		focusChangedFromActionBar = false;
 		// Do not make duplicate queries
 		if (last_From_query.equals(queryText))
 			return;
@@ -476,6 +517,8 @@ public class FormFragment extends Fragment {
 	 * The nearest bus stop is calculated 
 	 */
 	private void handleToFieldActivation(String queryText) {
+		//actionbar has to know whether the focus change from here
+		focusChangedFromActionBar = false;
 		// Do not make duplicate queries
 		if (last_To_query.equals(queryText))
 			return;
@@ -663,6 +706,8 @@ public class FormFragment extends Fragment {
 		}
 
 		protected void onPostExecute(String result) {
+			if(result.length()>0)
+			  doOrderButton.setTextColor(Color.RED);
 			estimatedPrice.setText(result);
 		}
 	}
@@ -712,6 +757,7 @@ public class FormFragment extends Fragment {
 		if(order != null){
 			order.setText(R.string.OF_button_order);
 		}
+		 createDropDown(rootView);
 	}
 
 	
@@ -719,10 +765,42 @@ public class FormFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+
+        	iSendFocusChangeInfo = (ISendFocusChangeInfo ) activity;
         	iSendFormSelection = (ISendFormSelection) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement interface");
         }
     }
+	
+	public int getMaximumPrice()
+	{
+		try
+		{
+			String mp=maxPrice.getText().toString().trim();
+			mp=mp.replace(',', '.');
+			float mpf=Float.parseFloat(mp)+0.5f;
+			return (int) mpf;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int getPassengerCount()
+	{
+		try
+		{
+			String pc=passengers.getText().toString().trim();
+			return Integer.parseInt(pc);
+		}
+		catch(Exception e)
+		{
+            e.printStackTrace();			
+		}
+		return -1;
+	}
 }

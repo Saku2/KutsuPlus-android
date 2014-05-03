@@ -7,7 +7,7 @@
     
     <!-- Order Tabs -->
     <string name="TAB_form">Tilauslomake</string>
-    <string name="TAB_form_description">Tämän välilehden lomakkeella voit  tilata Kustsuplus kyydin.</string>
+    <string name="TAB_form_description">Tämän välilehden lomakkeella voit  tilata Kutsuplus-kyydin.</string>
     <string name="TAB_ticket">Lippu</string>
     <string name="TAB_ticket_description">Tämä välilehti sisältää vastaanotetun lipun.</string>
     
@@ -16,19 +16,19 @@
     <!-- Order Form -->
     <string name="OF_current_location">Nykyinen sijainti</string>
     <string name="OF_from">Mistä</string>
-    <string name="OF_from_extra_options_desciption">Valitsemalla tämän saat lisä vaihtoehtoja.</string>
-    <string name="OF_from_field_description">Kirjoita tähän lähtöpaikan osoite</string>
+    <string name="OF_from_extra_options_desciption">Valitsemalla tämän saat lisää vaihtoehtoja.</string>
+    <string name="OF_from_field_description">Kirjoita tähän lähtöpaikan osoite.</string>
     
     <string name="OF_to">Mihin</string>
-    <string name="OF_to_extra_options_description">Valitsemalla tämän saat lisä vaihtoehtoja.</string>
-    <string name="OF_to_field_description">Kirjoita tähän kohdepaikan osoitee.</string>
+    <string name="OF_to_extra_options_description">Valitsemalla tämän saat lisää vaihtoehtoja.</string>
+    <string name="OF_to_field_description">Kirjoita tähän kohdepaikan osoite.</string>
     
     <string name="OF_number_of_passengers">Matkustajien määrä</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Maksimihinta</string>
+    <string name="OF_max_price">Maksimihinta (€)</string>
     <string name="OF_max_price_description">Kirjoita tähän paljonko matka saa enimmillään maksaa.</string>
     
-    <string name="OF_estimated_price">Arvioitu hinta</string>    
+    <string name="OF_estimated_price">Arvioitu hinta (€)</string>    
     
     <string name="OF_pickup_stop">Noutopysäkki</string>
     <string name="OF_dropoff_stop">Jättöpysäkki</string>
@@ -39,7 +39,7 @@
     
     
     <!-- SMS Handling -->
-    <string name="title_sms_notification">Vastetaan lippu</string>
+    <string name="title_sms_notification">Vastaanotetaan lippu</string>
     <string name="sms_waiting">Sekunteja </string>
     <string name="sms_timeout">Odotetaan yhä</string>
     <string name="sms_ticket_ok">Lippu vastaanotettu</string>
