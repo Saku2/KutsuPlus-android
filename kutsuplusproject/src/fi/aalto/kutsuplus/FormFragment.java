@@ -681,7 +681,7 @@ public class FormFragment extends Fragment {
 
 		protected void onPostExecute(String result) {
 			if(result.length()>0)
-			  doOrderButton.setTextColor(Color.RED);
+			  doOrderButton.setTextColor(Color.rgb(0,100,0));
 			estimatedPrice.setText(result);
 		}
 	}
