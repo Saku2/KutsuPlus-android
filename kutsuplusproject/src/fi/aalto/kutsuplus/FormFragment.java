@@ -205,7 +205,10 @@ public class FormFragment extends Fragment {
 		if (cb.getFrom_address() != null) {
 			fromView.setFocusable(false); // DO NOT REMOVE THIS
 			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)fromView.getAdapter();
+			fromView.setAdapter(null);
 			fromView.setText(cb.getFrom_address());
+			fromView.setAdapter(tmpAdapter);
 			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			fromView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -213,7 +216,10 @@ public class FormFragment extends Fragment {
 		if (cb.getTo_address() != null) {
 			toView.setFocusable(false); // DO NOT REMOVE THIS
 			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)toView.getAdapter();
+			toView.setAdapter(null);
 			toView.setText(cb.getTo_address());
+			toView.setAdapter(tmpAdapter);
 			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			toView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -448,9 +454,13 @@ public class FormFragment extends Fragment {
 	// The focus is disabled to avoid the autocomplete field to
 	// open its list
 	public void updateFromText(String street_address) {
+		
 		fromView.setFocusable(false); // DO NOT REMOVE THIS
 		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) fromView.getAdapter();
+		fromView.setAdapter(null);
 		fromView.setText(street_address);
+		fromView.setAdapter(tmpAdapter);
 		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 		fromView.setFocusable(true); // DO NOT REMOVE THIS
 		// To avoid extra search:
@@ -461,7 +471,10 @@ public class FormFragment extends Fragment {
 	public void updateToText(String street_address) {
 		toView.setFocusable(false); // DO NOT REMOVE THIS
 		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+		StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) toView.getAdapter();
+		toView.setAdapter(null);
 		toView.setText(street_address);
+		toView.setAdapter(tmpAdapter);
 		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 		toView.setFocusable(true); // DO NOT REMOVE THIS
 		// To avoid extra search:
