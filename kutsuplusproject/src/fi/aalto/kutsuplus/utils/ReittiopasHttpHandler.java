@@ -162,8 +162,7 @@ public class ReittiopasHttpHandler {
 					MapPoint mp = new MapPoint(Integer.parseInt(longtitude), Integer.parseInt(latitude));
 					StopObject dropoffStop_so = StopTreeHandler.getInstance().getClosestStops(mp, 1)[0].getNeighbor().getValue();
 					GoogleMapPoint gmp = CoordinateConverter.kkj2xy_to_wGS84lalo(mp.getX(), mp.getY());
-					
-					LatLng ll = new LatLng(gmp.getX(), gmp.getY());//
+					LatLng ll = new LatLng(gmp.getX(), gmp.getY());
 
 					communication.setEnd_location(OTTOCommunication.FORM_FRAGMENT, ll);
 					communication.setDrop_off_stop(OTTOCommunication.FORM_FRAGMENT, dropoffStop_so);
