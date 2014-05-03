@@ -26,10 +26,10 @@
     
     <string name="OF_number_of_passengers">Antalet passagerare</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Högsta priset</string>
+    <string name="OF_max_price">Högsta priset (€)</string>
     <string name="OF_max_price_description">Skriv här det högsta priset som resan kan kosta.</string>
     
-    <string name="OF_estimated_price">Beräknad pris</string>    
+    <string name="OF_estimated_price">Beräknad pris (€)</string>    
     
     <string name="OF_pickup_stop">Hämtningshållplats</string>
     <string name="OF_dropoff_stop">Destinationshållplats</string>

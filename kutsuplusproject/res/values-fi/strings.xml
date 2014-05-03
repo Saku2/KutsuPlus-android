@@ -25,10 +25,10 @@
     
     <string name="OF_number_of_passengers">Matkustajien määrä</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Maksimihinta</string>
+    <string name="OF_max_price">Maksimihinta (€)</string>
     <string name="OF_max_price_description">Kirjoita tähän paljonko matka saa enimmillään maksaa.</string>
     
-    <string name="OF_estimated_price">Arvioitu hinta</string>    
+    <string name="OF_estimated_price">Arvioitu hinta (€)</string>    
     
     <string name="OF_pickup_stop">Noutopysäkki</string>
     <string name="OF_dropoff_stop">Jättöpysäkki</string>
