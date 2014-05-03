@@ -23,6 +23,7 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
  */
 public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
+	private String current_location_string=null;
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
 
@@ -44,7 +45,7 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 			final AutoCompleteTextView fromView = (AutoCompleteTextView) mainActivity.findViewById(R.id.from);
 			fromView.setFocusable(false);
 			fromView.setFocusableInTouchMode(false);
-			if (selectedItemText.equals(MainActivity.CURRENT_LOCATIION))
+			if (selectedItemText.equals(current_location_string))
 			{
 				if(communication.getCurrent_location()!=null)
 				{
@@ -61,7 +62,7 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 					communication.setFrom_address(""); // Set the field to be updated when we get the positioning
 					fromView.setFocusable(false); 
 					fromView.setFocusableInTouchMode(false); 
-					fromView.setText("waiting");
+					fromView.setText("");
 					fromView.setFocusableInTouchMode(true); 
 					fromView.setFocusable(true); 
 				}
@@ -81,7 +82,7 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 			final AutoCompleteTextView toView = (AutoCompleteTextView) mainActivity.findViewById(R.id.to);
 			toView.setFocusable(false);
 			toView.setFocusableInTouchMode(false);
-			if (selectedItemText.equals(MainActivity.CURRENT_LOCATIION))
+			if (selectedItemText.equals(current_location_string))
 			{
 				if(communication.getCurrent_location()!=null)
 				{
@@ -98,7 +99,7 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 					communication.setTo_address("");  // Set the field to be updated when we get the positioning
 					toView.setFocusable(false); 
 					toView.setFocusableInTouchMode(false); 
-					toView.setText("waiting");
+					toView.setText("");
 					toView.setFocusableInTouchMode(true); 
 					toView.setFocusable(true); 
 					
@@ -121,5 +122,9 @@ public class Form_DropdownOnItemClickListener implements OnItemClickListener {
 		Toast.makeText(mContext, selectedItemTag, Toast.LENGTH_SHORT).show();
 
 	}
+	public void setCurrent_location_string(String current_location_string) {
+		this.current_location_string = current_location_string;
+	}
 
+	
 }

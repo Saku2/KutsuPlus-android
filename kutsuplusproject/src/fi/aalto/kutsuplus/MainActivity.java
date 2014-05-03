@@ -62,7 +62,7 @@ import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener, ISendFocusChangeInfo {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, LocationListener, ISendFocusChangeInfo { 
 
 
 	private Locale myLocale;
@@ -77,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	
 	SharedPreferences preferences;
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
-	final static public String CURRENT_LOCATIION = "Current location";
+	//final static public String CURRENT_LOCATIION = "Current location";
 	final static int FORMFRAG = 0;
 	final static int MAPFRAG = 1;
 	final static int FROM = 0;
@@ -259,7 +259,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			
 		}
 		mapFragment.setStopTreeHandler(stopTreeHandler);
-
+		checkOldSMSs();//?
 	}
 	
 
@@ -633,7 +633,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		{
 			formFragment.updateFromText(street_address);
 			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
-			mapturn=MainActivity.TO;
 		}
 		else
 		{
@@ -659,18 +658,34 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		while (c.moveToNext()) {
 
 			// Only Inbox messages
-			if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+			if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {//
 
-				SMSMessage read_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
+				SMSMessage received_sms = new SMSMessage(c.getString(c.getColumnIndexOrThrow("_id")), c.getString(c.getColumnIndexOrThrow("address")), c.getString(c.getColumnIndexOrThrow("body")),
 						c.getString(c.getColumnIndexOrThrow("date")));
 				
+				System.out.println("ADDRESS:"+received_sms.getAddress());
+				if(true)
+				{
+					SMSParser smsparser = null;
+					try {
+						smsparser = new SMSParser(getResources().getStringArray(R.array.sms_keyword_array));
+					} catch (NotFoundException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					TicketInfo response = smsparser.parse(received_sms.getMessage());
+					if (smsparser.isTicket()) {
+						ticketFragment.showTicket(received_sms.getMessage());
+					}
+				}
 
 			}
 
 			c.moveToNext();
 		}
 		return;
-	}
+	}//?
 
 	/*
 	 * (non-Javadoc)
@@ -802,18 +817,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	public void setActiveExtraslist(int extras_list) {
 		this.extras_list = extras_list;
 	}
-
-	@Override
-	public void setFromActivated() {
-			mapturn=MainActivity.FROM;
-	}
-
-	@Override
-	public void setToActivated() {
-			mapturn=MainActivity.TO;
-	}
-
-	
+ 	
 	
 	//LOCATION SCRUMBS
 	@Override

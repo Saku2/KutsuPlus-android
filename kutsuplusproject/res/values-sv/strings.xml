@@ -17,7 +17,7 @@
     <!-- Order Form -->
     <string name="OF_current_location">Nuvarande läge</string>
     <string name="OF_from">Från</string>
-    <string name="OF_from_extra_options_desciption">Genom att välja det här kan du se fler alternativ</string>
+    <string name="OF_from_extra_options_desciption">Genom att välja det här kan du se fler alternativ.</string>
     <string name="OF_from_field_description">Skriv här startadressen för resan.</string>
     
     <string name="OF_to">Till</string>
@@ -26,10 +26,10 @@
     
     <string name="OF_number_of_passengers">Antalet passagerare</string>
     <string name="OF_number_of_passengers_hint">1</string>
-    <string name="OF_max_price">Högsta priset</string>
+    <string name="OF_max_price">Högsta priset (€)</string>
     <string name="OF_max_price_description">Skriv här det högsta priset som resan kan kosta.</string>
     
-    <string name="OF_estimated_price">Beräknad pris</string>    
+    <string name="OF_estimated_price">Beräknad pris (€)</string>    
     
     <string name="OF_pickup_stop">Hämtningshållplats</string>
     <string name="OF_dropoff_stop">Destinationshållplats</string>

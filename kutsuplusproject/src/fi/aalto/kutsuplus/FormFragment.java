@@ -27,6 +27,7 @@ import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources; 
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -66,7 +67,7 @@ import fi.aalto.kutsuplus.utils.StreetSearchAdapter;
 
 public class FormFragment extends Fragment {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
-	private ISendFormSelection iSendFormSelection;
+	
 	private View rootView;
 	String popUpContents[];
 	ImageButton buttonShowDropDown_fromExtras;
@@ -204,7 +205,10 @@ public class FormFragment extends Fragment {
 		if (cb.getFrom_address() != null) {
 			fromView.setFocusable(false); // DO NOT REMOVE THIS
 			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)fromView.getAdapter();
+			fromView.setAdapter(null);
 			fromView.setText(cb.getFrom_address());
+			fromView.setAdapter(tmpAdapter);
 			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			fromView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -212,7 +216,10 @@ public class FormFragment extends Fragment {
 		if (cb.getTo_address() != null) {
 			toView.setFocusable(false); // DO NOT REMOVE THIS
 			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter)toView.getAdapter();
+			toView.setAdapter(null);
 			toView.setText(cb.getTo_address());
+			toView.setAdapter(tmpAdapter);
 			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
 			toView.setFocusable(true); // DO NOT REMOVE THIS
 		}
@@ -272,7 +279,9 @@ public class FormFragment extends Fragment {
 	 */
 	private void createDropDown(View rootView) {
 		List<String> optionsList = new ArrayList<String>();
-		optionsList.add("Current location");
+		Resources res = getResources();
+		String current_location_string = res.getString(R.string.OF_current_location);
+		optionsList.add(current_location_string);
 		StreetDatabaseHandler stha = new StreetDatabaseHandler(rootView.getContext());
 		try {
 			List<StreetAddress> own_addresses = stha.getAllStreetAddresses();
@@ -290,7 +299,9 @@ public class FormFragment extends Fragment {
 		 */
 		Context mContext = rootView.getContext();
 		final MainActivity mainActivity = ((MainActivity) mContext);
-		mainActivity.popupWindow_ExtrasList = getPopupWindow();
+		Form_DropdownOnItemClickListener fdd_listenerner=new  Form_DropdownOnItemClickListener();
+		fdd_listenerner.setCurrent_location_string(current_location_string);
+		mainActivity.popupWindow_ExtrasList = getPopupWindow(fdd_listenerner);
 		popupWindow_ExtrasList = mainActivity.popupWindow_ExtrasList;
 		/*
 		 * fromExtras button on click listener
@@ -332,7 +343,7 @@ public class FormFragment extends Fragment {
 	// new style is here
 	// http://stackoverflow.com/questions/9978884/bitmapdrawable-deprecated-alternative
 	@SuppressWarnings("deprecation")
-	public PopupWindow getPopupWindow() {
+	public PopupWindow getPopupWindow(Form_DropdownOnItemClickListener fdd_listener) {
 		PopupWindow popupWindow = new PopupWindow(rootView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		// the drop down list is a list view
@@ -342,7 +353,7 @@ public class FormFragment extends Fragment {
 		listViewExtras.setAdapter(extrasAdapter(popUpContents));
 
 		// set the item click listener
-		listViewExtras.setOnItemClickListener(new Form_DropdownOnItemClickListener());
+		listViewExtras.setOnItemClickListener(fdd_listener);
 		// Closes the popup window when touch outside of it - when looses focus
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 		popupWindow.setOutsideTouchable(true);
@@ -407,17 +418,6 @@ public class FormFragment extends Fragment {
 				handleFromFieldActivation(queryText);
 			}
 		});
-		this.fromView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String queryText = parent.getItemAtPosition(position).toString();
-				handleFromFieldActivation(queryText);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
 		this.toView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -426,42 +426,38 @@ public class FormFragment extends Fragment {
 			}
 		});
 
-		this.toView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String queryText = parent.getItemAtPosition(position).toString();
-				handleToFieldActivation(queryText);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
 	}
 
 	// After clicking on a map, update From text
-	// The focus is disabled to avoid the autocomplete field to
-	// open its list
-	public void updateFromText(String street_address) {
-		fromView.setFocusable(false); // DO NOT REMOVE THIS
-		fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		fromView.setText(street_address);
-		fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		fromView.setFocusable(true); // DO NOT REMOVE THIS
-		// To avoid extra search:
-		last_From_query=street_address;
-	}
+		// The focus is disabled to avoid the autocomplete field to
+		// open its list
+		public void updateFromText(String street_address) {
+			
+			fromView.setFocusable(false); // DO NOT REMOVE THIS
+			fromView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) fromView.getAdapter();
+			fromView.setAdapter(null);
+			fromView.setText(street_address);
+			fromView.setAdapter(tmpAdapter);
+			fromView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+			fromView.setFocusable(true); // DO NOT REMOVE THIS
+			// To avoid extra search:
+			last_From_query=street_address;
+		}
 
-	// After clicking on a map, update To text
-	public void updateToText(String street_address) {
-		toView.setFocusable(false); // DO NOT REMOVE THIS
-		toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
-		toView.setText(street_address);
-		toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
-		toView.setFocusable(true); // DO NOT REMOVE THIS
-		// To avoid extra search:
-		last_To_query=street_address;
-	}
+		// After clicking on a map, update To text
+		public void updateToText(String street_address) {
+			toView.setFocusable(false); // DO NOT REMOVE THIS
+			toView.setFocusableInTouchMode(false); // DO NOT REMOVE THIS
+			StreetSearchAdapter tmpAdapter = (StreetSearchAdapter) toView.getAdapter();
+			toView.setAdapter(null);
+			toView.setText(street_address);
+			toView.setAdapter(tmpAdapter);
+			toView.setFocusableInTouchMode(true); // DO NOT REMOVE THIS
+			toView.setFocusable(true); // DO NOT REMOVE THIS
+			// To avoid extra search:
+			last_To_query=street_address;
+		}
 
 	private String last_From_query = "";
 
@@ -488,7 +484,6 @@ public class FormFragment extends Fragment {
 		communication.setFrom_address(OTTOCommunication.FORM_FRAGMENT, queryText);
 		Log.d(LOG_TAG, "timer called");
 		http.makeGetStartAddress("http://api.reittiopas.fi/hsl/prod/", args);
-		iSendFormSelection.setToActivated();
 	}
 
 	private String last_To_query = "";
@@ -713,6 +708,7 @@ public class FormFragment extends Fragment {
 		if(order != null){
 			order.setText(R.string.OF_button_order);
 		}
+		createDropDown(rootView); 
 	}
 
 	
@@ -722,7 +718,6 @@ public class FormFragment extends Fragment {
         try {
 
         	iSendFocusChangeInfo = (ISendFocusChangeInfo ) activity;
-        	iSendFormSelection = (ISendFormSelection) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement interface");

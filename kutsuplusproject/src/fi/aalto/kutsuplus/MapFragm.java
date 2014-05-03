@@ -85,7 +85,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	final static public float initialZoomLevel = 11.5F;
 	
 	//min zoom level, for showing distance and duration markers
-	final public float distanceDurationZoomLevel = 12F;
+	final public float distanceDurationZoomLevel = 14F;
 	public Marker marker_duration_start = null;
 	public Marker marker_distance_start = null;
 	public Marker marker_duration_end = null;
@@ -308,12 +308,10 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		if(marker.getTitle().toString().equals("start"))
 		{
 			marker.hideInfoWindow();
-			iSendMapSelection.setFromActivated();
 		}
 		else if(marker.getTitle().toString().equals("finish"))
 		{
 			marker.hideInfoWindow();
-			iSendMapSelection.setToActivated();
 		}
 		else
 		{
@@ -364,6 +362,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 		     catch(IllegalStateException is){
 		        	// Can be happeded, when closing the application
 		     }
+			 catch (IllegalArgumentException e) { 
+			 	   // Can happen if clear map is clicked when updating the markers has not finished 
+			 } 
 
 			marker.showInfoWindow();
 			marker.setAlpha(1);
