@@ -53,7 +53,7 @@ public class TicketFragment extends Fragment {
 	 */
 	public void showTicket(String body)
 	{
-		String template = "<body><img src=\"ticket.jpg\"><BR>(1)</body>";
+		String template = "<body><img src=\"ticket.jpg\"  width=\"80%\"><BR>(1)</body>";
 		String body2 = body.replace("\n", "<BR>");
 		String html = template.replace("(1)", body2);
 		int uripos = html.indexOf("http");
