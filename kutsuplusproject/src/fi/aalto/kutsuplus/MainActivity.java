@@ -535,16 +535,14 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		FormFragment formFragment = getFormFragment();
         MapFragm mapFragment = getMapFragment();
 		handleMarkerDragging();
-		boolean focusAtFrom = formFragment.fromView.hasFocus();
-		if(focusAtFrom){
+		
+		if(mapturn==MainActivity.FROM){
 			formFragment.updateFromText(street_address);
 			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
-			mapturn=MainActivity.FROM;
 		}
 		else{
 			formFragment.updateToText(street_address);
 			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
-			mapturn=MainActivity.TO;
 		}
 				
 		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
@@ -558,7 +556,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				{
 					StopObject stopObject=stops[0].getNeighbor().getValue();
 					mapFragment.makeKPmarkers();
-					mapFragment.updateMarkersAndRoute(address_gps, stopObject, focusAtFrom);
+					mapFragment.updateMarkersAndRoute(address_gps, stopObject, mapturn==MainActivity.FROM);
 				}
 			}
 		} catch (TreeNotReadyException e) {
@@ -582,7 +580,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         		if(!item.getTitle().toString().equals("start_focus")){
     				item.setIcon(R.drawable.focus_start);
     				item.setTitle("start_focus");
-    				this.getFormFragment().fromView.requestFocus();			
+    				this.getFormFragment().fromView.requestFocus();
+    				mapturn=MainActivity.FROM;
     			}
         	}
         	else{   			
@@ -592,6 +591,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     				item.setIcon(R.drawable.focus_finish);
     				item.setTitle("finish_focus");
     				this.getFormFragment().toView.requestFocus();
+    				mapturn=MainActivity.TO;
     			}
         	}
         }
@@ -656,8 +656,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			formFragment.updateToText(street_address);
 		}
 
-		boolean focusAtFrom = findViewById(R.id.from).hasFocus();
-		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, focusAtFrom);
+		
+		mapFragment.updateMarkersAndRoute(address_gps, bus_stop, mapturn==MainActivity.FROM);
 	}
 
 	/*
