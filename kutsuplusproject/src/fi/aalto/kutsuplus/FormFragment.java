@@ -534,7 +534,7 @@ public class FormFragment extends Fragment {
 			Log.d("estimate", "going to estimate next");
 			// the price is 0,45 euros / km + base fee of 3,5 euros.
 			if (communication.getPick_up_stop() == null || communication.getDrop_off_stop() == null) {
-				Log.e("estimate", "getPick_up_stop was null when estimating price");
+				Log.e("estimate", "getPick_up_stop or getDrop_off_stop was null when estimating price");
 				return "";
 			}
 			int distance = calculateDistance(communication.getPick_up_stop().getFinnishAddress(), "simonkatu 1, Helsinki");
@@ -543,7 +543,33 @@ public class FormFragment extends Fragment {
 			float distance_price = 0.45f * distance / 1000;
 			float base_price = 3.5f;
 			float estimated_price = distance_price + base_price;
-			Log.e("estimate", "estimated value: " + String.valueOf(estimated_price));
+			
+			// add passengers to the price calculation
+			int pass;
+			try {
+				pass = Integer.parseInt(passengers.getText().toString());
+			} catch (java.lang.NumberFormatException e) {
+				e.printStackTrace();
+				pass = 1;
+			}
+			
+			Log.e("passengers", "number of passengers is: " + String.valueOf(pass));
+			float coefficient = 1.0f;
+			Log.e("estimate", "estimated value for one passenger: " + String.valueOf(estimated_price));
+			estimated_price = estimated_price * pass;
+			if (pass > 5) {
+				pass = 5;
+			}
+			switch (pass) {
+				case 2: coefficient = 0.8f; break;
+				case 3: coefficient = 0.7f; break;
+				case 4: coefficient = 0.6f; break;
+				case 5: coefficient = 0.5f; break;
+				default: break;
+			}
+			Log.e("estimate", "estimated value before passenger discount: " + String.valueOf(estimated_price));
+			estimated_price = estimated_price * coefficient;
+			Log.e("estimate", "estimated value after passenger discount: " + String.valueOf(estimated_price));
 			DecimalFormat moneyFormatter = new DecimalFormat("##.##");
 			return moneyFormatter.format(estimated_price);
 		}

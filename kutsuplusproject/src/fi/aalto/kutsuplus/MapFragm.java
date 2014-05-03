@@ -733,36 +733,8 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
  		return drawBmp;
 	}
 
+	// Otto-framework related things
 	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//ootto pask
-
 	@Subscribe
     public void onCurrentLocationChangeEvent(CurrentLocationChangeEvent event){
     	if(event.getSender()!=OTTOCommunication.MAP_FRAGMENT)
