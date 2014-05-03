@@ -836,12 +836,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
 	@Override
 	public void setFromActivated() {
-			mapturn=MainActivity.FROM;
-	}
+		MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
+    	if(!item.getTitle().toString().equals("start_focus")){
+				item.setIcon(R.drawable.focus_start);
+				item.setTitle("start_focus");		
+			}
+    	mapturn=MainActivity.FROM;	
+    	}
 
 	@Override
 	public void setToActivated() {
-			mapturn=MainActivity.TO;
+		MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
+		if(item.getTitle().toString().equals("start_focus")){
+			item.setIcon(R.drawable.focus_finish);
+			item.setTitle("finish_focus");
+		}
+		mapturn=MainActivity.TO;
 	}
 
 	//LOCATION SCRUMBS
