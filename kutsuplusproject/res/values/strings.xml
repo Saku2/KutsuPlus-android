@@ -56,7 +56,7 @@
     <string name="title_sms_notification">Receive ticket</string>
     <string name="sms_waiting">Seconds </string>
     <string name="sms_timeout">Still waiting</string>
-    <string name="sms_ticket_ok">Ticket received</string>
+    <string name="sms_reply_received">Ticket received</string>
     <string name="sms_hsl_number">5556</string>    
     <!--  0504106775 -->
     <string name="kutsuplus_url_short">http://kutsuplus.fi</string>

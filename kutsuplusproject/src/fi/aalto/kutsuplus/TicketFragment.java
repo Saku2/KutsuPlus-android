@@ -140,7 +140,7 @@ public class TicketFragment extends Fragment {
 		counter.cancel();
 		try
 		{
-		 timerText.setText(getString(R.string.sms_ticket_ok));
+		 timerText.setText(getString(R.string.sms_reply_received));
 		 progressBar.setVisibility(View.GONE);
 		}
 		catch(IllegalStateException is)
