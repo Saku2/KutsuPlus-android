@@ -257,8 +257,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				clear_map_button.setVisible(true);
 			
 		}
+		//this feature is under construction and is commented out for now
+		//checkOldSMSs();
 		mapFragment.setStopTreeHandler(stopTreeHandler);
-		checkOldSMSs();
 	}
 	
 
@@ -692,7 +693,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 					}
 					TicketInfo response = smsparser.parse(received_sms.getMessage());
 					if (smsparser.isTicket()) {
-						ticketFragment.showTicket(received_sms.getMessage());
+						ticketFragment.showTicket(response);
 					}
 				}
 
@@ -743,7 +744,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				TicketInfo response = smsparser.parse(body);
 
 				if (smsparser.isTicket()) {
-					ticketFragment.showTicket(body);
+					ticketFragment.showTicket(response);
 				} else {
 					ticketFragment.showErrorMessage(body);
 				}

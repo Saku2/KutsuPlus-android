@@ -707,7 +707,8 @@ public class FormFragment extends Fragment {
 
 		protected void onPostExecute(String result) {
 			if(result.length()>0)
-			  doOrderButton.setTextColor(Color.RED);
+				//Dark blue used by Kutsuplus
+			  doOrderButton.setTextColor(Color.rgb(26, 155, 215));
 			estimatedPrice.setText(result);
 		}
 	}
@@ -783,11 +784,10 @@ public class FormFragment extends Fragment {
 			float mpf=Float.parseFloat(mp)+0.5f;
 			return (int) mpf;
 		}
-		catch(Exception e)
+		catch(NumberFormatException e)
 		{
-			e.printStackTrace();
+			return -1;
 		}
-		return -1;
 	}
 	
 	public int getPassengerCount()

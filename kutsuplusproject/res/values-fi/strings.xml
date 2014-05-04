@@ -65,4 +65,18 @@
     <!--  toast on map -->
     <string name="toast_address_on_map_click">osoite: </string>
     <string name="toast_address_not_found">sijainti ei löytynyt</string>
+    
+    <!-- ticket Strings -->
+    <string name="code">Lipun koodi: </string>
+    <string name="passengers">Matkustajia: </string>
+    <string name="pickup_stop">Lähtöpysäkki: </string>
+    <string name="pickup_address">Lähtöosoite: </string>
+    <string name="pickup_time">Lähtee: </string>
+    <string name="dropoff_stop">Päätepysäkki: </string>
+    <string name="dropoff_address">Pääteosoite: </string>
+    <string name="dropoff_time">Perillä: </string>
+    <string name="vehicle">bussi: </string>
+    <string name="price">Hinta: </string>
+    <string name="order_id">Tilaustunnus: </string>
+    <string name="link">Lisää tietoa: </string>
 </resources>

@@ -92,5 +92,18 @@
     <string name="toast_address_on_map_click">address: </string>
     <string name="toast_address_not_found">location was not found</string>
     
-    
+    <!-- ticket Strings -->
+    <string name="code">Ticket code: </string>
+    <string name="passengers">Passengers: </string>
+    <string name="price">Price: </string>
+    <string name="pickup_stop">Pickup stop: </string>
+    <string name="pickup_address">Pickup address: </string>
+    <string name="pickup_time">Pickup time: </string>
+    <string name="dropoff_stop">Dropoff stop: </string>
+    <string name="dropoff_address">Dropoff address: </string>
+    <string name="dropoff_time">Dropoff time: </string>
+    <string name="vehicle">Vehicle: </string>
+    <string name="order_id">Order ID: </string>
+    <string name="link">More information</string>
+
 </resources>

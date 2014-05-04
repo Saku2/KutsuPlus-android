@@ -1,15 +1,23 @@
 package fi.aalto.kutsuplus;
 
+import java.util.Collection;
+import java.util.Locale;
+
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import fi.aalto.kutsuplus.database.TicketInfo;
 import fi.aalto.kutsuplus.events.OTTOCommunication;
+import fi.aalto.kutsuplus.kdtree.StopObject;
+import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
  
 public class TicketFragment extends Fragment {
 	private OTTOCommunication communication = OTTOCommunication.getInstance();
@@ -51,18 +59,64 @@ public class TicketFragment extends Fragment {
 	/*
 	 * showTicket(String body)  shows the received ticket message on the screen
 	 */
-	public void showTicket(String body)
+	public void showTicket(TicketInfo response)
 	{
-		String template = "<body><img src=\"ticket.jpg\"  width=\"80%\"><BR>(1)</body>";
-		String body2 = body.replace("\n", "<BR>");
-		String html = template.replace("(1)", body2);
-		int uripos = html.indexOf("http");
-		if (uripos > -1) {
-			String first = html.substring(0, uripos) + "<A HREF=\"";
-			String end = html.substring(uripos);
-			String end2 = end.replace("<BR>", "\"> link <A><BR>");
-			html = first + end2;
+		
+		Resources res = getResources();
+		Locale current_locale = getResources().getConfiguration().locale;
+		Collection<StopObject> pysakit;
+		String pickup_address = "";
+		String dropoff_address = "";
+		String lang = current_locale.getLanguage();
+		String picture_filename = "";
+		if(lang.equals("fi")) {
+			picture_filename = "bus_fi.png";
 		}
+		else if(lang.equals("sv")) {
+			picture_filename = "bus_sv.png";
+		}
+		else {
+			picture_filename = "bus_en.png";
+		}
+		
+
+		try {
+			pysakit = StopTreeHandler.getInstance().getStopTree().values();
+			for(StopObject so : pysakit){
+				if(so.getShortId().equals(response.getPickupStop())) {
+					if(lang.equals("sv"))
+						pickup_address = so.getSwedishAddres();
+					else
+						pickup_address = so.getFinnishAddress();
+				}
+				if(so.getShortId().equals(response.getDropOffStop())) {
+					if(lang.equals("sv"))
+						dropoff_address = so.getSwedishAddres();
+					else
+						dropoff_address = so.getFinnishAddress();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		String html = "<body><img src=\"" + picture_filename + "\"  width=\"80%\"><p>";
+		html = html + res.getString(R.string.code) + response.getOrderCode() + "<br>";
+		html = html + res.getString(R.string.passengers) + response.getPassengerAmount() + "<br>";
+		html = html + res.getString(R.string.price) + response.getPrice() + "<br>";
+		html = html + res.getString(R.string.pickup_stop) + response.getPickupStop() + "<br>";
+		html = html + res.getString(R.string.pickup_address) + pickup_address + "<br>";
+		html = html + res.getString(R.string.pickup_time) + response.getPickupTime() + "<br></p><p>";
+		html = html + res.getString(R.string.dropoff_stop) + response.getDropOffStop() + "<br>";
+		html = html + res.getString(R.string.dropoff_address) + dropoff_address + "<br>";
+		html = html + res.getString(R.string.dropoff_time) + response.getDropOffTime() + "<br>";
+		html = html + res.getString(R.string.vehicle) + response.getVehicleCode() + "<br>";
+		html = html + res.getString(R.string.order_id) + response.getOrderId() + "<br>";
+		html = html + " <a href=\"" + response.getUrl() + "\">" + res.getString(R.string.link) + "</a>";		
+		html = html + "</p></body>";
+		
+		Log.e("ticket html", "ticket's html is: " + html);
 		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);	
 	}
 
