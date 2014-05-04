@@ -79,4 +79,8 @@
     <string name="price">Hinta: </string>
     <string name="order_id">Tilaustunnus: </string>
     <string name="link">Lisää tietoa: </string>
+    
+    <!-- Departure notification -->
+    <string name="departure">15 minuuttia noutoon!</string> 
+    <string name="departure_short"> minuuttia noutoon!</string> 
 </resources>

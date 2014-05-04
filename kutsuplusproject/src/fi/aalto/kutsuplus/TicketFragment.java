@@ -1,8 +1,13 @@
 package fi.aalto.kutsuplus;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Locale;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -31,6 +36,9 @@ public class TicketFragment extends Fragment {
 	CountDownTimer counter;
 	boolean delay_animation=false;
 	boolean animation_set=false;
+	
+	private AlarmManager alarmMgr;
+	private PendingIntent alarmIntent;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -117,7 +125,42 @@ public class TicketFragment extends Fragment {
 		html = html + "</p></body>";
 		
 		Log.e("ticket html", "ticket's html is: " + html);
-		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);	
+		sms_message.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);
+		
+		// Set timer for a departure notification
+		alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(getActivity(), DepartureAlarmReceiver.class);
+		alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
+
+		String[] timeArray = response.getPickupTime().split(":");
+		int hour = Integer.parseInt(timeArray[0]);
+		int minute = Integer.parseInt(timeArray[1]);
+		
+		// Check if we have more or less than 15 minutes until pickup
+		Calendar currentTime = Calendar.getInstance();
+		currentTime.setTimeInMillis(System.currentTimeMillis());
+		
+		Calendar alarmTime = Calendar.getInstance();
+		alarmTime.setTimeInMillis(System.currentTimeMillis());
+		alarmTime.set(Calendar.HOUR_OF_DAY, hour);
+		alarmTime.set(Calendar.MINUTE, minute);
+		
+		if (alarmTime.getTimeInMillis() - currentTime.getTimeInMillis() <= (15 * 60 * 1000)) {
+			// Notify the actual time left until pickup
+			Intent i = new Intent(getActivity(), DepartureService.class);
+			long delta = (alarmTime.getTimeInMillis() - currentTime.getTimeInMillis()) / 1000 / 60;
+			i.putExtra("fi.aalto.kutsuplus.walkTime", String.valueOf(delta));
+	        getActivity().startService(i);
+		}
+		else {
+			minute = minute - 15;
+		}
+		
+		// Set the alarm to start 15 min before pickup
+		alarmTime.set(Calendar.HOUR_OF_DAY, hour);
+		alarmTime.set(Calendar.MINUTE, minute);
+
+		alarmMgr.set(AlarmManager.RTC_WAKEUP, alarmTime.getTimeInMillis(), alarmIntent);
 	}
 
 	/*

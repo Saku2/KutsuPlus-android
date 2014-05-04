@@ -106,4 +106,8 @@
     <string name="order_id">Order ID: </string>
     <string name="link">More information</string>
     
+    <!-- Departure notification -->
+    <string name="departure">15 minutes until pickup!</string> 
+    <string name="departure_short"> minutes until pickup!</string> 
+    
 </resources>
