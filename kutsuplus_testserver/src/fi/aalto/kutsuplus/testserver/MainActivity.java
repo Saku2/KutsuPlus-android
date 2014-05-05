@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 	}
 
 	private String makeUPMessage() {
+		/**
 		Random randomGenerator = new Random(System.currentTimeMillis());
 		int delay = randomGenerator.nextInt(5);
 		try {
@@ -62,6 +63,8 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 		int answer_case = randomGenerator.nextInt(12);
+		*/
+		int answer_case = 7;
 		String txt,txt2;
 		switch (answer_case) {
 		case 0:
