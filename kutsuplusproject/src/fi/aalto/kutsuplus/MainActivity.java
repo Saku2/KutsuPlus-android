@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +34,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -43,7 +44,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import com.google.android.gms.internal.fo;
 import com.google.android.gms.maps.model.LatLng;
 import com.savarese.spatial.NearestNeighbors;
 
@@ -58,7 +58,6 @@ import fi.aalto.kutsuplus.kdtree.StopTreeHandler;
 import fi.aalto.kutsuplus.kdtree.TreeNotReadyException;
 import fi.aalto.kutsuplus.sms.SMSMessage;
 import fi.aalto.kutsuplus.sms.SMSParser;
-import fi.aalto.kutsuplus.utils.AddressHandler;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
@@ -755,6 +754,62 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		this.registerReceiver(sms_receiver, intentFilter);
 
 	}
+	
+	// http://stackoverflow.com/questions/5944345/sending-sms-in-android
+    private void sendSMS(String phoneNumber, String message)
+    {
+        String SENT = "SMS_SENT";
+        String DELIVERED = "SMS_DELIVERED";
+
+        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+            new Intent(SENT), 0);
+
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+            new Intent(DELIVERED), 0);
+
+        //---when the SMS has been sent---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        Toast.makeText(getBaseContext(), "SMS: Generic failure",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        Toast.makeText(getBaseContext(), "SMS: No service",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        Toast.makeText(getBaseContext(), "SMS: Null PDU",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        Toast.makeText(getBaseContext(), "SMS: Radio off",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(SENT));
+
+        //---when the SMS has been delivered---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case Activity.RESULT_CANCELED:
+                        Toast.makeText(getBaseContext(), "SMS not delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(DELIVERED));
+
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+    }
 
 	/*
 	 * doOrder(View v) reads the current selections from the communicaton singleton and
@@ -784,7 +839,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			mPager.setCurrentItem(2);
 		}
 
-		SmsManager smsManager = SmsManager.getDefault();
 
 		Locale current_locale = getResources().getConfiguration().locale;
 		
@@ -804,7 +858,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		 if(max_price>0)
 			 sms_message+=" E"+max_price;
 		}
-		smsManager.sendTextMessage(getString(R.string.sms_hsl_number), null, sms_message, null, null);
+		sendSMS(getString(R.string.sms_hsl_number), sms_message);
+		
 		ticketFragment.start_animation();
 		
 		
