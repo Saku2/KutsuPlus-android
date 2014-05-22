@@ -313,7 +313,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		if(marker != null)
-		/*if(marker.getTitle().toString().equals("start"))
+		if(marker.getTitle().toString().equals("start"))
 		{
 			marker.hideInfoWindow();
 			iSendMapSelection.setFromActivated();
@@ -323,7 +323,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			marker.hideInfoWindow();
 			iSendMapSelection.setToActivated();
 		}
-		else*/
+		else
 		{
 			if(marker != null){
 				marker.showInfoWindow();
