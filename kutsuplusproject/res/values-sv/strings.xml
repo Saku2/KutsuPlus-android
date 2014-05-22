@@ -40,6 +40,10 @@
     
     
     <!-- SMS Handling -->
+    <string name="SMS_Warning">Ordern ska kosta nånting. Ska vi fortsätta?</string>   
+    <string name="SMS_YES">Ja</string>   
+    <string name="SMS_No">Nej</string>   
+    
     <string name="title_sms_notification">Mottaga biljett</string>
     <string name="sms_waiting">Sekunder </string>
     <string name="sms_timeout">Väntar fortfarande</string>

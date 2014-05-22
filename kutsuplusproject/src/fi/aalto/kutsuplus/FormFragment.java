@@ -371,9 +371,9 @@ public class FormFragment extends Fragment {
 	/*
 	 * adapter where the list values will be set
 	 */
-	private ArrayAdapter<String> extrasAdapter(String dogsArray[]) {
+	private ArrayAdapter<String> extrasAdapter(String optionsArray[]) {
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dogsArray) {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, optionsArray) {
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {

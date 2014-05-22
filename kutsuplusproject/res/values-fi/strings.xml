@@ -39,6 +39,10 @@
     
     
     <!-- SMS Handling -->
+    <string name="SMS_Warning">Tilaaminen maksaa jonkin verran. Jatketaanko?</string>   
+    <string name="SMS_YES">Kyllä</string>   
+    <string name="SMS_No">Ei</string>   
+    
     <string name="title_sms_notification">Vastaanotetaan lippu</string>
     <string name="sms_waiting">Sekunteja </string>
     <string name="sms_timeout">Odotetaan yhä</string>

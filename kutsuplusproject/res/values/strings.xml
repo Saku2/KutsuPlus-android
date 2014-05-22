@@ -53,6 +53,10 @@
     <string name="operating_hours">Attention! Service is available only on work days between 6am and 11pm</string>
     
     <!-- SMS Handling -->
+    <string name="SMS_Warning">The order costs some money. Shall we continue?</string>   
+    <string name="SMS_YES">Yes</string>   
+    <string name="SMS_No">No</string>   
+    
     <string name="title_sms_notification">Receive ticket</string>
     <string name="sms_waiting">Seconds </string>
     <string name="sms_timeout">Still waiting</string>

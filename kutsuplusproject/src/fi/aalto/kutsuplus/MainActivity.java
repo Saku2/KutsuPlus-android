@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -773,17 +775,42 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
     }
 
+    
+    
 	/*
 	 * doOrder(View v) reads the current selections from the communicaton singleton and
 	 * sends a SMS to get the ticket. Ticket fragment is activated to be ready to show the
 	 * receiving ticket. At the end the ride is saved at the local store so that the selections
 	 * can be shown when the user opens the program later.
 	 */
-	public void doOrder(View v) {
+    public void doOrder(View v) {
 		if (communication == null)
 			return;
 		if ((communication.getPick_up_stop() == null) || (communication.getDrop_off_stop() == null))
 			return;
+
+    	Resources res = getResources();
+    	AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage(res.getString(R.string.SMS_Warning));
+        builder1.setCancelable(true);
+        builder1.setPositiveButton(res.getString(R.string.SMS_YES),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                doOrder();
+            }
+        });
+        builder1.setNegativeButton(res.getString(R.string.SMS_No),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+	public void doOrder() {
 		if (ticketFragment == null)
 			ticketFragment = new TicketFragment();
 		if (isTwoPaneLayout) {
