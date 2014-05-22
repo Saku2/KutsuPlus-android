@@ -61,7 +61,7 @@ import fi.aalto.kutsuplus.sms.SMSParser;
 import fi.aalto.kutsuplus.utils.CoordinateConverter;
 import fi.aalto.kutsuplus.utils.CustomViewPager;
 
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener, ISendFocusChangeInfo {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener, ISendMapSelection, ISendFormSelection, LocationListener {
 
 
 	private Locale myLocale;
@@ -414,19 +414,15 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     	try
     	{
     	Log.d("TAG FOCUS", item.getTitle().toString());
-		this.getFormFragment().focusChangedFromActionBar = true;
     	clearAllTextViewsFocusesInFromFragment();
+    	
 		if(item.getTitle().toString().equals("start_focus")){
-			item.setIcon(R.drawable.focus_finish);
-			item.setTitle("finish_focus");
 			this.getFormFragment().toView.requestFocus();
-			mapturn=MainActivity.TO;
+            setToActivated();
 		}
 		else{
-			item.setIcon(R.drawable.focus_start);
-			item.setTitle("start_focus");//
 			this.getFormFragment().fromView.requestFocus();	
-			mapturn=MainActivity.FROM;
+			setFromActivated();
 		}
     	}
     	catch(Exception e)
@@ -542,7 +538,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		}
 		else{
 			formFragment.updateToText(street_address);
-			communication.setTo_address(OTTOCommunication.FORM_FRAGMENT, street_address);
+			communication.setTo_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
 		}
 				
 		Log.d(LOG_TAG, "setMapLocationSelected address:"+address_gps.longitude+" "+address_gps.latitude);
@@ -576,53 +572,19 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			Log.d("TAG FOCUS", "Item title: " + item.getTitle().toString());
         	if(this.getMapFragment().isDraggedStartMarker()){//    			
     			Log.d("TAG FOCUS", "start dragged");
-    			clearAllTextViewsFocusesInFromFragment();
-        		if(!item.getTitle().toString().equals("start_focus")){
-    				item.setIcon(R.drawable.focus_start);
-    				item.setTitle("start_focus");
-    				this.getFormFragment().fromView.requestFocus();
-    				mapturn=MainActivity.FROM;
-    			}
+    			clearAllTextViewsFocusesInFromFragment();        		
+    			this.getFormFragment().fromView.requestFocus();
+    			setFromActivated();    			
         	}
         	else{   			
     			Log.d("TAG FOCUS", "finish dragged");
-    			clearAllTextViewsFocusesInFromFragment();
-    			if(item.getTitle().toString().equals("start_focus")){
-    				item.setIcon(R.drawable.focus_finish);
-    				item.setTitle("finish_focus");
-    				this.getFormFragment().toView.requestFocus();
-    				mapturn=MainActivity.TO;
-    			}
+    			clearAllTextViewsFocusesInFromFragment();    			
+    			this.getFormFragment().toView.requestFocus();
+    			setToActivated();
         	}
         }
 	}
 	
-
-	//focus has changed from order-view (from-view)
-	@Override
-	public void onFocusChanged(boolean FromHasFocus) {
-		if(!this.getFormFragment().focusChangedFromActionBar){
-			Log.d("focus Change View", ""+FromHasFocus);
-	    	MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
-	    	if(FromHasFocus){  			
-	    		if(!item.getTitle().toString().equals("start_focus")){
-					item.setIcon(R.drawable.focus_start);
-					item.setTitle("start_focus");		
-				}
-	    		mapturn=MainActivity.FROM;
-	    	}
-	    	else{   			
-				if(item.getTitle().toString().equals("start_focus")){
-					item.setIcon(R.drawable.focus_finish);
-					item.setTitle("finish_focus");
-				}
-				mapturn=MainActivity.TO;
-	    	}
-		}
-		this.getFormFragment().focusChangedFromActionBar = false;
-	}
-
-
 
 
 	/*
@@ -648,7 +610,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 		{
 			formFragment.updateFromText(street_address);
 			communication.setFrom_address(OTTOCommunication.MAIN_ACTIVITY, street_address);
-			mapturn=MainActivity.TO;
+			
 		}
 		else
 		{
@@ -893,28 +855,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 	@Override
 	public void setFromActivated() {
 		MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
-    	if(!item.getTitle().toString().equals("start_focus")){
-				item.setIcon(R.drawable.focus_start);
-				item.setTitle("start_focus");		
-			}
+		item.setIcon(R.drawable.focus_start);
+		item.setTitle("start_focus");		
     	mapturn=MainActivity.FROM;	
     	}
 
 	@Override
 	public void setToActivated() {
 		MenuItem item = this.thisMenu.findItem(R.id.focus_txtview);
-		if(item.getTitle().toString().equals("start_focus")){
 			item.setIcon(R.drawable.focus_finish);
 			item.setTitle("finish_focus");
-		}
 		mapturn=MainActivity.TO;
 	}
 
 	//LOCATION SCRUMBS
 	@Override
 	public void onLocationChanged(Location location) {
-		//Toast.makeText(getBaseContext(), "Latitude:" + location.getLatitude(), Toast.LENGTH_SHORT).show();
-		//Toast.makeText(getBaseContext(), "Longitude:" + location.getLongitude(), Toast.LENGTH_SHORT).show();
 		this.getMapFragment().updateRidingScrumbPolyline(location);
 	}
 

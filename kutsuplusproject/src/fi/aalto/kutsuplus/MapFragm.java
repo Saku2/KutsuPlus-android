@@ -313,7 +313,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		if(marker != null)
-		if(marker.getTitle().toString().equals("start"))
+		/*if(marker.getTitle().toString().equals("start"))
 		{
 			marker.hideInfoWindow();
 			iSendMapSelection.setFromActivated();
@@ -323,7 +323,7 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			marker.hideInfoWindow();
 			iSendMapSelection.setToActivated();
 		}
-		else
+		else*/
 		{
 			if(marker != null){
 				marker.showInfoWindow();
@@ -627,9 +627,9 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 
 	}
 	
-	public void updateMarkersAndRoute(LatLng ll, StopObject busstop,boolean focusAtFrom) {
+	public void updateMarkersAndRoute(LatLng ll, StopObject busstop,boolean isStartMarker) {
 		
-		boolean isStartMarker = true;
+		/*boolean isStartMarker = true;
 		if(markerWasDragged){
 			if(draggedStartMarker)
 				isStartMarker = true;
@@ -638,12 +638,13 @@ public class MapFragm extends Fragment implements OnMarkerClickListener, OnMapCl
 			
 			markerWasDragged = false;
 		}
-		else if(focusAtFrom){
+		else *
+		if(focusAtFrom){
 			isStartMarker = true;
 		}		
 		else{//
 			isStartMarker = false;
-		}
+		}*/
 		
 		
 		if(isStartMarker)
