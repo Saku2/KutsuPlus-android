@@ -167,7 +167,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			e.printStackTrace();
 		}
 		Log.d(LOG_TAG, "after creating stopTree");
-		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LOCKED); 
 
 
 		// web from:
@@ -232,6 +231,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 			maptab.setContentDescription(getString(R.string.TAB_map_description));
 			maptab.setTabListener(this);
 			actionBar.addTab(maptab);
+			setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT); 
 
 		}
 
@@ -256,6 +256,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 				ride_crumb_button.setVisible(true);
 			if (clear_map_button != null)
 				clear_map_button.setVisible(true);
+			setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE); 
+
 			
 		}
 		//this feature is under construction and is commented out for now
